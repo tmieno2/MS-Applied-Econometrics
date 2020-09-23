@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Statistical Hypothesis Testing</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 396/896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Statistical Hypothesis Testing
+### AECN 396/896-002
+
+---
+
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i&amp;display=swap);
+@import url(https://fonts.googleapis.com/css?family=Cabin:600,600i&amp;display=swap);
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700&amp;display=swap);
+
+
+:root {
+  /* Fonts */
+  --text-font-family: 'Noto Sans';
+  --text-font-is-google: 1;
+  --text-font-family-fallback: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, Ubuntu, roboto, noto, segoe ui, arial;
+  --text-font-base: sans-serif;
+  --header-font-family: Cabin;
+  --header-font-is-google: 1;
+  --code-font-family: 'Source Code Pro';
+  --code-font-is-google: 1;
+  --base-font-size: 18px;
+  --text-font-size: 1.0rem;
+  --code-font-size: 0.5rem;
+  --code-inline-font-size: 1em;
+  --header-h1-font-size: 1.4rem;
+  --header-h2-font-size: 1.1rem;
+  --header-h3-font-size: 0.9rem;
+
+  /* Colors */
+  --text-color: #000000;
+  --header-color: #035AA6;
+  --background-color: #FFFFFF;
+  --link-color: #ff005a;
+  --text-bold-color: #035AA6;
+  --code-highlight-color: rgba(255,255,0,0.5);
+  --inverse-text-color: #000000;
+  --inverse-background-color: #03A696;
+  --inverse-header-color: #000000;
+  --title-slide-background-color: #035AA6;
+  --title-slide-text-color: #FFFFFF;
+  --header-background-color: #035AA6;
+  --header-background-text-color: #FFFFFF;
+  --primary: #035AA6;
+  --secondary: #03A696;
+  --white: #FFFFFF;
+  --black: #000000;
+}
+
+html {
+  font-size: var(--base-font-size);
+}
+
+body {
+  font-family: var(--text-font-family), var(--text-font-family-fallback), var(--text-font-base);
+  font-weight: normal;
+  color: var(--text-color);
+}
+h1, h2, h3 {
+  font-family: var(--header-font-family);
+  font-weight: 600;
+  color: var(--header-color);
+}
+.remark-slide-content {
+  background-color: var(--background-color);
+  font-size: 0.7rem;
+  padding: 16px 64px 16px 64px;
+  width: 100%;
+  height: 100%;
+}
+.remark-slide-content h1 {
+  font-size: var(--header-h1-font-size);
+}
+.remark-slide-content h2 {
+  font-size: var(--header-h2-font-size);
+}
+.remark-slide-content h3 {
+  font-size: var(--header-h3-font-size);
+}
+.remark-code, .remark-inline-code {
+  font-family: var(--code-font-family), Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+}
+.remark-code {
+  font-size: var(--code-font-size);
+}
+.remark-inline-code {
+  font-size: var(--code-inline-font-size);
+  color: #035AA6;
+  background-color: #e6e6e6;
+  padding: 2px;
+}
+.remark-slide-number {
+  color: #035AA6;
+  opacity: 1;
+  font-size: 0.9em;
+}
+strong { color: var(--text-bold-color); }
+a, a &gt; code {
+  color: var(--link-color);
+  text-decoration: none;
+}
+.footnote {
+  position: absolute;
+  bottom: 60px;
+  padding-right: 4em;
+  font-size: 0.9em;
+}
+.remark-code-line-highlighted {
+  background-color: var(--code-highlight-color);
+}
+.inverse {
+  background-color: var(--inverse-background-color);
+  color: var(--inverse-text-color);
+  
+}
+.inverse h1, .inverse h2, .inverse h3 {
+  color: var(--inverse-header-color);
+}
+.title-slide, .title-slide h1, .title-slide h2, .title-slide h3 {
+  color: var(--title-slide-text-color);
+}
+.title-slide {
+  background-color: var(--title-slide-background-color);
+}
+.title-slide .remark-slide-number {
+  display: none;
+}
+/* Two-column layout */
+.left-column {
+  width: 20%;
+  height: 92%;
+  float: left;
+}
+.left-column h2, .left-column h3 {
+  color: #035AA699;
+}
+.left-column h2:last-of-type, .left-column h3:last-child {
+  color: #035AA6;
+}
+.right-column {
+  width: 75%;
+  float: right;
+  padding-top: 1em;
+}
+.pull-left {
+  float: left;
+  width: 47%;
+}
+.pull-right {
+  float: right;
+  width: 47%;
+}
+.pull-right ~ * {
+  clear: both;
+}
+img, video, iframe {
+  max-width: 100%;
+}
+blockquote {
+  border-left: solid 5px #03A69680;
+  padding-left: 1em;
+}
+.remark-slide table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+.remark-slide table thead th {
+  border-bottom: 1px solid #ddd;
+}
+th, td {
+  padding: 5px;
+}
+.remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even) {
+  background: #CCEDEA;
+}
+table.dataTable tbody {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+table.dataTable.display tbody tr.odd {
+  background-color: var(--background-color);
+}
+table.dataTable.display tbody tr.even {
+  background-color: #CCEDEA;
+}
+table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+  color: var(--text-color);
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  color: var(--text-color) !important;
+}
+
+/* Slide Header Background for h1 elements */
+.remark-slide-content.header_background &gt; h1 {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--header-background-color);
+  color: var(--header-background-text-color);
+  padding: 2rem 64px 1.5rem 64px;
+  margin-top: 0;
+  box-sizing: border-box;
+}
+.remark-slide-content.header_background {
+  padding-top: 7rem;
+}
+
+@page { margin: 0; }
+@media print {
+  .remark-slide-scaler {
+    width: 100% !important;
+    height: 100% !important;
+    transform: scale(1) !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+}
+
+.primary {
+  color: var(--primary);
+}
+.bg-primary {
+  background-color: var(--primary);
+}
+.secondary {
+  color: var(--secondary);
+}
+.bg-secondary {
+  background-color: var(--secondary);
+}
+.white {
+  color: var(--white);
+}
+.bg-white {
+  background-color: var(--white);
+}
+.black {
+  color: var(--black);
+}
+.bg-black {
+  background-color: var(--black);
+}
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+# Before we start 
+
+## Learning objectives
+
+Learn the theory of statistical hypothesis testing and learn how to conduct various tests. 
+
+## Table of contents
+
+1. [Review on statistical hypothesis testing](#review)
+2. [Testing (linear model)](#linear)
+3. [Confidence interval](#conf)
+4. [Testing with multiple coefficients](#multiple-coefs)
+5. [Multiple Linear Restrictions: F-test](#f)
+
+---
+class: inverse, center, middle
+name: review
+
+# Review on Statistical Hypothesis Testing
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+# Hypothesis Testing: General Steps 
+
+Here is the general step of any hypothesis testing:
+
++ Step 1: specify the null `\((H_0)\)` and alternative `\((H_1)\)` hypotheses
+
++ Step 2: find the distribution of the test statistic .red[if the null hypothesis is true]
+
++ Step 3: calculate the test statistic based on the data and regression results
+
++ Step 4: define the significance level
+
++ Step 5: check how unlikely that you get the actual test statistic (found at Step 3) .red[if indeed the null hypothesis is true]
+
+---
+
+# Hypothesis testing: An Example 
+
+.content-box-red[**Setup**]
+
+Suppose you want to test if the expected value of a normally distributed random variable (`x`) is 1 or not.
+
+We do know the variance of `x` is 4 for some reason.
+
+Your estimator is the sample mean: `\(\theta = \sum_{i=1}^J x_i/J\)`
+
+We know that `\(\theta \sim N(\alpha, 4/J)\)` (of course `\(\alpha\)` is not known).
+
+This means that `\(\sqrt{J} \times (\theta - \alpha)/2 \sim N(0, 1)\)`.
+
+.content-box-red[**Test statistic and its distribution under the null hypothesis**]
+
+The null hypothesis is `\(\alpha = 1\)`. 
+
+Suppose `\(\alpha = 1\)` is indeed 1, then `\(\sqrt{J} \times (\theta - 1)/2 \sim N(0, 1)\)`.
+
+So, if the null hypothesis is indeed true, this is the distribution of your test statistic: `\(\sqrt{J} \times (\theta - 1)/2\)`
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-3-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Hypothesis testing: An Example (Cont.) 
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-4-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+--
+
+.content-box-red[**Case 1**]
+
+Suppose you have obtained 100 samples `\((J = 100)\)` and calculated `\(\theta\)` (sample mean), which turned out to be 2.
+
+Then, your test statistic is `\(\sqrt{100} \times (2-1)/2 = 5\)`.
+
+How unlikely is it to get the number you got (5) if the null hypothesis is indeed true?
+
+--
+
+.blue[Very unlikely! So, the null is very much likely wrong!]
+
+--
+
+.content-box-red[**Case 2**]
+
+Suppose you have obtained 400 samples `\((J = 400)\)` and calculated `\(\theta\)` (sample mean), which turned out to be 1.02.
+
+Then, your test statistic is `\(\sqrt{400} \times (1.02-1)/2 = 0.2\)`.
+
+How unlikely is it to get the number you got (0.2) if the null hypothesis is indeed true?
+
+--
+
+.blue[Very much possible! So, we cannot say confidently that the null is wrong.]
+
+---
+
+# Hypothesis testing: Side Note
+
+Note that you do not really need to use `\(\sqrt{J} \times (\theta - \alpha)/2\)` as your test statistic. 
+
+--
+
+You could alternatively use `\(\theta - \alpha\)`. But, in that case, you need to be looking at `\(N(0, 4/J)\)` instead of `\(N(0, 1)\)`. When the number of observations is 100 `\((J = 100)\)`,
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-5-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+--
+
+.content-box-red[**Reconsider the case 1**]
+
+Suppose you have obtained 100 samples `\((J = 100)\)` and calculated `\(\theta\)` (sample mean), which turned out to be 2.
+
+Then, your test statistic is `\(2-1 = 1\)`. 
+
+Is is unlikely for you to get 1 if the null hypothesis is true? 
+
+The conclusion would be exactly the same as using `\(\sqrt{J} \times (\theta - \alpha)/2\)` because the distribution under the null is adjusted according to the test statistic you use.
+
+--
+
+.content-box-green[**Note**]
+
+We always use normalize test statistic so that we can always look up the same distribution.
+
+---
+class: inverse, center, middle
+name: coef
+
+# Hypothesis Testing of the Coefficients of a Linear Model
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+# Hypothesis Testing of the Coefficients  
+
+.content-box-red[**Hypotheses examples**]:
+
+Consider the following model,
+
+`$$wage = \beta_0 + \beta_1 educ + \beta_2 exper + u$$`
+
++ Hypothesis 1: education has no impact on wage `\((\beta_1=0)\)`
+
++ Hypothesis 2: experience has a positive impact on wage `\((\beta_2&gt;0)\)`
+
+--
+
+.content-box-red[**Statistical hypothesis testing**]
+
++ If `\(\hat{\beta}_1\)` is non-random, but just a scalar, all you have to do is just check if `\(\hat{\beta}_1=0\)` or not
+
+--
+
++ But, the estimate you get is \textcolor{blue}{just one realization} of the range of values `\(\hat{\beta}_1\)` could take because it is a random varaible
+
+--
+
++ This means that even if `\(\beta_1=0\)` in the population, it is possible to get an estimate that is very far from 0
+
+--
+
+.content-box-red[**Hypothesis Testing in General**]
+
+You have gotten an estimate of `\(\beta\)` `\((\hat{\beta})\)` and are wondering if the true value of `\(\beta\)` (which you will never know) is `\(\alpha\)` (a specific constant). 
+
+Here is the underlying concept of hypothesis testing.
+
++ What would be the .red[distribution] of `\(\hat{\beta}\)` (the estimator) .red[if] the true value of `\(\beta\)` is indeed `\(\alpha\)`?
+
++ If so, how likely that you would have gotten the value you have gotten for `\(\hat{\beta}\)`
+
+--
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+So, let's discuss the distribution of `\(\beta_j\)` now.
+
+---
+
+# Hypothesis Testing: Additional Assumption 
+
+So far, we learned that:
+
++ Expected value of the OLS estimators under MLR.1 ~ MLR.4
++ Variance of the OLS estimators under MLR.1 ~ MLR.5
+
+--
+
+We have .red[NOT] made any assumptions about the distribution of the error term!!
+
+--
+
+In order to perform hypothesis testing, we need to make assumptions about the distribution of error term (this is not strictly true, but more on this later)
+
+--
+
+.content-box-red[**Normality Assumption**]
+
+The population error `\(u\)` is .red[independent] of the explanatory variables `\(x_1,\dots,x_k\)` and is .red[normally] distributed with zero mean and variance `\(\sigma^2\)`:
+
+`$$u\sim Normal(0,\sigma^2)$$`
+
+--
+
+
+.content-box-green[**Note**]
+
+The normality assumption is much more than error term being distributed as Normal.
+
+Independence of the error term implies
+
++ `\(E[u|x] = 0\)`
++ `\(Var[u|x]= \sigma^2\)`
+
+So, we are necessarily assuming MLR.4 and MLR.5 hold by the independence assumption.
+
+---
+
+# The Implications of All the Assumptions
+
+
+.content-box-red[**distribution of the dependent variable**]
+
+The distribution of `\(y\)` conditional on `\(x\)` is a Normal distribution
+
+`\(y|x \sim Normal(\beta_0+\beta_1 x_1+\dots+\beta_k x_k,\sigma^2)\)`
+
++ `\(E[y|x]\)` is `\(\beta_0+\beta_1 x_1+\dots+\beta_k x_k\)`
++ `\(u|x\)` is `\(Normal(0,\sigma^2)\)`
+
+--
+
+.content-box-red[**distribution of the OLS estimator**]
+
+If the MLR.1 through MLR.6 are satisfied, `\(OLS\)` estimators are also Normally distributed!
+
+`\(\hat{\beta}_j \sim Normal(\beta_j,Var(\hat{\beta}_j))\)`
+
+which means,
+
+`\(\frac{\hat{\beta}_j-\beta_j}{sd(\hat{\beta}_j)} \sim Normal(0,1)\)`
+
+--
+
+Okay, so are we going to use this for testing involving `\(\beta_j\)`? 
+
+--
+
+No. 
+
+--
+
+.content-box-red[**t-statistic and t-distribution**]
+
+But, in practice, we need to estimate `\(sd(\beta_j)\)`. If we use `\(se(\hat{\beta}_j)\)` instead of `\(sd(\hat{\beta}_j)\)`, then,
+
+`\(\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}\)`
+
+where `\(n-k-1\)` is the degree of freedom of residual.
+
+(Note: `\(se(\hat{\beta}_j) = \hat{\sigma}^2/\big[SST_X\cdot (1-R_j^2)\big]\)`)
+
+---
+
+# Null and alternative hypotheses 
+
+
+.content-box-red[**one-sided alternative**]:
+
+`\(H_0:\)` `\(\beta_j = 0\)` 
+`\(H_1:\)` `\(\beta_j &gt; 0\)` 
+
+--
+
+You look at the positive end of the t-distribution to see if the t-statistic you obtained is more extreme than the level of error you accept (significance level). 
+
+--
+
+.content-box-red[**two-sided alternative**]:
+
+`\(H_0:\)` `\(\beta_j = 0\)` 
+`\(H_1:\)` `\(\beta_j \ne 0\)` 
+
+You look at the both ends of the t-distribution to see if the t-statistic you obtained is more extreme than the level of error you accept (significance level). 
+
+--
+
+.content-box-red[**significance level**]
+
+Definition: The probability of rejecting the null when the null is actually true (The probability that you wrongly claim that the null hypothesis is wrong even though it's true in reality: Type I error)
+
+The lower the significance level, you are more sure that the null is indeed wrong when you reject the null hypothesis
+
+---
+
+# One-sided test: 5% significance level
+
+
+
+This is the distribution of `\(\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}\)` if `\(\beta_j = 0\)` (the null hypothesis is true).
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+.content-box-red[**Decision rule**]
+
+Reject the null hypothesis if the t-statistic is greater than 1.66 (95% quantile of the t-distribution)
+
+--
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+If you follow the decision rule, then you have a 5% chance that you are wrong in rejecting the null hypothesis of `\(\beta_j = 0\)`.
+
+Here, 
+
++ 5% is the .red[significance level]
++ 1.66 is the .red[critical value] above which you will reject the null
+
+---
+
+# One-sided test: 1% significance level
+
+This is the distribution of `\(\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}\)` if `\(\beta_j = 0\)` (the null hypothesis is true).
+
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+.content-box-red[**Decision rule**]
+
+Reject the null hypothesis if the t-statistic is greater than 2.37 (99% quantile of the t-distribution)
+
+--
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+If you follow the decision rule, then you have a 1% chance that you are wrong in rejecting the null hypothesis of `\(\beta_j = 0\)`.
+
+Here, 
+
++ 1% is the .red[significance level]
++ 2.37 is the .red[critical value] above which you will reject the null
+
+---
+
+# One-sided test: an example 
+
+
+.content-box-red[**Estimated Model**]
+
+The impact of experience on wage:
+
++ `\(log(wage) = 0.284+0.092\times educ+0.0041\times exper + 0.022 \times tenure\)`
++ `\(se(\hat{\beta}_{exper}) = 0.0017\)` 
++ `\(n = 526\)`
+
+--
+
+.content-box-red[**Hypothesis**]
+
++ `\(H_0\)`: `\(\beta_{exper}=0\)`
++ `\(H_1\)`: `\(\beta_{exper}&gt;0\)`
+
+--
+
+.content-box-red[**Test**]
+
+t-statistic `\(= 0.0041/0.0017 = 2.41\)`
+
+The 99% quantile of `\(t_{526-3-1}\)` is `\(2.33\)`
+
+Since `\(2.41 &gt; 2.33\)`, we reject the null in favor of the alternative hypothesis at the 1% level.
+
+---
+
+# Two-sided test: 5% significance level
+
+
+
+This is the distribution of `\(\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}\)` if `\(\beta_j = 0\)` (the null hypothesis is true).
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+(Note: irrespective of the type of tests, the distribution of t-statistics is the same.)
+
+.content-box-red[**Decision rule**]
+
+Reject the null hypothesis if the .red[absolute] value of the t-statistic is greater than 1.96.
+
+--
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+If you follow the decision rule, then you have a 5% chance that you are wrong in rejecting the null hypothesis of `\(\beta_j = 0\)`.
+
+Here, 
+
++ 5% is the .red[significance level]
++ 1.96 is the .red[critical value] above which you will reject the null
+
+---
+
+# p-value 
+
+
+.content-box-red[**Definition**]
+
+The smallest significance level at which the null hypothesis would be rejected (the probability of observing a test statistic at least as extreme as we did if the null hypothesis is true)
+
+
+
+
+Suppose the t-statistic you got is 2.16. Then, there's a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
+
+--
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+So, the lower significance level the null hypothesis is rejected is 3.1%, which is the definition of p-value.
+
+--
+
+.content-box-red[**Decision rule**]
+
+If the p-value is lower than your choice of significance level, then you reject the null. 
+
+This decision rule of course results in the same test results as the one we saw that uses a t-value and critical value.
+
+---
+
+# R implementation  
+
+
+.content-box-red[**Get the data and run a regression**]
+
+
+```r
+#--- get the data ---#
+wage &lt;- read_csv('wage1.csv') 
+
+#--- run a regression ---#
+reg_wage &lt;- lm(wage ~ educ + exper + tenure, data = wage)
+```
+
+--
+
+.content-box-red[**Obtain t-statistics**]
+
+First apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object.
+
+
+```r
+(
+reg_wage_sum &lt;- summary(reg_wage)$coef
+)
+```
+
+```
+##                Estimate
+## (Intercept) -2.87273482
+## educ         0.59896507
+## exper        0.02233952
+## tenure       0.16926865
+##             Std. Error
+## (Intercept) 0.72896429
+## educ        0.05128355
+## exper       0.01205685
+## tenure      0.02164461
+##               t value
+## (Intercept) -3.940844
+## educ        11.679478
+## exper        1.852849
+## tenure       7.820361
+##                 Pr(&gt;|t|)
+## (Intercept) 9.224742e-05
+## educ        3.681353e-28
+## exper       6.446818e-02
+## tenure      2.934527e-14
+```
+
++ `Estimate`: the coefficient estimates `\((\hat{\beta}_j)\)`
++ `Std. Error`: `\(se(\hat{\beta}_j\)`)
++ `t value`: t-statistic for the null of `\(\beta_j = 0\)`
++ `Pr(&gt;|t|)`: p-value (for the two sided test with the null of `\(\beta_j = 0\)`)
+
+So, for the t-test of of `\(\beta_j = 0\)` is already there. You do not need to do anything further.
+
+For the null hypothesis other than `\(\beta_j = 0\)`, you need further work beyond just applying `summary()` to the regression results.
+
+---
+
+# R implementation  (by hand) 
+
+Suppose you are testing the null hypothesis of `\(\beta_{educ} = 1\)` against the alternative hypothesis of `\(\beta_{educ} \ne 1\)` (so, this is a two-sided test). 
+
+The t-value for this test is not available from the summary. 
+
+
+```r
+#--- coefficient estimate on educ ---#
+beta_educ &lt;- reg_wage_sum["educ", "Estimate"] 
+
+#--- se of the coefficient on educ ---#
+se_beta_educ &lt;- reg_wage_sum["educ", "Std. Error"]
+
+#--- t-value ---#
+(
+t_value &lt;- (beta_educ - 1)/se_beta_educ
+)
+```
+
+```
+## [1] -7.819953
+```
+
+--
+
+The degree of freedom `\((n-k-1)\)` of the t-distribution is 
+
+
+```r
+(
+df_t &lt;- reg_wage$df.residual 
+)
+```
+
+```
+## [1] 522
+```
+
+--
+
+You can get the 97.5% quantile of the `\(t_{522}\)` using the `qt()` function:
+
+
+```r
+(
+critical_value &lt;- qt(0.975, df = df_t)  
+)
+```
+
+```
+## [1] 1.964519
+```
+
+--
+
+Since the absolute value of the t-value (-7.8199528) is greater than the critical value (1.9645189), you reject the null.
+
+---
+
+class: inverse, center, middle
+name: conf
+
+# Confidence Interval (CI)
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+# Confidence Interval (CI): Definition
+
+.content-box-green[**Definition**]
+
+If you calculate 95% CI on multiple different samples, 95% of the time, the calculated CI includes the true parameter
+
+--
+
+.content-box-green[**What confidence interval is not**]
+
+The probability that a realized CI calculated from specific sample data includes the true parameter
+
+
+---
+
+# How to get CI (in general)
+
+.content-box-green[**General Procedure**]:
+
+For the **assumed** distribution of statistic `\(x\)`, the `\(A\%\)` confidence interval of `\(x\)` is the range with
+
++ lower bound: 100 − A/2 percent quantile of `\(x\)`
++ upper bound: 100-(100 − A)/2 percent quantile of `\(x\)` 
+
+--
+
+.content-box-green[**Example**]: 
+
+For the 95% CI (A = 95), 
+
++ lower bound: 2.5 (100 − 95/2) percent quantile of `\(x\)`
++ upper bound: 97.5 (100-(100 − 95)/2) percent quantile of `\(x\)`
+
+If `\(x\)` is standard normally distributed `\((x \sim N(0, 1))\)`, then,
+
+
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+The 2.5% and 97.5% quantiles are -1.96 and 1.96, respectively.
+
+So, the 95% CI of `\(x\)` is [-1.96, 1.96].
+
+---
+
+# How to get the CI of coefficients
+
+Under the assumption of MLR.1 through MLR.6 (which includes the normality assumption of the error), we learned that
+
+`\(\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}\)`
+
+--
+
+So, following the general procedure we discussed in the previous slide, the A% confidence interval of `\(\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}\)` is 
+
++ lower bound: `\((100 − A)/2\)`% quantile of the `\(t_{n-k-1}\)` distribution (let's call this `\(Q_l\)`)
++ upper bound: `\(100 - (100 − A)/2\)`% quantile of the `\(t_{n-k-1}\)` distribution (let's call this `\(Q_h\)`)  
+
+--
+
+But, we want the A% CI of `\(\beta_j\)`, not `\(\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}\)`. Solving for `\(\beta_j\)`,
+
+`\(\beta_j = t_{n-k-1}\times se(\hat{\beta}_j) + \hat{\beta}_j\)`
+
+--
+
+So, to get the A% CI of `\(\beta_j\)`, we scale the CI of `\(\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}\)` by `\(se(\hat{\beta}_j)\)` and then shift by `\(\hat{\beta}_j\)`.
+
++ lower bound: `\(Q_l \times se(\hat{\beta}_j) + \hat{\beta}_j\)`
++ lower bound: `\(Q_h \times se(\hat{\beta}_j) + \hat{\beta}_j\)`
+
+---
+
+# CI: An Example
+
+
+.content-box-green[**Get data**]
+
+
+```r
+wage &lt;- read_csv("wage1.csv") %&gt;% 
+  select(wage, educ, exper, tenure)
+```
+
+Take a look at the data:
+
+
+```r
+head(wage) 
+```
+
+```
+## # A tibble: 6 x 4
+##    wage  educ exper tenure
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1  3.10    11     2      0
+## 2  3.24    12    22      2
+## 3  3       11     2      0
+## 4  6        8    44     28
+## 5  5.30    12     7      2
+## 6  8.75    16     9      8
+```
+
+
+.content-box-green[**Run OLS and get its summary**]
+
+
+```r
+wage_reg &lt;- lm(wage ~ educ + exper + tenure, data = wage) 
+```
+
+Apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object to gain access to `\(\hat{\beta}_j\)` and `\(se(\hat{\beta}_j)\)`
+
+
+```r
+(
+reg_wage_sum &lt;- summary(reg_wage)$coef
+)
+```
+
+```
+##                Estimate
+## (Intercept) -2.87273482
+## educ         0.59896507
+## exper        0.02233952
+## tenure       0.16926865
+##             Std. Error
+## (Intercept) 0.72896429
+## educ        0.05128355
+## exper       0.01205685
+## tenure      0.02164461
+##               t value
+## (Intercept) -3.940844
+## educ        11.679478
+## exper        1.852849
+## tenure       7.820361
+##                 Pr(&gt;|t|)
+## (Intercept) 9.224742e-05
+## educ        3.681353e-28
+## exper       6.446818e-02
+## tenure      2.934527e-14
+```
+
+
+
+`df.residual` of the regression object has the degrees of freedom of residual (n-k-1).
+
+
+```r
+wage_reg$df.residual
+```
+
+```
+## [1] 522
+```
+
+---
+
+# CI: An Example (Cont.) 
+
+We are interested in getting the 90% confidence interval of the coefficient on `educ` `\((\beta_{educ})\)`.
+
+Under all the assumptions (MLR.1 through MLR.6), we know that in general,
+
+`\(\frac{\hat{\beta}_{educ} - \beta_{educ}}{se(\hat{\beta}_{educ})} \sim t_{n-k-1}\)`
+
+--
+
+Specifically for this regression,
+
++ `\(\hat{\beta}_{educ}\)` = 0.5989651
+
++ `\(se(\hat{\beta}_{educ})\)` = 0.0512835
+
++ n-k-1 = 522
+
+
+```r
+#--- coefficient estimate on educ ---#
+beta_educ &lt;- reg_wage_sum["educ", "Estimate"] 
+
+#--- se of the coefficient on educ ---#
+se_beta_educ &lt;- reg_wage_sum["educ", "Std. Error"]
+
+#--- n-k-1 ---#
+wage_reg$df.residual
+```
+
+```
+## [1] 522
+```
+
+
+
+  
+---
+
+# CI: An Example (Cont.)  
+
+Here is the distribution of `\(t_{522}\)`:
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-21-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+--
+
+Now, we need to find the 5% ((100-90)/2) and 95% (100-(100-90)/2) quantile of `\(t_{522}\)`.
+
+
+```r
+qt(0.05, df = 522)  
+```
+
+```
+## [1] -1.647778
+```
+
+
+```r
+qt(0.95, df = 522)  
+```
+
+```
+## [1] 1.647778
+```
+
+Yes, we could have just gotten one of them and multiply it by -1 to get the other since t distribution is symmetric around 0.
+
+--
+
+So, the 90% CI of `\(\frac{0.599 - \beta_{educ}}{0.051} \sim t_{522}\)` is [-1.6477779, 1.6477779]
+
+--
+
+By scaling and shifting, the lower and upper bounds of the 90% CI of `\(\beta_{educ}\)` are:
+
++ lower bound: 0.599 + 0.051 `\(\times\)` -1.6477779 = 0.5149633
+
++ upper bound: 0.599 + 0.051 `\(\times\)` 1.6477779 = 0.6830367
+
+---
+
+# In practice ...
+
+You can just use `tidy()` with `conf.int = TRUE`, `conf.level = confidence level` like below:
+
+
+```r
+tidy(wage_reg, conf.int = TRUE, conf.level = 0.9) %&gt;% 
+  relocate(term, conf.low, conf.high)
+```
+
+```
+## # A tibble: 4 x 7
+##   term  conf.low conf.high
+##   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Int… -4.07      -1.67  
+## 2 educ   0.514      0.683 
+## 3 exper  0.00247    0.0422
+## 4 tenu…  0.134      0.205 
+## # … with 4 more variables:
+## #   estimate &lt;dbl&gt;,
+## #   std.error &lt;dbl&gt;,
+## #   statistic &lt;dbl&gt;,
+## #   p.value &lt;dbl&gt;
+```
+
+---
+class: inverse, center, middle
+name: multiple-coefs
+
+# Linear Combination of Multiple Coefficients
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+
+# Linear Combination of Multiple Coefficients
+
+.content-box-green[**Example**]
+
+`$$log(wage) = \beta_0+\beta_1 jc+ \beta_2 univ + \beta_3 exper + u$$`
+
++ `\(jc\)`: 1 if you attended 2-year college, 0 otherwise
++ `\(univ\)`: 1 if you attended 4-year college, 0 otherwise
+
+--
+
+Does the impact of education on wage is greater if you attend a 4-year college than 2-year college?
+
+--
+
+The null and alternative hypotheses would be:
+
++ `\(H_1:\)` `\(\beta_1 &lt; \beta_2\)`
++ `\(H_0:\)` `\(\beta_1 = \beta_2\)`
+
+--
+
+Rewriting them,
+
++ `\(H_1:\)` `\(\beta_1-\beta_2 &lt; 0\)`
++ `\(H_0:\)` `\(\beta_1 - \beta_2 =0\)`
+
+--
+
+Or,  
+
++ `\(H_1:\)` `\(\alpha &lt; 0\)`
++ `\(H_0:\)` `\(\alpha =0\)`
+
+where `\(\alpha = \beta_1 - \beta_2\)`
+
+Note that `\(\alpha\)` is a linear combination of `\(\beta_1\)` and  `\(\beta_2\)`.
+
+---
+
+# Linear Combination of Multiple Coefficients  
+
+.content-box-green[**Important fact**]
+
+For any linear combination of the OLS coefficients, denoted as `\(\hat{\alpha}\)`, the following holds:
+
+`$$\frac{\hat{\alpha}-\alpha}{se(\hat{\alpha})} \sim t_{n-k-1}$$`
+
+Where `\(\alpha\)` is the true value (it is `\(\beta_1 - \beta_2\)` in the example in the previous slide).
+
+--
+
+So, using the example, this means that 
+
+`$$\frac{\hat{\alpha}-\alpha}{se(\hat{\alpha})} = \frac{\hat{\beta}_1-\hat{\beta}_2-(\beta_1 - \beta_2)}{se(\hat{\beta}_1-\hat{\beta}_2)} \sim t_{n-k-1}$$`
+
+--
+
+This is great because we know how to do t-test!
+
+--
+
+.content-box-green[**Going back to the example**]
+
+Our null hypothesis is `\(\alpha = 0\)` (or `\(\beta_1 - \beta_2 = 0\)`).
+
+So, .red[If] indeed the null hypothesis is true, then
+
+`$$\frac{\hat{\alpha}-0}{se(\hat{\alpha})} = \frac{\hat{\beta}_1-\hat{\beta}_2-0}{se(\hat{\beta}_1-\hat{\beta}_2)} \sim t_{n-k-1}$$`
+
+--
+
+So, all you need to do is to substitute `\(\hat{\beta}_1\)`, `\(1-\hat{\beta}_2\)`, `\(se(\hat{\beta}_1 - \hat{\beta}_2)\)` into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
+
+---
+
+# Linear Combination of Multiple Coefficients  
+
+But, 
+
+`$$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) \ne \sqrt{Var(\hat{\beta}_1)+Var(\hat{\beta}_2)}$$`
+
+--
+
+If the following was true,
+
+`$$se(\hat{\beta}_1-\hat{\beta}_2) = \sqrt{Var(\hat{\beta}_1)+Var(\hat{\beta}_2)}$$`
+
+then, we could have just extracted `\(Var(\hat{\beta}_1)\)` and `\(Var(\hat{\beta}_2)\)` individually from the regression object on R, sum them up, and take a square root of it.
+
+--
+
+.content-box-green[**Math Aside**]
+
+`$$Var(ax+by) = a^2 Var(x) + 2abCov(x,y) + b^2 Var(y)$$`
+
+--
+
+So, 
+
+`$$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) = \sqrt{Var(\hat{\beta}_1)-2Cov(\hat{\beta}_1,\hat{\beta}_2)+Var(\hat{\beta}_2)}$$`
+
+---
+
+# Demonstration using R  
+
+.content-box-red[**Regression**]
+
+
+```r
+twoyear &lt;- readRDS('twoyear.rds') # import data
+
+reg_sc &lt;- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
+```
+
+--
+
+.content-box-red[**Variance covariance matrix**]
+
+Variance covariance matrix is a matrix where
+
++ `\(VCOV_{i,i}\)`: the variance of `\(i\)`th variable's coefficient estimator
++ `\(VCOV_{i,j}\)`: the covariance between `\(i\)`th and `\(j\)`th variables' estimators
+
+You can get is by applying `vcov()` to regression results:
+
+
+```r
+(
+vcov_sc &lt;- vcov(reg_sc) # variance covariance matrix
+)
+```
+
+```
+##               (Intercept)
+## (Intercept)  4.435337e-04
+## jc          -1.741432e-05
+## univ        -1.573472e-05
+## exper       -3.104756e-06
+##                        jc
+## (Intercept) -1.741432e-05
+## jc           4.663243e-05
+## univ         1.927929e-06
+## exper       -1.718296e-08
+##                      univ
+## (Intercept) -1.573472e-05
+## jc           1.927929e-06
+## univ         5.330230e-06
+## exper        3.933491e-08
+##                     exper
+## (Intercept) -3.104756e-06
+## jc          -1.718296e-08
+## univ         3.933491e-08
+## exper        2.479792e-08
+```
+
+--
+
+.content-box-red[**Calculate the t-statistic**]
+
+
+
+```r
+numerator &lt;- reg_sc$coef["jc"]-reg_sc$coef["univ"]
+denomenator &lt;- sqrt(
+  vcov_sc["jc","jc"]-2*vcov_sc["jc","univ"]+vcov_sc["univ","univ"]
+  )
+t_stat &lt;- numerator/denomenator
+t_stat
+```
+
+```
+##        jc 
+## -1.467657
+```
+
+---
+class: inverse, center, middle
+name: f
+
+# Multiple Linear Restrictions: F-test
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+# Multiple Linear Restrictions: F-test
+
+
+.content-box-red[**Example**]
+
+`$$log(salary) =  \beta_0 + \beta_1 years + \beta_2 gamesyr + \beta_3 bavg + \beta_4 hrunsyr + \beta_5 rbisyr + u$$`
+
++ `\(salary\)`: salary in 1993
++ `\(years\)`: years in the league
++ `\(gamesyr\)`: average games played per year
++ `\(bavg\)`: career batting average
++ `\(hrunsyr\)`: home runs per year
++ `\(rbisyr\)`: runs batted in per year
+
+--
+
+.content-box-red[**Hypothesis**]
+
+Once years in the league and games per year have been controlled for, the statistics measuring performance ( `\(bavg\)`, `\(hrunsyr\)`, `\(rbisyr\)`) have no effect on salary collectively.
+
+`\(H_0\)`: `\(\beta_3=0\)`, `\(\beta_4=0\)`, and `\(\beta_5=0\)`
+
+`\(H_1\)`: `\(H_0\)` is not true
+
+--
+
+.content-box-green[**Questions**]
+  
+How do we test this?
+
++ `\(H_0\)` holds if all of `\(\beta_3\)`, `\(\beta_4\)`, or `\(\beta_5\)` are zero.
++ Conduct t-test for each coefficient individually?
+
+---
+
+# Individual t-test on the coefficients 
+
+
+.content-box-red[**Running a regression**]
+
+
+```r
+library(readstata13)
+
+#--- red the data ---#
+mlb_data &lt;- read.dta13('MLB1.dta')
+
+#--- run a rergession ---#
+mlb_reg &lt;- lm(log(salary)~years+gamesyr+bavg
+  +hrunsyr+rbisyr,data=mlb_data)
+
+#--- take a look at the results ---#
+tidy(mlb_reg) 
+```
+
+```
+## # A tibble: 6 x 5
+##   term  estimate std.error
+##   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Int…  1.12e+1   0.289  
+## 2 years  6.89e-2   0.0121 
+## 3 game…  1.26e-2   0.00265
+## 4 bavg   9.79e-4   0.00110
+## 5 hrun…  1.44e-2   0.0161 
+## 6 rbis…  1.08e-2   0.00717
+## # … with 2 more variables:
+## #   statistic &lt;dbl&gt;,
+## #   p.value &lt;dbl&gt;
+```
+
+--
+
+.content-box-red[**Question**]
+
+What do you find?
+
+--
+
+None of the coefficients on `bavg`, `hrunsyr`, and `rbisyr` is statistically significantly different from 0 even at the 10% level!!
+
+So, does this mean that they collectively have no impact on the salary of MLB players?
+
+--
+
+If you were to conclude that they do not have statistically significant impact jointly, you would turn out to be wrong!!
+
+`\(SSR\)` (or `\(R^2\)`) turns out to be useful for testing their impacts jointly.
+
+---
+
+# F-test 
+
+In doing an F-test of the null hypothesis, we compare sum of squared residuals ($SSR$) of two models:
+
+.content-box-red[**Unrestricted Model**]
+
+`$$log(salary) = \beta_0 + \beta_1 years + \beta_2 gamesyr + \beta_3 bavg + \beta_4 hrunsyr + \beta_5 rbisyr + u$$`
+
+
+.content-box-red[**Restricted Model**]
+
+`$$log(salary) = \beta_0 + \beta_1 years + \beta_2 gamesyr + u$$`
+
+The coefficients on `\(bavg\)`, `\(hrunsyr\)`, and `\(rbisyr\)` are restricted to be 0 following the null hypothesis. 
+
+--
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+
+.content-box-green[**Question**]
+
+If the null hypothesis is indeed true, then what do you think is going to happen if you compare the SSE of the two models?
+
+---
+
+# Sum of Squared Residuals (SSR) for F-test 
+
+.content-box-red[**SSR of the unrestricted model**]: `\(SSR_u\)`.
+
+
+```r
+#--- run OLS ---#
+res_u &lt;- lm(log(salary) ~ years + gamesyr + bavg
+   + hrunsyr + rbisyr, data = mlb_data)
+
+#--- SSR ---#
+sum(res_u$residuals^2)   
+```
+
+```
+## [1] 183.1863
+```
+
+.content-box-red[**SSR of the restricted model**]: `\(SSR_r\)`.
+
+
+```r
+#--- run OLS ---#
+res_r &lt;- lm(log(salary) ~ years + gamesyr, data = mlb_data)
+
+#--- SSR ---#
+sum(res_r$residuals^2)  
+```
+
+```
+## [1] 198.3115
+```
+
+--
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+.content-box-green[**Questions**]
+
++ Which SSR is larger? Does that make sense?
+
+--
+
+`\(SSR_r\)` should be large because the restricted model has a smaller explanatory power than the unrestricted model.
+
+--
+
++ What does `\(SSR_r - SSR_u\)` measure?
+
+--
+
+The contribution from the three excluded variables in explaining the dependent variable.  
+
+--
+
++ Is the contribution large enough to say that the excluded variables are important? 
+
+--
+
+Cannot tell at this point. 
+
+---
+
+# F-test in general 
+
+
+.content-box-red[**Setup**]
+
+Consider a following general model:
+
+$$
+y = \beta_0 +\beta_1 x_1 + \dots+\beta_k x_k +u
+$$
+
+Suppose we have `\(q\)` restrictions to test: that is, the null hypothesis states that `\(q\)` of the variables have zero coefficients.
+
+`$$H_0: \beta_{k-q+1} =0, \beta_{k-q+2} =0, \dots, \beta_k=0$$`
+
+When we impose the restrictions under `\(H_0\)`, the restricted model is the following:
+
+`$$y = \beta_0 +\beta_1 x_1 + \dots+\beta_{k-q} x_{k-q} + u$$`
+
+
+.content-box-red[**F-statistic**]
+
+.red[If] the null hypothesis is true, then,
+
+`$$F = \frac{(SSR_r-SSR_u)/q}{SSR_u/(n-k-1)} \sim F_{q,n-k-1}$$`
+
++ `\(q\)`: the number of restrictions
++ `\(n-k-1\)`: degrees of freedom of residuals
+
+
+.content-box-green[**Questions**]
+
++ Is the above `\(F\)`-statistic always positive?
+
+--
+
+Yes, because `\(SSR_r-SSR_u\)` is always positive.
+
+--
+
++ The greater the joint contribution of the `\(q\)` variables, the (greater or smaller) the `\(F\)`-statistic?
+
+--
+
+Greater.
+
+---
+
+# F-distribution and F-test steps
+
+.content-box-red[**F-distribution**]
+
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-31-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.content-box-red[**F-test steps**]
+
++ Define the null hypothesis
++ Estimate the unrestricted and restricted models to obtains their `\(SSR\)`
++ Calculate `\(F\)`-statistic
++ Define the significance level and corresponding critical value according to the F distribution with appropriate degrees of freedoms
++ Reject if your `\(F\)`-statistic is greater than the critical value, otherwise do not reject
+
+---
+
+# F-test by hand 
+
+.content-box-red[**Step 1: estimate the unrestricted and restricted models**]
+
+
+```r
+#--- unrestricted model ---#
+reg_u &lt;- lm(log(salary)~years+gamesyr+
+  bavg+hrunsyr+rbisyr,data=mlb_data)
+
+SSR_u &lt;- sum(reg_u$residuals^2)
+
+#--- restricted model ---#
+reg_r &lt;- lm(log(salary)~years+gamesyr,data=mlb_data)
+
+SSR_r &lt;- sum(reg_r$residuals^2)
+```
+
+--
+
+.content-box-red[**Step 2: calculate F-stat**]
+
+
+```r
+df_q &lt;- 3 # the number of restrictions
+df_ur &lt;- reg_u$df.residual # degrees of freedom for the unrestricted model
+F_stat_num &lt;- (SSR_r-SSR_u)/df_q # numerator of F-stat
+F_stat_denom &lt;- SSR_u/df_ur # denominator of F-stat
+F_sta &lt;- F_stat_num/F_stat_denom # F-stat
+F_sta  
+```
+
+```
+## [1] 9.550254
+```
+
+--
+
+.content-box-red[**Step 3: find the critical value**]
+
+
+```r
+alpha &lt;- 0.05 # 5%  significance level
+c_value &lt;- qf(1-alpha, df1 = df_q, df2 = df_ur)
+c_value
+```
+
+```
+## [1] 2.630641
+```
+
+--
+
+.content-box-red[**Step 4: F-stat &gt; critical value?**]
+
+
+```r
+F_sta &gt; c_value
+```
+
+```
+## [1] TRUE
+```
+
+--
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+So, the performance variables have statistically significant impacts on salary .red[jointly]!!
+
+--
+
+What happened?
+
+---
+
+# Simulation (multicollinearity, t-test, and F-test) 
+
+.content-box-red[**Data generation**]
+
+
+```r
+N &lt;- 300 # num observations
+mu &lt;- runif(N) # term shared by indep vars 1 and 2
+x1 &lt;- 0.1*runif(N)+2*mu # indep 1
+x2 &lt;- 0.1*runif(N)+2*mu # indep 2
+x3 &lt;- runif(N) # indep 3
+u &lt;- rnorm(N) # error
+y &lt;- 1 + x1 + x2 + x3 + u # generate y
+data &lt;- data.table(y=y,x1=x1,x2=x2) # combine into a data.table
+```
+
+`x1` and `x2` are highly correlated with each other:
+
+
+```r
+cor(x1, x2) # correlation between x1 and x2
+```
+
+```
+## [1] 0.9974091
+```
+
+.content-box-red[**Regression**]
+
+
+```r
+reg_u &lt;- lm(y~x1+x2+x3,data=data) # OLS
+tidy(reg_u) # results  
+```
+
+```
+## # A tibble: 4 x 5
+##   term  estimate std.error
+##   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Int…    1.00      0.166
+## 2 x1       1.46      1.44 
+## 3 x2       0.629     1.44 
+## 4 x3       0.795     0.206
+## # … with 2 more variables:
+## #   statistic &lt;dbl&gt;,
+## #   p.value &lt;dbl&gt;
+```
+
+Both `x1` and `x2` are statistically insignificant individually. 
+
+---
+
+# Simulation (multicollinearity, t-test, and F-test)  
+
+.content-box-red[**F-test**]
+
+
+```r
+#--- unrestricted ---#
+SSR_u &lt;- sum(reg_u$residuals^2)
+
+#--- restricted ---#
+reg_r &lt;- lm(y ~ x3,data=data)
+SSR_r &lt;- sum(reg_r$residuals^2)
+
+#--- F ---#
+F_stat &lt;- ((SSR_r-SSR_u)/2)/(SSR_u/reg_u$df.residual)
+
+#--- critical value ---#
+alpha &lt;- 0.05
+c_value &lt;- qf(1-alpha,df1=2,df2=reg_u$df.residual)
+```
+
+The F-statistic for the hypothesis testing is:
+
+
+```r
+#--- F &gt; critical value? ---#
+F_stat
+```
+
+```
+## [1] 204.2609
+```
+
+```r
+F_stat &gt; c_value  
+```
+
+```
+## [1] TRUE
+```
+
+The F-statistic is very high, meaning they collectively affect the dependent variable significantly.
+
+--
+
+.content-box-green[**Important**]
+
+Standard error of the coefficients on `x1` and `x2` are very high because they are so highly correlated that your estimation of the model had such a difficult time to distinguish the their individual impacts.
+
+But, collectively, they have large impacts. `\(F\)`-test was able to detect the statistical significance of their impacts .red[collectively].
+
+---
+
+# MLB example 
+
+Here is the correlation coefficients between the three variables:
+
+
+```r
+select(mlb_data,bavg,hrunsyr,rbisyr) %&gt;% cor() 
+```
+
+```
+##              bavg   hrunsyr
+## bavg    1.0000000 0.1905958
+## hrunsyr 0.1905958 1.0000000
+## rbisyr  0.3291454 0.8907428
+##            rbisyr
+## bavg    0.3291454
+## hrunsyr 0.8907428
+## rbisyr  1.0000000
+```
+
+--
+
+As you can see, `brunsyr` and `hrunsyr` are highly correlated with each other. 
+
+They are not so highly correlated with `bavg`.
+
+---
+
+# F-test in practice  
+
+You can use the `linearHypothesis()` function from the `car` package
+
+.content-box-red[**Syntax**]
+
+
+```r
+linearHypothesis(regression, hypothesis)
+```
+
+`regression` is the name of the regression results of the unrestricted model
+
+`hypothesis` is a text of null hypothesis:
+
+
+.content-box-green[**example**]
+
+`c("x1 = 0", "x2 = 1")` means the coefficients on `\(x1\)` and `\(x2\)` are `\(0\)` and `\(1\)`, respectively
+
+
+.content-box-red[**Demonstration**]
+
+
+```r
+#--- load the car package ---#
+library(car)
+
+#--- unrestricted regression ---#
+reg_u &lt;- lm(y ~ x1 + x2 + x3, data = data)
+
+#--- F-test ---#
+linearHypothesis(reg_u,c('x1=0','x2=0'))  
+```
+
+```
+## Linear hypothesis test
+## 
+## Hypothesis:
+## x1 = 0
+## x2 = 0
+## 
+## Model 1: restricted model
+## Model 2: y ~ x1 + x2 + x3
+## 
+##   Res.Df    RSS Df Sum of Sq
+## 1    298 743.46             
+## 2    296 312.36  2     431.1
+##        F    Pr(&gt;F)    
+## 1                     
+## 2 204.26 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  
+##   0 '***' 0.001 '**' 0.01
+##   '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+# Multiple coefficients again 
+
+The test of a linear combination of the parameters we looked at earlier is a special case where the number of restriction is 1
+
+We can actually use `\(F\)`-test for this type of hypothesis testing because `\(F_{1,t-n-k} \sim t_{t-n-k}^2\)`.
+
+
+```r
+#--- F-test ---#
+F_res &lt;- linearHypothesis(reg_sc,c("jc-univ=0"))
+F_res
+```
+
+```
+## Linear hypothesis test
+## 
+## Hypothesis:
+## jc - univ = 0
+## 
+## Model 1: restricted model
+## Model 2: lwage ~ jc + univ + exper
+## 
+##   Res.Df    RSS Df Sum of Sq
+## 1   6760 1250.9             
+## 2   6759 1250.5  1   0.39853
+##       F Pr(&gt;F)
+## 1             
+## 2 2.154 0.1422
+```
+
+```r
+#--- F-stat ---#
+sqrt(F_res$F)  
+```
+
+```
+## [1]       NA 1.467657
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "13:16",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

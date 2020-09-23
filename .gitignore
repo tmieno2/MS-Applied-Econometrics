@@ -6,7 +6,6 @@
 /*/cache/*
 /*/libs/*
 /*/figure/*
-*.html
 *.csv
 *.rds
 *.dta

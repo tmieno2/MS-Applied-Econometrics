@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Standard Error Estimation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 396/896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Standard Error Estimation
+### AECN 396/896-002
+
+---
+
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+
+# Before we start 
+
+## Learning objectives
+
+Understand the consequences of the violation of the homoskedasticity assumption and how to deal with the problem
+
+## Table of contents
+
+1. [Review on statistical hypothesis testing](#review)
+2. [Testing (linear model)](#linear)
+3. [Confidence interval](#conf)
+
+---
+
+class: inverse, center, middle
+name: review
+
+# Heteroskedasticity
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Homoskedasticity and Heteroskedasticity  
+
+
+.pull-left[
+.content-box-red[**Homoskedasticity**]
+
+`$$Var(u|x) = \sigma^2$$`
+
+&lt;br&gt;
+.content-box-red[**Heteroskedasticity**]
+
+`$$Var(u|x) = f(x)$$`
+
+]
+
+---
+
+# Visualization 
+
+
+
+&lt;img src="se_estimation_x_files/figure-html/unnamed-chunk-4-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Central Questions 
+
+
+What are the consequences of assuming error is homoskedastic when it is heteroskedastic in reality?
+
++ Estimation of coefficients `\((\hat{\beta}_j)\)`?
++ Estimation of the variance of `\(\hat{\beta}_j\)`?
+
+---
+
+# Coefficient estimators
+
+.content-box-green[**Question**]
+
+--
+
+Are OLS estimators unbiased when error is heteroskedastic?
+
+--
+
+.content-box-green[**Answer**]
+
+--
+
+Yes
+
+--
+
+.content-box-green[**Why?**]
+
+--
+
+We do not homoskedasticity for the OLS estimators to be unbiased.    
+
+---
+
+# Variance of the coefficient estimators 
+
+We learned that when the homoskedasticity assumption holds, then,
+
+`\(Var(\hat{\beta}_j) = \frac{\sigma^2}{SST_x(1-R^2_j)}\)`
+
+--
+
+We used the following as the estimator of `\(Var(\hat{\beta}_j)\)`
+
+`\(\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}\)` where `\(\hat{\sigma}^2 = \frac{\sum_{i=1}^{N} \hat{u}_i^2}{N-k-1}\)` 
+
+--
+
+&lt;br&gt;
+
+.content-box-red[**Important**]: By default, R and other statistical software uses this formula to get estimates of the variance of `\(\hat{\beta}_j\)`.
+
+.content-box-green[**Note**]: Hereafter, we let `\(\widehat{Var(\hat{\beta_j})}\)` denote the estimator of the variance of `\(\hat{\beta}_j\)`.
+
+---
+
+# Variance of the coefficient estimators  
+
+But, under heteroskedasticity,
+
+`\(Var(\hat{\beta}_j) \ne \frac{\sigma^2}{SST_x(1-R^2_j)}\)`
+
+--
+
+.content-box-green[**Question**]:
+   
+Is `\(E[\widehat{Var(\hat{\beta}_j)}]=E\Big[\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}\Big]=Var(\hat{\beta}_j)\)` under heteroskedasticity?
+
+--
+
+.content-box-green[**Answer**]: No
+
+---
+
+# Variance of the coefficient estimators  
+
+.content-box-green[**Question**]:
+
+So, what are the consequences of using `\(\widehat{Var(\hat{\beta}_j)}=\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}\)` under heteroskedasticity?
+
+
+.content-box-red[**Consequence**]
+
+Your hypothesis testing is going to be biased.
+
+---
+
+# Consequence of heteroskedasticity on testing
+
+Let's run MC simulations to see the consequence of ignoring heteroskedasticity.
+
+--
+
+.content-box-green[**Model**]
+
+`\(y = 1 + \beta x + u\)`, where `\(\beta = 0\)`
+
+--
+
+.content-box-red[**Test of interest**]
+
++ `\(H_0:\)` `\(\beta=0\)`
++ `\(H_1:\)` `\(\beta \ne 0\)`
+
+--
+
+.content-box-green[**Question**]
+
+If you test the null hypothesis at the `\(5\%\)` significance level, what should be the probability that you reject the null hypothesis when it is actually true? 
+
+`\(Pr(\mbox{reject} \;\; H_0|H_0 \;\; \mbox{is true})=?\)`
+
+---
+
+.content-box-green[**Question**]
+
+If you test the null hypothesis at the `\(5\%\)` significance level, what should be the probability that you reject the null hypothesis when it is actually true? 
+
+&lt;img src="se_estimation_x_files/figure-html/unnamed-chunk-5-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+--
+
+.content-box-green[**Answer**]
+
+Since the null is true (we generate the data that way!), the probability you reject the null should be the same as the significance level, which is `\(5%\)`.
+
+---
+
+# MC simulation: conceptual steps
+
++ generate a dataset so that `\(\beta_1\)` (the coefficient on `\(x\)`) is zero
+
+`$$y=\beta_0+\beta_1 x + v$$`
+
++ estimate the model and find `\(\hat{\beta}_1\)` and `\(\widehat{se(\hat{\beta}_1)}\)`
++ calculate `\(t\)`-statistic `\((\hat{\beta}_x-0/\widehat{se(\hat{\beta}_x)})\)` and decide whether you reject the null or not
++ repeat the above 1000 times
++ check how often you reject the null (should be close to 50 times)
+
+---
+
+# MC simulation: R code 
+
+
+```r
+set.seed(927834)
+
+N &lt;- 1000 # number of observations
+B &lt;- 1000 # number of simulations
+
+b_hat_store &lt;- rep(0, B) # beta hat storage
+t_stat_store &lt;- rep(0, B) # t-stat storage
+c_value &lt;- qt(0.975, N - 2) # critical value 
+
+x &lt;- runif(N,0,1) # x (fixed across iterations)
+
+for (i in 1:B){
+  #--- generate data ---#
+  het_u &lt;- 3 * rnorm(N, mean = 0, sd = 2 * x) # heteroskedastic error
+  y &lt;- 1 + het_u # y
+  data_temp &lt;- data.frame(y = y,x = x)
+
+  #--- regression ---#
+  ols_res &lt;- lm(y~x,data=data_temp)  
+
+  b_hat &lt;- ols_res$coef['x'] # coef estimate on x
+  b_hat_store[i] &lt;- b_hat # save the coef estimate
+  vcov_ols &lt;- vcov(ols_res) # get variance covariance matrix
+  t_stat_store[i] &lt;- b_hat/sqrt(vcov_ols['x','x']) # calculate t-stat
+} 
+```
+
+---
+
+# MC simulation: Results
+
+
+```r
+#--- how many times do you reject? ---#
+reject_or_not &lt;- abs(t_stat_store) &gt; c_value
+  mean(reject_or_not) 
+```
+
+```
+## [1] 0.108
+```
+
+--
+
+.content-box-red[**Consequence of ignoring heteroskedasticity**]
+
+We rejected the null hypothesis 10.8% of the time, instead of `\(5\%\)`.
+
+--
+
++ So, you are more likely to claim that `\(x\)` has a statistically significant impact than you are supposed to.
+
+--
+
++ The use of the formula `\(\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}\)` seemed to (over/under)-estimate the true variance of the OLS estimators
+
+--
+
++ The direction of bias is ambiguous. 
+
+---
+
+# How should we address this problem?
+
++ Now, we understand the consequence of heteroskedasticity: 
+
+`\(\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}\)` is a biased estimator of `\(Var(\hat{\beta})\)`, which makes any kind of testings based on it invalid.
+
+--
+
++ Can we credibly estimate the variance of the OLS estimators?
+
+--
+
+&lt;br&gt;
+
+.content-box-red[**White-Huber-Eicker heteroskedasticity-robust standard error estimator**]
+
+--
+
++ valid in the presence of heteroskedasticity of .red[unknown form]
++ heteroskedasticity-robust standard error estimator in short
+
+---
+class: middle
+
+.content-box-red[**Heteroskedasticity-robust standard error estimator**]
+
+`\(\widehat{Var(\hat{\beta}_j)} = \frac{\sum_{i=1}^n \hat{r}^2_{i,j} \hat{u}^2_i}{SSR^2_j}\)`
+
++ `\(\hat{u}_i\)`: residual from regressing `\(y\)` on all the independent variables
++ `\(\hat{r}_{i,j}\)`: residual from regressing `\(x_j\)` on all other independent variables for `\(i\)`th observation
++ `\(SSR^2_j\)`: the sum of squared residuals from regressing `\(x_j\)` on all other independent variables
+
+---
+class: middle
+
+We spend .red[NO] time to try to understand what's going on with the estimator.
+
+What you need is
+
++ understand the consequence of heteroskedasticity
++ know there is an estimator that is appropriate under heteroskedasticity (heteroskedasticity-robust standard error estimator)
++ know how to use the heteroskedasticity-robust standard error estimator in `\(R\)` (or some other software)
+
+---
+
+# In practice 
+
+Here is the well-accepted procedure in econometric analysis:
+
+--
+
++ Estimate the model using OLS (you do nothing special here)
+
+--
+
++ Assume the error term is heteroskedastic and estimate the variance of the OLS estimators 
+  * There are tests to whether error is heteroskedastic or not: .red[Breusch-Pagan] test and .red[White] test
+  * In practice, almost nobody bothers to conduct these tests
+  * We do not learn how to run these tests
+
+--
+
++ Replace the estimates from `\(\widehat{Var(\hat{\beta})}_{default}\)` with those from `\(\widehat{Var(\hat{\beta})}_{robust}\)` for testing
+
+--
+
++ But, we do not replace coefficient estimates (remember, coefficient estimation is still unbiased under heteroskedasticity)
+
+---
+ 
+# Implementation in R 
+
+We use
+
++ the `vcovHC()` function from the `sandwich` package to estimate heteroskedasticity-robust standard errors
+
++ the `coeftest()` function from the `lmtest` package to do tests
+
+--
+
+Let's run a regression using `MLB1.dta`.
+
+
+```r
+#--- library ---#
+library(readstata13)
+
+#--- import the data ---#
+mlb_data &lt;- read.dta13('MLB1.dta')
+
+#--- regression ---#
+reg_mlb &lt;- lm(log(salary)~years+bavg,data=mlb_data) 
+```
+
+---
+class: middle
+
+.content-box-red[**Obtaining Heteroskedasticity-robust SE estimates**]
+
+
+```r
+library(sandwich)
+```
+
+
+```r
+#--- NOT RUN ---#  
+vcovHC(regression result)
+```
+
+---
+
+
+.content-box-red[**Default**]
+
+
+```r
+vcov_hom &lt;- vcov(reg_mlb)
+```
+
+
+```
+##               (Intercept)         years          bavg
+## (Intercept)  0.1176979990 -2.038038e-04 -4.397390e-04
+## years       -0.0002038038  1.748348e-04 -3.483443e-06
+## bavg        -0.0004397390 -3.483443e-06  1.783011e-06
+```
+
+&lt;br&gt;
+
+.content-box-red[**Heteroskedasticity-robust**]
+
+
+```r
+vcov_het &lt;- vcovHC(reg_mlb)
+```
+
+
+```
+##              (Intercept)         years          bavg
+## (Intercept)  0.870291289  1.114209e-02 -3.683349e-03
+## years        0.011142089  3.943826e-04 -5.270567e-05
+## bavg        -0.003683349 -5.270567e-05  1.574648e-05
+```
+
+---
+class: middle
+
+.content-box-red[**Coefficient tests using `coeftest()`**]
+
+
+```r
+library(lmtest)
+```
+
+
+```r
+#--- NOT RUN ---#  
+coeftest(regression result, variance covariance matrix)
+```
+
+---
+
+.content-box-red[**Default**]
+
+
+```r
+coeftest(reg_mlb, vcov_hom) %&gt;% tidy()
+```
+
+```
+## # A tibble: 3 x 5
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept) 11.0       0.343       32.2  1.25e-106
+## 2 years        0.166     0.0132      12.6  3.16e- 30
+## 3 bavg         0.00539   0.00134      4.04 6.59e-  5
+```
+
+&lt;br&gt;
+
+.content-box-red[**Heteroskedasticity-robust**]
+
+
+```r
+coeftest(reg_mlb, vcov_het) %&gt;% tidy()
+```
+
+```
+## # A tibble: 3 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) 11.0       0.933       11.8  2.04e-27
+## 2 years        0.166     0.0199       8.38 1.29e-15
+## 3 bavg         0.00539   0.00397      1.36 1.75e- 1
+```
+
+---
+
+# Het-robust SE estimator: validation 
+
+Does the heteroskedasticity-robust se estimator work? Let's see using MC simulations:
+
+
+```r
+#--- x fixed across iterations ---#
+x &lt;- runif(N,0,1) # x
+
+for (i in 1:B){
+  #--- generate data ---#
+  het_u &lt;- 3 * rnorm(N, mean = 0, sd = 2 * x) # heteroskedastic error
+  y &lt;- 1 + het_u # y
+  data_temp &lt;- data.frame(y = y, x = x)
+
+  #--- regression ---#
+  ols_res &lt;- lm(y~x,data = data_temp)
+  b_hat &lt;- ols_res$coef['x'] # coef estimate on x
+  b_hat_store[i] &lt;- b_hat # save the coef estimate
+* vcov_hc &lt;- vcovHC(ols_res) # get variance covariance matrix
+  t_stat_store[i] &lt;- b_hat/sqrt(vcov_hc['x','x']) # calculate t-stat
+}  
+```
+
+---
+
+# MC simulation results 
+
+
+```r
+reject_or_not &lt;- abs(t_stat_store) &gt; c_value
+mean(reject_or_not)
+```
+
+```
+## [1] 0.062
+```
+
+Okay, not perfect. But, certainly better. 
+
+---
+
+class: inverse, center, middle
+name: review
+
+# Clustered Error
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+
+.content-box-red[**Clustered Error**]
+
++ Often times, observations can be grouped into clusters
++ Errors within the cluster can be correlated
+
+---
+class: middle
+
+.content-box-red[**Example 1**]
+
+College GPA: cluster by college
+
+`\(GPA_{col} = \beta_0 + \beta_1 income + \beta_2 GPA_{hs} + u\)`
+
++ Your observations consist of students' GPA scores across many colleges
++ Because of some unobserved (omitted) school characteristics, error terms for the individuals in the same college might be correlated.
+  * grading policy
+
+---
+class: middle
+
+.content-box-red[**Example 2**]
+
+Eduction Impacts on Income: cluster by individual
+
++ Your observations consist of 500 individuals with each individual tracked over 10 years
+
++ Because of some unobserved (omitted) individual characteristics, error terms for time-series observations within an individual might be correlated.
+  * innate ability
+
+---
+
+# Consequences of clustered error 
+
+.content-box-green[**Question**]
+
+Are the OLS estimators of the coefficients biased in the presence of clustered error?
+
+--
+
+.content-box-green[**Answer**]
+
+--
+
+No, the correlation between `\(x\)` and `\(u\)` would hurt you, but not correlation among `\(u\)`.
+
+---
+
+# Consequences of clustered error 
+
+.content-box-green[**Question**]
+
+Are `\(\widehat{Var(\hat{\beta})}_{default}\)` unbiased estimators of `\(Var(\hat{\beta})\)`?
+
+--
+
+.content-box-green[**Answer**]
+
+--
+
+No, `\(\widehat{Var(\hat{\beta})}_{default}\)` is unbiased only under homoskedasticity assumption, which assumes no correlation between errors
+
+---
+
+# Consequences of clustered error 
+
+.content-box-green[**Question**]
+
+Which has more information?
++ two errors that are independent
++ two errors that are correlated
+
+&lt;br&gt;
+.content-box-red[**Consequences**]
+
++ If you were to use `\(\widehat{Var(\hat{\beta})}_{default}\)` to estimate `\(Var(\hat{\beta})\)` in the presence of clustered error, you would (under/over)-estimate the true `\(Var(\hat{\beta})\)`.
+
++ This would lead to rejecting null hypothesis (more/less) often than you are supposed to
+
+---
+
+# MC simulations: conceptual steps
+
+Here are the conceptual steps of the MC simulations to see the consequence of clustered error. 
+
++ generate data according to the generating process in a way that error within the cluster (two clusters in this example) is correlated
++ estimate the model and find `\(\hat{\beta}_x\)` and `\(\widehat{se(\hat{\beta}_x)}\)`
++ calculate `\(t\)`-statistic `\((\hat{\beta}_x/\widehat{se(\hat{\beta}_x)})\)`
++ repeat steps 1-3 for 1000 times
++ see how many times out of 1000 times you reject the null hypothesis: `\(H_0:\)` `\(\beta_x=0\)`
+
+---
+
+# R code: steps 1 - 3
+
+Here is the R code for one iteration (Steps 1 ~ 3):
+
+
+```r
+#--- setup ---#
+library(MASS) # to use the mvrnorm() function later
+N &lt;- 200 # number of observations per cluster
+
+#--- error term ---#
+# generating errors that are correlated within each group
+u_1 &lt;- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+u_2 &lt;- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+
+#--- x ---#
+x_1 &lt;- runif(N); x_2 &lt;- runif(N) 
+
+#--- y ---#
+y_1 &lt;- 1 + 0*x_1 + u_1; y_2 &lt;- 1 + 0*x_2 + u_2
+
+#--- data ---#
+data &lt;- data.table(y=c(y_1,y_2),x=c(x_1,x_2)) 
+
+#--- OLS ---#
+reg &lt;- lm(y~x,data=data)
+*vcov_temp &lt;- vcov(reg) # default
+t_stat &lt;- reg$coef['x']/sqrt(vcov_temp['x','x'])
+t_stat_store[i] &lt;- t_stat
+```
+
+---
+
+# R code: step 4
+
+
+```r
+B &lt;- 1000
+t_stat_store &lt;- rep(0,B)
+for (i in 1:B){
+  #--- generate data ---#
+  u_1 &lt;- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+  u_2 &lt;- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+  x_1 &lt;- runif(N) # x for group 1
+  x_2 &lt;- runif(N) # x for group 2
+  y_1 &lt;- 1 + 0*x_1 + u_1
+  y_2 &lt;- 1 + 0*x_2 + u_2
+  data &lt;- data.table(y=c(y_1,y_2),x=c(x_1,x_2))
+
+  #--- OLS ---#
+  reg &lt;- lm(y~x,data=data)
+
+  #--- get vcov ---#
+  vcov_temp &lt;- vcov(reg)
+
+  #--- calculate t-stat ---#
+  t_stat &lt;- reg$coef['x']/sqrt(vcov_temp['x','x'])
+  t_stat_store[i] &lt;- t_stat
+} 
+```
+
+---
+
+# MC simulations: results 
+
+
+```r
+c_value &lt;- qt(0.975,400-2)
+
+#--- how often do you reject the null ---#
+mean(abs(t_stat_store) &gt; c_value) 
+```
+
+```
+## [1] 0.839
+```
+
+--
+
+
+.content-box-red[**Important**]: 
+
++ clustered error can severely bias your test results
++ it is always to make variables more significant than they truly are
+
+---
+  
+# What to do? 
+
+
+.content-box-red[**Cluster-robust standard error estimation**]
+
+There exist estimators of `\(Var(\hat{\beta})\)` that take into account the possibility that errors are clustered.
+
++ We call such estimators .blue[cluster-robust variance covariance estimator] denoted as `\((\widehat{Var(\hat{\beta})}_{cl})\)`
+
++ We call estimates from such estimators .blue[cluster-robust variance]
+
+---
+
+# Cluster-robust standard error estimation 
+
+I neither derive nor show the mathematical expressions of these estimators.
+  
+
+.content-box-red[**This is what you need to do**]
+
++ understand the consequence of clustered errors
+
++ know there are estimators that are appropriate under clustered error
+
++ know that the estimators we will learn take care of heteroskedasticity at the same time (so, they really are cluster- and heteroskedasticity-robust standard error estimators)
+
++ know how to use the estimators in `\(R\)` (or some other software)
+
+---
+
+# R implementation 
+
+We use the `feols()` package from the `fixest` package. 
+
+This is the function we will be using instead of `lm()` for the rest of the course.
+
+&lt;br&gt;
+
+.content-box-red[**feols()**]
+
+
+```r
+feols(dep var ~ indep var 1 + indep var 2 + ..., data = data) 
+```
+
+So, syntactically, it is identical with `lm()`, but it goes way beyond `lm()` as we will see later when we cover panel data estimation methods.
+
+--
+
+&lt;br&gt;
+
+.content-box-red[**Cluster-robust standard error**]
+
+Run a regression, and then apply `vcov()` with the `cluster = ~ ` option.
+
+---
+
+# Before an R demonstration 
+
+Let's take a look at the MLB data again.
+
+
+```r
+mlb_data[, c("salary", "years", "bavg", "nl")] %&gt;% head()
+```
+
+```
+##    salary years bavg nl
+## 1 6329213    12  289  1
+## 2 3375000     8  259  1
+## 3 3100000     5  299  1
+## 4 2900000     8  245  1
+## 5 1650000    12  258  1
+## 6  700000    17  286  1
+```
+
+`nl` (1 if in the National league, 0 if in the American league) is the group variable we cluster around. 
+
+---
+
+# R Demonstration 
+
+
+.content-box-red[**Step 1**]
+
+Run a regression
+
+
+```r
+reg_mlb &lt;- feols(log(salary) ~ years + bavg, data = mlb_data) 
+```
+
+--
+
+.content-box-red[**Step 2**]
+
+Apply `vcov()` with the `cluster =` option.
+
+
+
+```r
+vcov(reg_mlb, cluster = ~ nl)
+```
+
+
+```
+##               (Intercept)         years          bavg
+## (Intercept)  0.0622583346 -3.131444e-03 -1.785296e-04
+## years       -0.0031314439  1.575041e-04  8.979606e-06
+## bavg        -0.0001785296  8.979606e-06  5.119444e-07
+```
+
+Here, it is clustered around `nl`.
+
+---
+
+# Compare 
+
+
+.content-box-red[**Default**]
+
+
+```r
+vcov(reg_mlb) 
+```
+
+
+```
+##               (Intercept)         years          bavg
+## (Intercept)  0.1176979990 -2.038038e-04 -4.397390e-04
+## years       -0.0002038038  1.748348e-04 -3.483443e-06
+## bavg        -0.0004397390 -3.483443e-06  1.783011e-06
+```
+
+.content-box-red[**Cluster-robust standard error**]
+
+
+```r
+vcov(reg_mlb, cluster = ~ nl) 
+```
+
+
+```
+##               (Intercept)         years          bavg
+## (Intercept)  0.0622583346 -3.131444e-03 -1.785296e-04
+## years       -0.0031314439  1.575041e-04  8.979606e-06
+## bavg        -0.0001785296  8.979606e-06  5.119444e-07
+```
+---
+
+# In practice 
+
+Just like the heteroskedasticity-present case before,
+
++ Estimate the model using OLS (you do nothing special here)
+
++ Assume the error term is clustered and/or heteroskedastic, and estimate the variance of the OLS estimators ($Var(\hat{\beta})$) using cluster-robust standard error estimators
+
++ Replace the estimates from `\(\widehat{Var(\hat{\beta})}_{default}\)` with those from `\(\widehat{Var(\hat{\beta})}_{cl}\)` for testing
+
++ But, we do not replace coefficient estimates.
+       
+---
+
+# But does it really work? 
+
+Let's run MC simulations to see if the use of the cluster-robust standard error estimation method works:
+
+--
+
+Here is the data generating process:
+
+
+```r
+#--- error correlated within group ---#
+u_1 &lt;- mvrnorm(N, mu=rep(0, N), Sigma=matrix(.7, nrow=N, ncol=N)+diag(N)*.3)
+u_2 &lt;- mvrnorm(N, mu=rep(0, N), Sigma=matrix(.7, nrow=N, ncol=N)+diag(N)*.3)
+
+#--- other variables ---#
+x_1 &lt;- runif(N) # x for group 1
+x_2 &lt;- runif(N) # x for group 2
+y_1 &lt;- 1 + 1*x_1 + u_1 # dep var for group 1
+y_2 &lt;- 1 + 1*x_2 + u_2 # dep var for group 2
+*g_1 &lt;- rep('group 1', N) # group 1
+*g_2 &lt;- rep('group 2', N) # group 2
+
+#--- put together all the variables ---#
+data &lt;- data.frame(y=c(y_1, y_2), x=c(x_1, x_2), group=c(g_1, g_2))  
+```
+
+---
+class: middle
+
+Take a look at the data:
+
+
+```r
+data %&gt;% head()
+```
+
+```
+##           y          x   group
+## 1 0.9518322 0.04527744 group 1
+## 2 2.9023910 0.25028787 group 1
+## 3 0.5488082 0.91708107 group 1
+## 4 2.2914862 0.97184264 group 1
+## 5 0.3133658 0.68511433 group 1
+## 6 2.0306945 0.12429843 group 1
+```
+
+We are going to use `group` to cluster standard error estimation.
+
+---
+
+# MC simulation results: R code 
+
+
+```r
+B &lt;- 1000
+t_stat_store &lt;- rep(0, B)
+for (i in 1:B){
+  #--- generate data ---#
+  u_1 &lt;- mvrnorm(N, mu = rep(0, N), Sigma = matrix(.7, nrow = N, ncol = N)+diag(N)*.3)
+  u_2 &lt;- mvrnorm(N, mu = rep(0, N), Sigma = matrix(.7, nrow = N, ncol = N)+diag(N)*.3)
+  x_1 &lt;- runif(N) # x for group 1
+  x_2 &lt;- runif(N) # x for group 2
+  y_1 &lt;- 1 + 0*x_1 + u_1
+  y_2 &lt;- 1 + 0*x_2 + u_2
+  data &lt;- data.table(y = c(y_1, y_2), x = c(x_1, x_2), group = c(rep(1, N), rep(2, N)))
+
+  #--- OLS ---#
+  reg &lt;- feols(y ~ x,  data = data)
+
+  #--- get cluster-robust vcov ---#
+  vcov_cl &lt;- vcov(reg, cluster = ~ group)
+
+  #--- calculate t-stat ---#
+  t_stat &lt;- reg$coefficients['x']/sqrt(vcov_cl['x', 'x'])
+  t_stat_store[i] &lt;- t_stat
+}  
+```
+
+---
+
+# MC simulation results 
+
+
+```r
+#--- critical value ---#
+c_value &lt;- qt(0.975, 400-2)
+
+#--- how often do you reject the null ---#
+mean(abs(t_stat_store) &gt; c_value) 
+```
+
+```
+## [1] 0.269
+```
+
+--
+
+Well, it is much better than the default VCOV, but there is still a long way to go. 
+
+--
+
+.content-box-red[**Important**]
+
++ Cluster-robust standard error estimation gets better as the number of groups get larger 
+
++ The number of groups of 2 is too small (As a rule of thumb, \# of groups larger than 50 is sufficiently large)
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "4:3",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
