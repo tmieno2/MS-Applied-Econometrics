@@ -1,7 +1,7 @@
 
-# Data Science for Social Scientists and Agricultural and Environmental Scientists (AECN 396/AECN896-002)
+# Applied Econometrics (AECN 396/AECN896-003)
 
-This is the repository for AECN 396/AECN896-002 at University of Nebraska Lincoln, where you can find lecture slides and links to the datasets used during lectures.
+This is the repository for AECN896-003 at the University of Nebraska Lincoln, where you can find lecture slides and links to the datasets used during lectures.
 
 ## Lecture Notes
 

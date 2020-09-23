@@ -1282,22 +1282,61 @@ You then include two (the number of status values - 1) of the three dummy variab
 
 --
 
-
 .content-box-red[**Interpretation**]
 
 `\(\sigma_m\)`: the impact of having a MS degree .red[relative to] having a .red[college degree] 
 
 `\(\sigma_d\)`: the impact of having a Ph.D. degree .red[relative to] having a .red[college degree]
 
+--
 
 .content-box-red[**Important**]
 
 The omitted category (here, `college`) becomes the baseline.
 
+---
 
+# Structural differences across groups
 
+.content-box-red[**Definition**]
 
+Structural difference refers to the fundamental differences in the model of a phenomenon in the population:
 
+---
+
+.content-box-red[**Example**]
+
+.blue[Male]: `\(cumgpa = \alpha_0 + \alpha_1 sat + \alpha_2 hsperc + \alpha_3 tothrs + u\)`
+
+.blue[Female]: `\(cumgpa = \beta_0 + \beta_1 sat + \beta_2 hsperc + \beta_3 tothrs + u\)`
+
++ `\(cumgpa\)`: college grade points averages for male and female college athletes
+
++ `\(sat\)`: SAT score
+
++ `\(hsperc\)`: high school rank percentile
+
++ `\(tothrs\)`: total hours of college courses
+
+--
+
+.content-box-red[**In this example,**]
+
+`\(cumgpa\)` are determined in a fundamentally different manner between female and male students.
+
+You do not want to run a single regression that fits a single model for both female and male students. 
+
+---
+
+.content-box-red[**What to do?**]
+
+If you suspect that the underlying process of how the dependent variable is determined vary across groups, then you should test that hypothesis!
+
+.content-box-red[**To do so,**]
+
+You estimate the model that allows to estimate separate models across groups within a single regression analysis.     
+
+`\(cumgpa = &amp; \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female) + \beta_2 hsperc + \sigma_2 (hsperc \times female) + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u\)`
 
 
 
