@@ -1,0 +1,27 @@
+\frametitle{R code to generate the unbiasedness figure \hyperlink{unbiased_frame}{\beamerbutton{go back}}}
+ \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+  \hlcom{#--- set seed ---#}
+  \hlkwd{set.seed}\hlstd{(}\hlnum{244598}\hlstd{)}
+
+  \hlcom{#--- set the number of observations ---#}
+  \hlstd{n} \hlkwb{<-} \hlnum{100}
+  \hlstd{B} \hlkwb{<-} \hlnum{1000}
+  \hlstd{mean_st} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,B)}
+  \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{}
+    \hlcom{#--- generate random values ---#}
+    \hlstd{x_seq} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(n)} \hlcom{# Normal(mean=0,sd=1)}
+
+    \hlcom{#--- calcualte the mean ---#}
+    \hlstd{mean_st[i]} \hlkwb{<-} \hlkwd{mean}\hlstd{(x_seq)}
+  \hlstd{\}}
+  \hlstd{plot_data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(mean_st)}
+  \hlstd{g_unsbiased} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(}\hlkwc{data}\hlstd{=plot_data)} \hlopt{+}
+    \hlkwd{geom_density}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=mean_st),}\hlkwc{fill}\hlstd{=}\hlstr{'blue'}\hlstd{,}\hlkwc{alpha}\hlstd{=}\hlnum{0.5}\hlstd{)} \hlopt{+}
+    \hlkwd{xlab}\hlstd{(}\hlstr{'Sample Mean'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+}

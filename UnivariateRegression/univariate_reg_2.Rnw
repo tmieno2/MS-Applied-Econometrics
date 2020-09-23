@@ -1,0 +1,1536 @@
+\documentclass[fleqn]{beamer}
+
+% \usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlysmall]{structurebold}
+\usepackage[normalem]{ulem} % use normalem to protect \emph
+\newcommand\hl{\bgroup\markoverwith
+  {\textcolor{yellow}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{wasysym}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{qtree}
+\usepackage{inconsolata}
+\usepackage{framed}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+\usepackage[justification=centering]{caption}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\usepackage[space]{grffile}
+\usefonttheme[onlymath]{serif}
+% \usepackage{tikz}
+% \usetikzlibrary{calc,matrix}
+\usepackage{sgame}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\mode<presentation>
+%\usetheme{Frankfurt}
+\usetheme{boxes}
+\usecolortheme{beaver}
+%\usetheme{Singapore}
+%\usetheme{Hannover}
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{blocks}[rounded]
+\newenvironment<>{block_code}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \begin{block}#2{#1}}{\end{block}}
+
+%===================================
+% Coloring change
+%===================================
+\definecolor{darkred}{rgb}{0.8,0,0}
+\setbeamercolor{block title}{fg=darkred,bg=structure.fg!20!bg!50!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg}
+
+\title{Simple Univariate Regression: Part 2}
+\author{Taro Mieno}
+\everymath{\displaystyle}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+<<chunk_option,echo=FALSE>>=
+library(knitr)
+opts_chunk$set(
+  comment = NA,
+  message = FALSE,
+  echo = FALSE,
+  warning = FALSE,
+  tidy=FALSE,
+  fig.align='center'
+  )
+@
+
+<<setup>>=
+source('~/Box/R_libraries_load/library.R')
+# source('~/Box/MySoftware/MyR/ggplot2/ggplot2_default_teaching.R')
+source('~/Box/Teaching/R_functions/functions.R')
+library(xtable)
+library(stargazer)
+
+# setwd('~/Box/Teaching/UNL/EconometricsMaster/aecn892_2019/lectures/UnivariateRegression')
+@
+
+%===================================
+% R implementation
+%===================================
+
+\begin{frame}[c]
+  \frametitle{Deriving the Ordinary Least Squares (OLS) estimates}
+  \begin{enumerate}
+    \item You have collected data with $n$ observations on $y$  and $x$
+    \item This random sample is denoted as $\{(y_i,x_i):i=1,\dots,n\}$
+    \item For each $i$, we can write:
+    \begin{align}
+        y_i=\beta_0+\beta_1 x_i + u_i \notag
+    \end{align}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{The data set and model}
+  \begin{block}{Objective}
+    Estimate the impact of lot size on house price
+  \end{block}
+
+  \begin{block}{Model}
+  \begin{align*}
+  price_i = \beta_0 + \beta_1 lotsize_i+u_i
+  \end{align*}
+  \begin{itemize}
+    \item $price_i$: house price (\$) of house $i$
+    \item $lotsize_i$: lot size of house $i$
+    \item $u_i$: error term (everything else) of house $i$
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Data set we are going to use}
+  \begin{block_code}{R code: Loading a data set}
+  \footnotesize{
+<<data_load, tidy=F, echo=T,message=FALSE,warning=F>>=
+  #--- load the AER package  ---#
+  library(AER) # load the AER package
+
+  #--- load the HousePrices data set ---#
+  data(HousePrices) # load
+
+  #--- take a look ---#
+  head(HousePrices[,1:5])
+@
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Random sample and regression}
+
+\begin{columns}[onlytextwidth]
+  \begin{column}{0.7\textwidth}
+\only<1-1>{
+<<fig_2_sample, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+
+g_hp <- ggplot(data=HousePrices) +
+  geom_point(aes(y=price,x=lotsize)) +
+  ylab('House Price ($)') +
+  xlab('Lot Size')
+
+g_hp
+@
+}
+
+\only<2-2>{
+<<fig_2_reg, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+g_hp +
+  geom_smooth(aes(y=price,x=lotsize),method='lm',se=F)
+@
+}
+  \end{column}
+  \begin{column}{0.3\textwidth}
+    \only<2-2>{
+    \begin{itemize}
+      \item We want to draw a line like this, the slope of which is an estimate of $\beta_1$
+      \item A way: Ordinary Least Squares (OLS)
+    \end{itemize}
+
+    }
+  \end{column}
+​\end{columns}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Before talking about OLS}
+  \begin{block}{Residuals}
+  For particular values of $\hat{\beta}_0$ and $\hat{\beta}_1$ you pick, the modeled value of $y$ for individual $i$ is $\hat{\beta}_0 + \hat{\beta}_1 x_i$.\\\vspace{0.6cm}
+
+  Then, the residual for individual $i$ is:
+  \begin{align*}
+     \hat{u}_i =  y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i)
+  \end{align*}
+  That is, residual is the observed value of the dependent variable less the value of modeled part. For different values of $\hat{\beta}_0$ and $\hat{\beta}_1$, you have a different value of residual.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Residuals}
+
+\begin{columns}[onlytextwidth]
+  \begin{column}{0.7\textwidth}
+\only<1-1>{
+<<fig_reg_line, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+g_hp +
+  geom_abline(intercept=70000,slope=3.8,color='red')
+@
+}
+
+\only<2-2>{
+<<fig_reg_line_2, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+g_hp +
+  geom_abline(intercept=20000,slope=7,color='red')
+
+@
+}
+  \end{column}
+  \begin{column}{0.3\textwidth}
+    \only<1-1>{
+    \begin{itemize}
+      \item $\hat{\beta}_0=70000$
+      \item $\hat{\beta}_1=3.8$
+    \end{itemize}
+    }
+    \only<2-2>{
+    \begin{itemize}
+      \item $\hat{\beta}_0=20000$
+      \item $\hat{\beta}_1=7$
+    \end{itemize}
+    }
+  \end{column}
+​\end{columns}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{OLS}
+
+  \begin{block}{Idea}
+    Let's find the value of $\beta_0$ and $\beta_1$ that minimizes the squared residuals!
+  \end{block}
+   \begin{block}{Mathematically}
+   \vspace{-0.6cm}
+   \begin{align}
+       Min_{\hat{\beta}_0,\hat{\beta}_1} \sum_{i=1}^n \hat{u}_i^2, \notag
+   \end{align}
+   where $\hat{u}_i=y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)$
+   \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Ordinary Least Squares (OLS): Visualization}
+
+<<ols, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+x <- 200*runif(20)
+y <- 100+0.5*x+rnorm(20)*30
+data <- data.table(y=y,x=x)
+coefs <- lm(y~x,data=data)$coef
+ggplot() +
+  geom_point(data=data,aes(y=y,x=x))+
+  geom_abline(intercept=coefs[1],slope=coefs[2]) +
+  geom_hline(yintercept=0)+
+  geom_vline(xintercept=0)+
+  geom_curve(
+    aes(x=120,y=coefs[1]+coefs[2]*100,
+    xend=120,yend=coefs[1]+coefs[2]*120),
+    color='red') +
+  geom_segment(
+    aes(x=100,y=coefs[1]+coefs[2]*100,
+    xend=130,yend=coefs[1]+coefs[2]*100),
+    color='red')
+@
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{OLS}
+  \begin{itemize}
+     \item Why do we square the residuals, and then sum them up together? What's gonna happen if you just sum up residuals?
+     \item How about taking the absolute value of residuals, and then sum them up?
+   \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Deriving OLS estimates }
+   \begin{align}
+       Min_{\hat{\beta}_0,\hat{\beta}_1} \sum_{i=1}^n [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]^2, \notag
+   \end{align}
+
+   \begin{block}{Steps}
+     \begin{enumerate}
+       \item partial differentiation of the objective function with respect to $\hat{\beta}_0$ and $\hat{\beta}_1$
+       \item solve for $\hat{\beta}_0$ and $\hat{\beta}_1$
+     \end{enumerate}
+   \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{OLS derivation: FOC}
+  \begin{align}
+       Min_{\hat{\beta}_0,\hat{\beta}_1} \sum_{i=1}^n [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]^2, \notag
+   \end{align}
+   \begin{block}{FOC}
+   \vspace{-0.6cm}
+     \begin{align*}
+       \frac{\partial }{\partial \hat{\beta}_0}=& 2\sum_{i=1}^n [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]=0 \\
+       \frac{\partial }{\partial \hat{\beta}_1}=& 2\sum_{i=1}^n x_i\cdot [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]=0
+    \end{align*}
+   \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{OLS derivation: Blank Sheet 1}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{OLS derivation: Blank Sheet 2}
+
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{OLS}
+  \begin{block}{OLS estimators: analytical formula}
+    \begin{align*}
+      \hat{\beta}_1 = & \frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^n(x_i-\bar{x})^2}\\
+      \hat{\beta}_0 = & \bar{y}-\hat{\beta}_1 \bar{x}
+    \end{align*}
+  \end{block}
+
+  \only<2->{\begin{block}{Estimators}
+    Specific \textcolor{blue}{rules} to use available data once you get the data
+  \end{block}}
+
+  \only<3->{\begin{block}{Estimates}
+    Numbers you get once you plug values (your data) into the formula
+  \end{block}}
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{OLS demonstration in R}
+  \begin{block}{Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \hat{\beta}_1 = & \frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^n(x_i-\bar{x})^2}\\
+      \hat{\beta}_0 = & \bar{y}-\hat{\beta}_1 \bar{x}
+    \end{align*}
+  \end{block}
+  \begin{block_code}{R code: hard way}
+  \scriptsize{
+<<uni_reg_hard, tidy=F, echo=T,message=FALSE,warning=F>>=
+  y <- HousePrices$price
+  x <- HousePrices$lotsize
+
+  #--- beta_1 ---#
+  b1_num <- sum((x-mean(x))*(y-mean(y)))
+  b1_denom <- sum((x-mean(x))^2)
+  b1 <- b1_num/b1_denom
+  b1
+@
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{OLS demonstration in R}
+  \begin{block}{Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      price = \beta_0 + \beta_1 lotsize + u
+    \end{align*}
+  \end{block}
+  \begin{block_code}{R code: easy way}
+  \footnotesize{
+<<uni_reg, tidy=F, echo=T,message=FALSE,warning=F>>=
+  #--- run OLS on the above model ---#
+  # lm(dep_var ~ indep_var,data=data_name)
+  uni_reg <- lm(price~lotsize,data=HousePrices)
+  uni_reg
+@
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Sample Regression Function (SRF)}
+  Once you have estimated $\beta_0$ and $\beta_1$, you can form
+  \begin{block}{Sample Regression Function (SRF)}
+  \vspace{-0.6cm}
+     \begin{align}
+         \hat{y}=\hat{\beta_0}+\hat{\beta_1}x \notag
+     \end{align}
+     \vspace{-0.6cm}
+  \end{block}
+  \begin{block}{House Price Example}
+  \vspace{-0.6cm}
+    \begin{align*}
+      price =  \Sexpr{round(uni_reg$coefficients[1],0)} + \Sexpr{round(uni_reg$coefficients[2],3)} \times lotsize
+    \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Prediction}
+  \begin{block}{Sample Regression Function (SRF)}
+  \vspace{-0.6cm}
+     \begin{align}
+         \hat{y}=\hat{\beta_0}+\hat{\beta_1}x \notag
+     \end{align}
+     \vspace{-0.6cm}
+  \end{block}
+  \begin{block}{Prediction}
+    If you plug a value into $x$ in the SRF, you can get a prediction of $E[y|x]$ $(\hat{y})$ (called either \textcolor{blue}{fitted value of predicted value})
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Prediction}
+  \begin{block_code}{R code: Prediction}
+
+  \scriptsize{
+<<pred, tidy=F, echo=T,message=FALSE,warning=F>>=
+  #--- list the things inside the regression results ---#
+  ls(uni_reg)
+
+  #--- access fitted values for sample points ---#
+  uni_reg$fitted.values[1:5]
+
+  #--- for values of lotsize that are not in the sample ---#
+  newdata <- data.frame(lotsize=c(3000,12000,15000))
+  predict(uni_reg,newdata=newdata)
+@
+  }
+  \end{block_code}
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{Exercise}
+  \begin{block}{The impact of lotsize}
+    Your current lot size is 3000. You are thinking of expanding your lot by 1000 (with everything else fixed), which would cost you $5,000\$$. Should you do it? Use R to figure it out.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Exercise}
+  \begin{block_code}{R code: impact of lotsize}
+  \scriptsize{
+<<impact, tidy=F, echo=T,message=FALSE,warning=F>>=
+  #--- list the things inside the regression results ---#
+  ls(uni_reg)
+
+  #--- access the coefficient values  ---#
+  uni_reg$coefficients
+  # class(uni_reg)
+
+  #--- assess the impact ---#
+
+@
+  }
+  \end{block_code}
+
+\end{frame}
+
+% \begin{frame}[c]
+%   \frametitle{Properties of OLS (on Any Sample of Data)}
+%   \begin{block}{Property 1}
+%   \vspace{-0.6cm}
+%      \begin{align}
+%          \sum_{i=1}^n \hat{u}_i=0 \notag
+%      \end{align}
+%    \end{block}
+%   \begin{block}{Property 2}
+%   \vspace{-0.6cm}
+%      \begin{align}
+%          \sum_{i=1}^n x_i\hat{u}_i=0 \notag
+%      \end{align}
+%    \end{block}
+% \end{frame}
+
+%--- New Frame ---%
+
+\begin{frame}
+  \frametitle{$R^2$: Goodness of fit}
+    \begin{block}{$R^2$}
+        A measure of how good your model is in predicting the dependent variable (explaining  variations in the dependent variable) \textcolor{red}{compared to} just using the average of the dependent variable as the predictor
+    \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Goodness of fit}
+  You can decompose observed value of $y$ into two parts: fitted value and residual
+  \begin{align}
+      y_i=\hat{y}_i (\hat{\beta}_0+\hat{\beta}_1 x_i)+\hat{u}_i \notag
+  \end{align}
+  Now, subtracting $\bar{y}$ (sample average of $y$),
+  \begin{align}
+      y_i-\bar{y}=\hat{y}_i-\bar{y}+\hat{u}_i \notag
+  \end{align}
+
+  \begin{itemize}
+    \item $y_i-\bar{y}$: how far away is the actual value of $y$ for $i$th observation from the sample average $\bar{y}$? (actual deviation from the mean)
+    \item $\hat{y_i}-\bar{y}$: how far away is the predicted value of $y$ for $i$th observation from the sample average $\bar{y}$? (explained deviation from the mean)
+    \item $\hat{u_i}$: unexplained part
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Visualization}
+
+\begin{columns}[onlytextwidth]
+  \begin{column}{0.75\textwidth}
+<<good, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+g_hp +
+  geom_smooth(aes(y=price,x=lotsize),method='lm',se=F) +
+  geom_hline(yintercept=mean(HousePrices$price),color='red')+
+  annotate('text',x=15000,y=60000,label='Average Price',color=
+'red')
+@
+  \end{column}
+  \begin{column}{0.25\textwidth}
+     \begin{itemize}
+        \item $y_i-\bar{y}$
+        \item $\hat{y_i}-\bar{y}$
+        \item $\hat{u_i}$
+      \end{itemize}
+  \end{column}
+​\end{columns}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{$R^2$: Goodness of fit}
+  \begin{block}{total sum of squares (SST)}
+  \vspace{-0.7cm}
+  \begin{align}
+     SST\equiv \sum_{i=1}^{n}(y_i-\bar{y})^2 \notag \;\; \mbox{Sample variation in $y$}
+  \end{align}
+  \end{block}
+  \begin{block}{explained sum of squares (SSE)}
+  \vspace{-0.7cm}
+   \begin{align}
+     SSE\equiv \sum_{i=1}^{n}(\hat{y}_i-\bar{y})^2 \notag
+  \end{align}
+  \end{block}
+  \begin{block}{residual sum of squares (SSR)}
+  \vspace{-0.7cm}
+    \begin{align}
+     SSR\equiv \sum_{i=1}^{n}\hat{u}_i^2 \notag
+  \end{align}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Goodness of fit}
+  \begin{block}{$R^2$}
+  \vspace{-0.6cm}
+     \begin{align}
+         R^2 = SSE/SST=1-SSR/SST \notag
+     \end{align}
+  (the value of $R^2$ always lies between $0$ and $1$ as long as an intercept is included in the econometric model)
+  \end{block}
+  \begin{block}{What does $R^2$ measure}
+    $R^2$ is a measure of how much improvement you've made by including independent variable(s) ($y=\beta_0+\beta_1 x+u$) compared to when simply using the mean of dependent variable as the predictor ($y=\beta_0+u$)
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{$R^2$}
+  \begin{block}{Important notes about $R^2$}
+    \begin{itemize}
+     \item $R^2$ is of no value if you are interested in finding the causal (ceteris paribus) impact of a variable of interest (\textcolor{red}{More on this later when we discuss bias})
+     \item $R^2$ is important if your interest lies in predicting $y$
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+%===================================
+% Small sample properties
+%===================================
+\begin{frame}[c]
+  \title{Small sample property of OLS estimators}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Small sample property of OLS estimators}
+
+  \begin{block}{What is an \textcolor{blue}{estimator}?}
+  \begin{itemize}
+    \item A function of data that produces an estimate (actual number) of a parameter of interest \textcolor{red}{once} you plug in actual values of data
+    \item OLS estimators: $\hat{\beta_1}=\frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^n (x_i-\bar{x})^2}$
+  \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Small sample property of OLS estimators}
+
+  \begin{block}{What is \textcolor{blue}{small sample property}?}
+    Properties that hold whatever the size of observation (small or large) \textcolor{red}{prior to} obtaining actual estimates (before getting data)\\\vspace{0.6cm}
+
+    \begin{itemize}
+      \item Put more simply: what can you expect from the estimators before you actually get data and obtain estimates?
+      \item Difference between small sample property and the algebraic properties we looked at earlier?
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Small sample property of OLS estimators}
+  \begin{block}{Desirable Properties}
+    OLS is only a way of using available information to obtain estimates. Does it have desirable properties?
+
+    \begin{itemize}
+      \item Unbiasedness
+      \item Efficiency
+    \end{itemize}
+    \textcolor{blue}{As it turns out, OLS is a very good way of using available information!!}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \title{Unbiasedness of OLS estimators}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{What does \textcolor{blue}{unbiased} mean?}
+
+  \begin{block}{Example}
+  \begin{itemize}
+    \item Consider a problem of estimating the expected value of a single variable, $x$
+    \item A good estimator is sample mean: $\frac{1}{n}\sum_i^n x_i$
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Unbiasedness}
+  \begin{block_code}{R code: Sample Mean}
+
+  \footnotesize{
+  <<unbiased, tidy=F, echo=T,message=FALSE,warning=F>>=
+  #--- set the number of observations ---#
+  n <- 100
+
+  #--- generate random values ---#
+  x_seq <- rnorm(n) # Normal(mean=0,sd=1)
+
+  #--- calcualte the mean ---#
+  mean(x_seq)
+  @
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,label=unbiased_frame]
+  \frametitle{Unbiasedness: Visualization}
+
+<<unbiased_viz,echo=F,out.height='3in',out.width='3in',dev='pdf'>>=
+  #--- set seed ---#
+  set.seed(244598)
+
+  #--- set the number of observations ---#
+  n <- 100
+  B <- 1000
+  mean_st <- rep(0,B)
+  for (i in 1:B){
+    #--- generate random values ---#
+    x_seq <- rnorm(n) # Normal(mean=0,sd=1)
+
+    #--- calcualte the mean ---#
+    mean_st[i] <- mean(x_seq)
+  }
+  plot_data <- data.table(mean_st)
+  g_unsbiased <- ggplot(data=plot_data) +
+    geom_density(aes(x=mean_st),fill='blue',alpha=0.5) +
+    geom_vline(xintercept=0) +
+    xlab('Sample Mean')
+  g_unsbiased
+@
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Biasedness: Visualization}
+
+<<biased_viz, echo=F,out.height='3in',out.width='3in',dev='pdf'>>=
+  #--- set seed ---#
+  set.seed(28394)
+
+  #--- set the number of observations ---#
+  n <- 100
+  B <- 1000
+  mean_st <- rep(0,B)
+  for (i in 1:B){
+    #--- generate random values ---#
+    x_seq <- rnorm(n) # Normal(mean=0,sd=1)
+
+    #--- calcualte the mean ---#
+    mean_st[i] <- mean(x_seq)
+  }
+  plot_data_1 <- data.table(x=mean_st,type='unbiased')
+  plot_data_2 <- data.table(x=mean_st+0.2,type='biased')
+  plot_data <- rbind(plot_data_1,plot_data_2)
+
+  g_biased <- ggplot(data=plot_data) +
+    geom_density(aes(x=x,fill=type),alpha=0.5) +
+    geom_vline(xintercept=0) +
+    xlab('Sample Mean') +
+    scale_fill_discrete(name='') +
+    theme(
+      legend.position='bottom'
+      )
+  g_biased
+@
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{\textcolor{blue}{Unbiasedness} of OLS estimators}
+  \begin{block}{Unbiasedness of OLS estimators}
+    Under \textcolor{blue}{certain conditions}, OLS estimators are unbiased. That is,
+    \begin{align}
+    E[\hat{\beta_1}]=E\Big[\frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^n (x_i-\bar{x})^2}\Big]=\beta_1 \notag
+    \end{align}
+  \end{block}
+  (We do not talk about unbiasedness of $\hat{\beta}_0$ because we are almost never interested in the intercept. Given the limited time we have, it is not worthwhile talking about it)
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Certain Conditions}
+  \begin{block}{Condition $SLR.1$: Linear in Parameters}
+  In the population model, the dependent variable, $y$, is related to the independent variable, $x$, and the error (or disturbance), $u$, as
+  \begin{align*}
+         y=\beta_0+\beta_1 x+u \label{peq}
+     \end{align*}
+  \end{block}
+  \tiny{Wooldridge, Jeffrey M. (2012-09-26). Introductory Econometrics: A Modern Approach (Upper Level Economics Titles) (Page 45). Cengage Textbook. Kindle Edition.}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Certain Conditions}
+  \begin{block}{Condition $SLR.2$: Random sampling}
+    We have a random sample of size $n$, ${(x_i,y_i):i=1,2,\dots,n}$, following the population model in equation (\ref{peq}). \vspace{0.6cm}
+
+    (\textcolor{blue}{the consequence of the violation of this condition is discussed later})
+  \end{block}
+
+  \begin{block}{Non-random sampling}
+  \begin{itemize}
+    \item Example: You observe income-education data only for those who have income higher than $\$25K$
+    \item Benevolent and malevolent kinds:
+      \begin{itemize}
+        \item \textcolor{blue}{exogenous} sampling
+        \item \textcolor{blue}{endogenous} sampling
+      \end{itemize}
+  \end{itemize}
+
+  \end{block}
+  \tiny{Wooldridge, Jeffrey M. (2012-09-26). Introductory Econometrics: A Modern Approach (Upper Level Economics Titles) (Page 45). Cengage Textbook. Kindle Edition.}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Certain Conditions}
+  \begin{block}{Condition $SLR.3$: Sample variation in covariates}
+     The sample outcomes on $x$, namely, ${x_i,i=1,\dots,n}$, are not all the same value.
+  \end{block}
+  \tiny{Wooldridge, Jeffrey M. (2012-09-26). Introductory Econometrics: A Modern Approach (Upper Level Economics Titles) (Page 46). Cengage Textbook. Kindle Edition.}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Certain Conditions}
+  \begin{block}{Condition $SLR.4$: \textcolor{blue}{Zero conditional mean}}
+     The error u has an expected value of zero given any value of the explanatory variable. In other words,
+  \begin{align}
+     E[u|x]=0  \notag
+  \end{align}
+  Along with random sampling condition, this implies that
+  \begin{align}
+   E[u_i|x_i]=0 \notag
+  \end{align}
+  \end{block}
+  \tiny{Wooldridge, Jeffrey M. (2012-09-26). Introductory Econometrics: A Modern Approach (Upper Level Economics Titles) (Page 47). Cengage Textbook. Kindle Edition.}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Correlation and Mean Independence}
+  \begin{block}{Note}
+    \textcolor{blue}{Mean independence of $u$ and $x$ implies no correlation. But, correlation does not imply mean independence.}
+  \end{block}
+
+  \begin{block}{Mean Independence Implies Correlation (Proof)}
+  \begin{align*}
+     Cov(u,x)= & E[(u-E[u])(x-E[x])] \\
+     = & E[ux]-E[u]E[x]-E[u]E[x]+E[u]E[x]\\
+     = & E[ux] \\
+     = & E_x[E_u[u|x]] \;\; \mbox{(iterated law of expectation)}
+  \end{align*}
+  If zero conditional mean condition ($E(u|x)=0$) is satisfied,
+  \begin{align*}
+     Cov(u,x)= & E_x[0] = 0
+  \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Good and bad empiricists}
+  \begin{block}{Good Empiricists}
+    \begin{itemize}
+      \item have ability to judge if the above conditions are satisfied for the particular context you are working on
+      \item have ability to correct (if possible) for the problems associated with the violations of any of the above conditions
+      \item knows the context well so you can make appropriate judgments
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS estimators}
+  \begin{align}
+    \hat{\beta}_1 = & \frac{\sum_{i=1}^n (x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^n (x_i-\bar{x})^2} \notag \\
+    = & \frac{\sum_{i=1}^n (x_i-\bar{x})y_i}{\sum_{i=1}^n (x_i-\bar{x})^2} \;\; \Big[\mbox{because }\sum_{i=1}^n (x_i-\bar{x})\bar{y}=0\Big]\notag\\
+    = & \frac{\sum_{i=1}^n (x_i-\bar{x})y_i}{SST_x} \;\;\Big[\mbox{where,}\;\; SST_x=\sum_{i=1}^n (x_i-\bar{x})^2\Big] \notag \\
+    = & \frac{\sum_{i=1}^n (x_i-\bar{x})(\beta_0+\beta_1 x_i+u_i)}{SST_x} \notag\\
+    = & \frac{\sum_{i=1}^n (x_i-\bar{x})\beta_0 +\sum_{i=1}^n \beta_1(x_i-\bar{x})x_i+\sum_{i=1}^n(x_i-\bar{x})u_i}{SST_x} \notag
+  \end{align}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS estimators}
+  \begin{align*}
+    \hat{\beta}_1 = & \frac{\sum_{i=1}^n (x_i-\bar{x})\beta_0 + \beta_1 \sum_{i=1}^n (x_i-\bar{x})x_i+\sum_{i=1}^n(x_i-\bar{x})u_i}{SST_x}
+  \end{align*}
+
+  \begin{align*}
+    \mbox{Since } & \sum_{i=1}^n (x_i-\bar{x})=0\;\; \mbox{and}\\
+     & \sum_{i=1}^n (x_i-\bar{x})x_i=\sum_{i=1}^n (x_i-\bar{x})^2=SST_x,
+  \end{align*}
+
+  \begin{align*}
+    \hat{\beta}_1 = & \frac{\beta_1 SST_x+\sum_{i=1}^n(x_i-\bar{x})u_i}{SST_x}
+    = & \beta_1+(1/SST_x)\sum_{i=1}^n(x_i-\bar{x})u_i
+  \end{align*}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS estimators}
+ \begin{align}
+    \hat{\beta}_1 = & \beta_1+(1/SST_x)\sum_{i=1}^n(x_i-\bar{x})u_i \notag
+ \end{align}
+ Taking, expectation of $\hat{\beta}_1$ conditional on $\mathbf{x}=\{x_1,\dots,x_n\}$,
+ \begin{align}
+    \Rightarrow E[\hat{\beta}_1|\mathbf{x}] = & E[\beta_1|\mathbf{x}]+E[(1/SST_x)\sum_{i=1}^n(x_i-\bar{x})u_i|\mathbf{x}] \notag \\
+    = & \beta_1 + (1/SST_x)\sum_{i=1}^n (x_i-\bar{x}) E[u_i|\mathbf{x}] \notag
+ \end{align}
+
+ So, if condition 4 ($E[u_i|\mathbf{x}]=0$) is satisfied,
+ \begin{align}
+    E[\hat{\beta}_1|\mathbf{x}] = & \beta_1 \notag\\
+    E_{\mathbf{x}}[\hat{\beta}_1|\mathbf{x}] = & E[\hat{\beta}_1] = \beta_1 \notag
+ \end{align}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS estimators}
+
+  \begin{block}{Reconsider the following example}
+  \vspace{-0.6cm}
+   \begin{align}
+    price=\beta_0+\beta_1\times lotsize + u \notag
+  \end{align}
+  \vspace{-0.6cm}
+  \begin{itemize}
+    \item $price$: house price (\$)
+    \item $lotsize$: lot size
+    \item $u$: error term (everything else)
+  \end{itemize}
+  \end{block}
+
+  \begin{block}{Questions}
+    \begin{itemize}
+       \item What's in $u$?
+       \item Do you think $E[u|x]$ is satisfied?
+     \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS estimators}
+  \begin{block}{Important notes (again)}
+  \begin{itemize}
+    \item Unbiasedness property of OLS estimators says \textcolor{blue}{NOTHING} about the estimate that we obtain for a given sample
+    \item it is always possible that we could obtain an unlucky sample that would give us a point estimate far from $\beta_1$, and we can never know for sure whether this is the case.
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \title{Variance of OLS estimators}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Variance of OLS estimators}
+  \begin{block}{Important notes}
+    \begin{itemize}
+      \item OLS estimators are random variables, which means that they have distributions
+      \item OLS estimators have variance (how spread out OLS estimates can be)
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Variance}
+  \begin{block}{Example:}
+    Consider two estimators of $E[x]$:
+    \begin{align}
+      \theta_{smart} = & \frac{1}{n}\sum_{i=1}^n x_i  \;\;(n=1000)\notag \\
+      \theta_{stupid} = & \frac{1}{10}\sum_{i=1}^{10} x_i \notag
+    \end{align}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,label=var_frame]
+  \frametitle{Variance of estimators}
+  << variance_viz, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+  set.seed(38495)
+  B <- 1000
+  theta_smart <- rep(0,B)
+  theta_stupid <- rep(0,B)
+  for (i in 1:B){
+    x <- rnorm(1000)
+    theta_smart[i] <- mean(x)
+    theta_stupid[i] <- mean(x[1:10])
+  }
+
+  smart_data <- data.table(value=theta_smart,type='Smart')
+  stupid_data <- data.table(value=theta_stupid,type='Stupid')
+  plot_data <- rbind(smart_data,stupid_data)
+
+  g_var <- ggplot(data=plot_data) +
+    geom_density(aes(x=value,fill=type),alpha=0.5,size=0.5) +
+    scale_fill_discrete(name='Estimator') +
+    xlab('Sample Mean') +
+    theme(
+      legend.position='bottom'
+      )
+  g_var
+@
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Variance of OLS estimators}
+
+  \begin{block}{Variance of OLS estimators}
+  If \textcolor{blue}{$Var(u|x)=\sigma^2$} and the four conditions (we used to prove unbiasedness of OLS estimators) are satisfied,
+    \begin{align}
+      Var(\hat{\beta}_1) = \frac{\sigma^2}{\sum_{i=1}^n (x_i-\bar{x})^2}=\frac{\sigma^2}{SST_x} \notag
+    \end{align}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{$Var(u|x)=\sigma^2$}
+  \begin{block}{Homoskedasticity}
+    The error $u$ has the same variance give any value of the covariate $x$
+  \end{block}
+
+  \begin{block}{Heterokedasticity}
+    The variance of the error $u$ differs depending on the value of $x$
+    \begin{align}
+       Var(u|x)=f(x)
+    \end{align}
+  \end{block}
+\end{frame}
+
+<<var_data, echo=FALSE>>=
+x_levels <- seq(40,200,by=20)
+x <- rep(x_levels,each=200)
+
+u_homoske <- rnorm(200*length(x_levels))*20
+y_homoske <- 100+0.5*x+u_homoske
+
+u_hetero <- lapply(x_levels,function(x) rnorm(200,sd=x/50)*20) %>% unlist()
+y_hetero <- 100+0.5*x+u_hetero
+
+plot_data_homo <- data.table(
+  x=x,
+  y=y_homoske
+  )
+plot_data_hetero <- data.table(
+  x=x,
+  y=y_hetero
+  )
+g_homoske <- ggplot(data=plot_data_homo) +
+  geom_point(aes(y=y,x=x),size=0.7)+
+  geom_abline(intercept=100,slope=0.5)+
+  geom_hline(yintercept=0)+
+  geom_vline(xintercept=0)
+
+g_hetero <- ggplot(data=plot_data_hetero) +
+  geom_point(aes(y=y,x=x),size=0.7)+
+  geom_abline(intercept=100,slope=0.5)+
+  geom_hline(yintercept=0)+
+  geom_vline(xintercept=0)
+@
+
+\begin{frame}[c]
+  \frametitle{Homoskedastic Error}
+<<fig_homoske, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+g_homoske
+@
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Heteroskedastic Error}
+<<fig_hetero, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+g_hetero
+@
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{House Price Example}
+
+<<price_hetero, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+ g_hp +
+  geom_smooth(aes(y=price,x=lotsize),method='lm',se=F)
+@
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Homoskedasticity Condition (Assumption)}
+  \begin{block}{Important notes}
+    \begin{itemize}
+      \item We did \textcolor{blue}{NOT} use this condition to prove that OLS estimators are unbiased
+      \item In most applications, homoskedasticity condition is not satisfied, which has important implications on:
+        \begin{itemize}
+          \item estimation of variance (standard error) of OLS estimators
+          \item significance test
+        \end{itemize}
+      (\textcolor{red}{A lot more on this issue later})
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,label=var_dev]
+  \frametitle{Derivation of the variance of OLS estimators}
+
+  \begin{align}
+    \hat{\beta}_1 = & \beta_1 + (1/SST_x)\sum_{i=1}^n d_i u_i \notag
+  \end{align}
+  Because $Var(\alpha x)=\alpha^2 var(x)$,
+  \begin{align}
+    Var(\hat{\beta}_1|x) = & (1/SST_x)^2 Var(\sum_{i=1}^n d_i u_i|x) \notag
+  \end{align}
+  Because of independent random sampling \hyperlink{mathasides}{\beamerbutton{Math Aside}},
+  \begin{align}
+    Var(\hat{\beta}_1|x) = & (1/SST_x)^2 \sum_{i=1}^n d_i^2 Var(u_i|x) \notag
+  \end{align}
+  If the homoskedasticity assumption is satisfied,
+  \begin{align}
+    Var(\hat{\beta}_1|x) = & (1/SST_x)^2 \sum_{i=1}^n d_i^2 \sigma^2 \notag \\
+    = & \sigma^2/SST_x \notag
+  \end{align}
+\end{frame}
+
+\begin{frame}[c,label=mathasides]
+  \frametitle{Math Aside \hyperlink{var_dev}{\beamerbutton{Go Back}}}
+  \begin{align}
+    Var(\alpha x) = & \alpha^2 Var(x)\notag \\
+    Var(x+y) = & Var(x) + 2Cov(x,y) + Var(y)\notag
+  \end{align}
+  If $x$ and $y$ are independent, $Cov(x,y) =0$.
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Variance of OLS estimators}
+  \begin{block}{Variance of the OLS estimators}
+  \vspace{-0.6cm}
+    \begin{align*}
+    Var(\hat{\beta}_1|x) = \sigma^2/SST_x \notag
+    \end{align*}
+  \end{block}
+  \only<2->{\begin{block}{What can you learn from this equation?}
+     \begin{itemize}
+    \item the variance of OLS estimators is smaller (larger) if the variance of error term is smaller (larger)
+    \item the greater (smaller) the variation in the covariate $x$, the smaller (larger) the variance of OLS estimators
+      \begin{itemize}
+        \item if you are running experiments, spread the value of $x$ as much as possible
+        \item you will rarely have this luxury
+      \end{itemize}
+    \end{itemize}
+   \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Gauss-Markov Theorem:}
+  \begin{block}{Gauss-Markov Theorem}
+    Under conditions $SLR.1$ through $SLR.5$, OLS estimators are the best linear unbiased estimators (BLUEs)
+  \end{block}
+  \begin{block}{Meaning,}
+    No other \textcolor{blue}{unbiased linear}  estimators have smaller variance than the OLS estimators (desirable efficiency property of OLS)
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Estimating the error variance}
+
+  \begin{itemize}
+    \item $Var(\hat{\beta}_1|x) = \sigma^2/SST_x$ will never be known. But, you can estimate it.
+    \item Once you estimate $Var(\hat{\beta}_1|x)$, you can test the statistical significance of $\hat{\beta}_1$ (More on this later)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Estimating the error variance}
+  \begin{align}
+    & Var(u_i)=\sigma^2=E[u_i^2] \notag \\
+    & \Big( Var(u_i)\equiv E[u_i^2]-E[u_i]^2 \Big) \notag
+  \end{align}
+  \begin{itemize}
+    \item So, $\frac{1}{n}\sum_{i=1}^n u_i^2$ is an unbiased estimator of $Var(u_i)$
+    \item What is the problem with this estimator?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Estimating the error variance}
+  We don't observe $u_i$ (error), but we observe residuals ($\hat{u_i}$)
+  \begin{block}{Error and Residual}
+  \vspace{-0.6cm}
+    \begin{align}
+       y_i = \beta_0+\beta_1 x_i + u_i \notag\\
+       y_i = \hat{\beta}_0+\hat{\beta}_1 x_i + \hat{u}_i \notag
+    \end{align}
+  \end{block}
+
+  \begin{block}{Residuals as unbiased estimators of error}
+  \vspace{-0.6cm}
+   \begin{align}
+      \hat{u}_i = & y_i -\hat{\beta}_0-\hat{\beta}_1 x_i \notag\\
+      \hat{u}_i = & \beta_0+\beta_1 x_i + u_i -\hat{\beta}_0-\hat{\beta}_1 x_i \notag\\
+      \Rightarrow \hat{u}_i -u_i=&(\beta_0-\hat{\beta}_0)+(\beta_1-\hat{\beta}_1) x_i \notag\\
+      \Rightarrow E[\hat{u}_i -u_i]=&E[(\beta_0-\hat{\beta}_0)+(\beta_1-\hat{\beta}_1) x_i]=0\notag
+  \end{align}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Estimating the error variance}
+  \begin{itemize}
+    \item We know $E[\hat{u}_i-u_i]=0$
+    \item so, why don't we use $\hat{u}_i$ (observable) in place of $u_i$ (unobservable)
+    \item $\frac{1}{n}\sum_{i=1}^n \hat{u}_i^2$ as an estimator of $\sigma^2$?
+    \item Unfortunately, $\frac{1}{n}\sum_{i=1}^n \hat{u}_i^2$ is a biased estimator of $\sigma^2$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Estimating the error variance}
+   \begin{block}{Algebraic property of OLS}
+  \vspace{-0.6cm}
+    \begin{align}
+        \sum_{i=1}^n \hat{u}_i=0\;\; \mbox{and}\;\; \sum_{i=1}^n x_i\hat{u}_i=0\notag
+    \end{align}
+  \only<2->{\begin{itemize}
+    \item this means that once you know the value of $n-2$ residuals, you can find the value of the other two by solving the above equations
+    \item so, it's almost as if you have $n-2$ value of residuals instead of $n$
+  \end{itemize}}
+  \end{block}
+  \only<3->{\begin{block}{Unbiased estimator of $\sigma^2$}
+    We use $\hat{\sigma}^2=\frac{1}{n-2}\sum_{i=1}^n \hat{u}_i^2$, which satisfies $E[\frac{1}{n-2}\sum_{i=1}^n \hat{u}_i^2]=\sigma^2$
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{The use of $\hat{\sigma}^2$}
+  Since $sd(\hat{\beta_1})=\sigma/\sqrt{SST_x}$, the natural estimator of $sd(\hat{\beta_1})$ is
+  \begin{align*}
+     se(\hat{\beta_1}) =\sqrt{\hat{\sigma}^2}/\sqrt{SST_x},
+  \end{align*}
+  which is called \textcolor{blue}{standard error of $\hat{\beta_1}$}. Later, we use $\hat{\beta_1}$ for testing.
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Standard Error Estimation}
+
+  \begin{block_code}{R code: Standard Error}
+  \scriptsize{
+  <<se, tidy=F, echo=T,message=FALSE,warning=F>>=
+  summary(uni_reg)
+  @
+  }
+  \end{block_code}
+\end{frame}
+
+%===================================
+% functional form and scale
+%===================================
+<<wage, echo=FALSE, results='hide'>>=
+wage <- readRDS('./../../Data/wage1.rds') %>% data.table()
+col <- c("OLS Regression Line"='red','LOESS'='blue','Log Fit'='darkgreen')
+g_wage_loess <- ggplot(data=wage,aes(y=wage,x=educ)) +
+  geom_point(size=0.7)+
+  geom_smooth(method='lm',se=F,aes(color="OLS Regression Line")) +
+  geom_smooth(method='loess',se=F,aes(color='LOESS')) +
+  scale_color_manual(values=col,name='') +
+  theme(
+    legend.position='bottom'
+    )
+@
+
+\begin{frame}[c]
+  \title{Functional Form}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Functional Form}
+  \begin{block}{Functional forms}
+    \begin{itemize}
+    \item transformation of variables is allowed without disturbing our analytical framework as long as the model is linear in \textcolor{blue}{parameter}.
+    \item transformation of variables change the interpretation of the coefficients estimates
+    \end{itemize}
+  \end{block}
+  \begin{block}{Golas}
+    \begin{itemize}
+      \item present popular functional forms
+      \item use simple calculus to examine the interpretation of the coefficients
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Popular Functional Forms}
+  \begin{block}{log-linear}
+  \vspace{-0.6cm}
+    \begin{align}
+     log(y_i)= \beta_0+\beta_1 x_i + u_i \notag
+    \end{align}
+  \end{block}
+  \begin{block}{linear-log}
+  \vspace{-0.6cm}
+    \begin{align}
+     y_i= \beta_0+\beta_1 log(x_i) + u_i \notag
+    \end{align}
+  \end{block}
+  \begin{block}{log-log}
+  \vspace{-0.6cm}
+    \begin{align}
+     log(y_i)= \beta_0+\beta_1 log(x_i) + u_i \notag
+    \end{align}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Functional form: Log-linear}
+  \begin{block}{Model}
+  \vspace{-0.6cm}
+    \begin{align}
+      log(y_i)= \beta_0+\beta_1 x_i + u_i \notag
+    \end{align}
+  \end{block}
+
+  \begin{block}{Calculus}
+    Differentiating the both sides wrt $x_i$,
+    \begin{align}
+      \frac{1}{y_i}\cdot\frac{\partial y_i}{\partial x_i} = \beta_1 \Rightarrow \frac{\Delta y_i}{y_i} = \beta_1 \Delta x_i \notag
+    \end{align}
+  \end{block}
+
+  \begin{block}{Interpretation}
+    $\beta_1$ measures a percentage change in $y_i$ when $x_i$ is increased by one unit
+  \end{block}
+\end{frame}
+
+<< log_linear_vis, echo=F, results='hide' >>=
+  N <- 1000
+  x <- seq(1,2,length=N)
+  y_p <- exp(2+x)
+  y_n <- exp(4-x)
+  y_p_data <- data.table(
+    y = y_p,
+    x=x,
+    type='(2,1)'
+    )
+  y_n_data <- data.table(
+    y = y_n,
+    x=x,
+    type='(4,-1)'
+    )
+  plot_data <- rbind(y_p_data,y_n_data)
+  g_log_linear <- ggplot(data=plot_data) +
+    geom_line(aes(y=y,x=x,color=type))+
+    scale_color_discrete(name=expression(list(beta[0],beta[1]))) +
+    theme(
+      legend.position='bottom'
+      )
+  ggsave(g_log_linear,file='./log_linear_vis.pdf',width=4,height=2.7)
+@
+
+
+% \begin{frame}[c]
+%   \frametitle{Functional Form}
+% \begin{columns}[onlytextwidth]
+%   \begin{column}{0.55\textwidth}
+% <<g_wage_2, echo=FALSE,out.height='2.1in',out.width='2.1in',dev='pdf'>>=
+% g_wage_loess
+% @
+%   \end{column}
+%   \begin{column}{0.45\textwidth}
+%     So far, $y$ and $x$ are linearly related in all the models we have considered\\ \vspace{0.6cm}
+%     $\hat{wage}=-0.90+0.54\times educ$
+%   \end{column}
+% ​\end{columns}
+% \end{frame}
+
+\begin{frame}[c]
+  \frametitle{Functional Form}
+  It is not hard to write the model in a way that $y$ and $x$ are non-linearly related. \vspace{0.6cm}
+
+  How about this model?
+  \begin{align}
+     log(wage)=\beta_0 + \beta_1 educ + u \notag
+  \end{align}
+
+  Interpretation of $\beta_1$? Differentiating both sides with respect to $educ$,
+  \begin{align}
+     \frac{1}{wage} \frac{\partial wage}{\partial educ} = \beta_1 \Rightarrow \frac{\Delta wage}{wage} = \beta_1\Delta educ\notag
+  \end{align}
+  \begin{block}{Interpretation}
+    If education increases by 1 year ($\Delta educ=1$), then wage increases by $\beta_1*100\%$ ($\frac{\Delta wage}{wage}=\beta_1$)
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Log-linear model}
+  If you estimate $log(wage)=\beta_0 + \beta_1 educ + u \notag$,
+  \begin{align}
+    \widehat{log(wage)}=0.584+0.083 educ \notag
+  \end{align}
+  With $u=0$,
+  \begin{align}
+    \widehat{wage}=e^{0.584+0.083 educ} \notag
+  \end{align}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Visualization}
+<<g_wage_log, echo=FALSE,out.height='3in',out.width='3in',dev='pdf',message=F,warning=F>>=
+
+min_educ <- wage[,educ] %>% min()
+max_educ <- wage[,educ] %>% max()
+x <- seq(min_educ,max_educ,length=1000)
+y <- exp(0.584+0.083*x)
+log_fit <- data.table(y=y,x=x)
+col <- c("OLS Regression Line"='red','Log Fit'='blue')
+ggplot(data=wage,aes(y=wage,x=educ)) +
+  geom_point(size=0.7)+
+  geom_smooth(method='lm',se=F,aes(color="OLS Regression Line")) +
+  geom_line(data=log_fit,aes(y=y,x=x,color='Log Fit'),size=1) +
+  scale_color_manual(values=col,name='') +
+  ylim(0,15) +
+  theme(
+    legend.position='bottom'
+    )
+@
+\end{frame}
+
+
+% \begin{frame}[c,fragile]
+%   \frametitle{Visualization}
+%   \begin{figure}
+%   \caption[]{Visualization of log-linear functional form: $E[y|x]=exp(\beta_0+\beta_1 x)$}
+%   \includegraphics[width=4in]{log_linear_vis.pdf}
+%   \end{figure}
+% \end{frame}
+
+\begin{frame}[c]
+  \frametitle{Functional form: Linear-log}
+  \begin{block}{Model}
+    \begin{align}
+      y_i= \beta_0+\beta_1 log(x_i) +u_i \notag
+    \end{align}
+  \end{block}
+
+  \begin{block}{Calculus}
+    Differentiating the both sides wrt $x_i$,
+    \begin{align}
+      \frac{\partial y_i}{\partial x_i} = \beta_1/x_i \Rightarrow \Delta y_i = \beta_1\frac{\Delta x_i}{x_i} \notag
+    \end{align}
+  \end{block}
+  \begin{block}{Interpretation}
+    When $x$ increases by $1\%$, $y$ increases by $\beta_1$
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Visualization}
+  <<linear_log_vis,echo=F,out.height='3in',out.width='3in'>>=
+  N <- 1000
+  x <- seq(1,20,length=N)
+  y <- log(x)
+  plot_data <- data.table(y=y,x=x,type='(0,1)')
+  ggplot(data=plot_data) +
+    geom_line(aes(y=y,x=x,color=type))+
+    scale_color_discrete(name=expression(list(beta[0],beta[1]))) +
+    theme(
+      legend.position='bottom'
+      )
+  @
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Functional form: Log-log}
+  \begin{block}{model}
+  \vspace{-0.6cm}
+    \begin{align}
+    log(y_i)= \beta_0+\beta_1 log(x_i) +u_i \notag
+  \end{align}
+  \end{block}
+
+  \begin{block}{Calculus}
+    Differentiating the both sides wrt $x_i$,
+    \begin{align}
+      \frac{\partial y_i}{y_i}/\frac{\partial x_i}{x_i} = \beta_1 \Rightarrow \frac{\Delta y_i}{y_i} = \beta_1 \frac{\Delta x_i}{x_i}\notag
+    \end{align}
+  \end{block}
+
+  \begin{block}{Interpretation}
+    A \textcolor{blue}{percentage} change in $x$ would result in a $\beta_1$ \textcolor{blue}{percentage} change in $y_i$ (constant elasticity)
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Simple Linear Regression}
+  \begin{itemize}
+    \item In these models, the dependent variable and independent variable are non-linearly related, how come are these models called simple \textcolor{blue}{linear} model?
+    \item \textcolor{blue}{``linear''} in simple \textcolor{blue}{linear} model means that the model is linear in \textcolor{blue}{parameter}, but not in \textcolor{blue}{variable}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Non-linear (in parameter) Models}
+  \begin{block}{Examples: non-linear models}
+  \vspace{-0.6cm}
+    \begin{align*}
+      y_i=\beta_0+x_i^{\beta_1}+u_i \\
+      y_i=\frac{x_i}{\beta_0+\beta_1 x_i}+u_i
+    \end{align*}
+  \end{block}
+  \begin{block}{Notes}
+    Transformation of the dependent and independent variables would not affect the OLS results we have seen as long as the model is linear in parameter
+  \end{block}
+\end{frame}
+
+%===================================
+% Appendix
+%===================================
+\appendix
+\title{Appendix}
+\author{}
+\date{}
+
+\begin{frame}[c]
+\maketitle
+\end{frame}
+
+\begin{frame}[c,fragile,label=R_unbiased]
+  \frametitle{R code to generate the unbiasedness figure \hyperlink{unbiased_frame}{\beamerbutton{go back}}}
+ \scriptsize{
+<<unbiased_viz_txt, tidy=F, echo=T,message=FALSE,warning=F,eval=FALSE>>=
+  #--- set seed ---#
+  set.seed(244598)
+
+  #--- set the number of observations ---#
+  n <- 100
+  B <- 1000
+  mean_st <- rep(0,B)
+  for (i in 1:B){
+    #--- generate random values ---#
+    x_seq <- rnorm(n) # Normal(mean=0,sd=1)
+
+    #--- calcualte the mean ---#
+    mean_st[i] <- mean(x_seq)
+  }
+  plot_data <- data.table(mean_st)
+  g_unsbiased <- ggplot(data=plot_data) +
+    geom_density(aes(x=mean_st),fill='blue',alpha=0.5) +
+    xlab('Sample Mean')
+@
+}
+\end{frame}
+
+\begin{frame}[c,fragile,label=R_var]
+  \frametitle{R code to generate the variance figure \hyperlink{var_frame}{\beamerbutton{go back}}}
+ \scriptsize{
+<< variance, echo=T,eval=FALSE>>=
+  set.seed(38495)
+  B <- 1000
+  theta_smart <- rep(0,B)
+  theta_stupid <- rep(0,B)
+  for (i in 1:B){
+    x <- rnorm(1000)
+    theta_smart[i] <- mean(x)
+    theta_stupid[i] <- mean(x[1:10])
+  }
+
+  smart_data <- data.table(value=theta_smart,type='Smart')
+  stupid_data <- data.table(value=theta_stupid,type='Stupid')
+  plot_data <- rbind(smart_data,stupid_data)
+
+  g_var <- ggplot(data=plot_data) +
+    geom_density(aes(x=value,fill=type),alpha=0.5,size=0.5) +
+    scale_fill_discrete(name='Estimator') +
+    xlab('Sample Mean') +
+    theme(
+      legend.position='bottom'
+      )
+  ggsave('./variance.pdf',width=4,height=2.8)
+@
+}
+
+\end{frame}
+
+\end{document}

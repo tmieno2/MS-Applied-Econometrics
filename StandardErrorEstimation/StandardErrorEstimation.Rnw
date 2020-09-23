@@ -1,0 +1,894 @@
+\documentclass[fleqn]{beamer}
+
+% \usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlysmall]{structurebold}
+\usepackage[normalem]{ulem} % use normalem to protect \emph
+\newcommand\hl{\bgroup\markoverwith
+  {\textcolor{yellow}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{wasysym}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{qtree}
+\usepackage{inconsolata}
+\usepackage{framed}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+\usepackage[justification=centering]{caption}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\usepackage[space]{grffile}
+\usefonttheme[onlymath]{serif}
+% \usepackage{tikz}
+% \usetikzlibrary{calc,matrix}
+\usepackage{sgame}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\mode<presentation>
+%\usetheme{Frankfurt}
+\usetheme{boxes}
+\usecolortheme{beaver}
+%\usetheme{Singapore}
+%\usetheme{Hannover}
+
+\newcommand*{\captionsource}[2]{%
+  \caption[{#1}]{%
+    #1%
+    \\\hspace{\linewidth}%
+    {\small\textbf{Source:} #2}%
+  }%
+}
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{blocks}[rounded]
+\newenvironment<>{block_code}[1]{
+  \setbeamercolor{block title}{fg=white,bg=black}
+  \begin{block}#2{#1}}{\end{block}}
+
+%--------------------------
+% Reduce the spacing between R code and output
+%--------------------------
+\usepackage{etoolbox}
+\makeatletter
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+
+\renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{}
+
+%===================================
+% Coloring change
+%===================================
+\definecolor{darkred}{rgb}{0.8,0,0}
+\setbeamercolor{block title}{fg=darkred,bg=structure.fg!20!bg!50!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg}
+
+
+
+\title{Standard Error Estimation}
+\author{Taro Mieno}
+\date{AECN 896-003: Applied Econometrics}
+\everymath{\displaystyle}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+<<prep, echo=FALSE, message=F, warning=F>>=
+source('~/Box/R_libraries_load/library.R')
+source('~/Box/MySoftware/MyR/ggplot2/ggplot2_default_teaching.R')
+source('~/Box/Teaching/R_functions/functions.R')
+opts_chunk$set(
+  comment = NA,
+  message= FALSE,
+  warning= FALSE,
+  tidy=FALSE,
+  size='footnotesize',
+
+  #--- figure related options ---#
+  fig.align='center',
+  out.height='3in',
+  out.width='3in',
+  dev='pdf'
+  )
+
+# setwd('~/Box/Teaching/UNL/EconometricsMaster/aecn892_2019/lectures/Heteroskedasticity')
+@
+
+
+%===================================
+% Multicollinearity and omitted variable bias
+%===================================
+\begin{frame}[c]
+  \title{Heteroskedasticity and Its Consequences}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Heteroskedasticity}
+  \begin{block}{Homoskedasticity}
+  \vspace{-0.6cm}
+  \begin{align*}
+    Var(u|x) = \sigma^2
+  \end{align*}
+  \end{block}
+  \begin{block}{Heteroskedasticity}
+  \vspace{-0.6cm}
+  \begin{align*}
+    Var(u|x) = f(x)
+  \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Heteroskedasticity Visualization}
+<< het_viz, size='scriptsize',echo=FALSE,cache=TRUE>>=
+  set.seed(10384)
+  N <- 1000
+
+  #--- generate data ---#
+  x <- runif(N,0,1) # x
+  het_u <- 3*rnorm(N,mean=0,sd=x) # heteroskedastic error
+  y_het <- 1 + 3*x + het_u # y
+  hom_u <- 3*rnorm(N,mean=0,sd=0.5) # homoskedastic error
+  y_hom <- 1 + 3*x + hom_u # y
+  data <- data.table(
+    'heteroskedastic'=y_het,
+    'homoskedastic'=y_hom,
+    x=x) %>%
+  melt(id.var='x')
+  data[,type:=factor(variable,levels=c('homoskedastic','heteroskedastic'))]
+
+  #--- figure ---#
+  ggplot(data=data) +
+    geom_point(aes(y=value,x=x),size=0.6) +
+    geom_smooth(aes(y=value,x=x),method='lm',se=FALSE) +
+    facet_grid(type~.)
+
+@
+\end{frame}
+
+
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness and consistency of OLS estimators under heteroskedasticity}
+    \begin{description}
+      \item [Question]: Are OLS estimators unbiased and consistent when error is heteroskedastic?
+      \only<2->{\item [Answer]: Yes.}
+      \only<3->{\item [Why?]: }
+    \end{description}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness and consistency of $\widehat{Var(\hat{\beta}_j)}$ under heteroskedasticity}
+  \begin{block}{Under homoskedasticity,}
+  we used $\widehat{Var(\hat{\beta}_j)}=\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}$ to estimate $Var(\hat{\beta}_j)=\frac{\sigma^2}{SST_x(1-R^2_j)}$
+  \end{block}
+
+  \begin{block}{Under heteroskedasticity,}
+  \vspace{-0.5cm}
+    \begin{align*}
+    Var(\hat{\beta}_j)\ne \frac{\sigma^2}{SST_x(1-R^2_j)}
+    \end{align*}
+  \end{block}
+  \only<2->{\begin{block}{Question}
+    Should we keep using $\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}$ as the estimator of $Var(\hat{\beta}_j)$?
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness and consistency of $\widehat{Var(\hat{\beta}_j)}$ under heteroskedasticity}
+  \begin{description}
+    \item [Question]: Is $E[\widehat{Var(\hat{\beta}_j)}]=E\Big[\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}\Big]=Var(\hat{\beta}_j)$ under heteroskedasticity?
+    \only<2->{\item [Answer]: No.}
+  \end{description}
+  \only<3->{\begin{block}{Question}
+    So, what are the consequences of using $\widehat{Var(\hat{\beta}_j)}=\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}$ under heteroskedasticity?
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness and consistency of $\widehat{Var(\hat{\beta}_j)}$ under heteroskedasticity}
+  \begin{block}{Question}
+    So, what are the consequences of using $\widehat{Var(\hat{\beta}_j)}=\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}$ under heteroskedasticity?
+  \end{block}
+  \only<2->{\begin{block}{Consequence}
+    Your hypothesis testing is going to be biased
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \title{Consequence of heteroskedasticity on testing}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \begin{block}{Example:}
+  \vspace{-0.6cm}
+    \begin{align*}
+      y = 1 + \beta x + u
+    \end{align*}
+    where $\beta=0$
+  \end{block}
+
+  \only<2->{\begin{block}{Test of interest}
+    \begin{itemize}
+      \item $H_0:$ $\beta=0$
+      \item $H_1:$ $\beta \ne 0$
+    \end{itemize}
+  \end{block}}
+
+  \only<3->{\begin{block}{Question}
+    If you test the hypothesis at the $5\%$ significance level, what should be the probability that you reject the null hypothesis?\\
+    \vspace{0.3cm}
+    $Pr(\mbox{reject} \;\; H_0|H_0 \;\; \mbox{is true})=?$
+  \end{block}}
+
+\end{frame}
+
+\begin{frame}[c]
+  \begin{block}{Question}
+    If you test the hypothesis at the $5\%$ significance level, what should be the probability that you reject the null hypothesis?\\
+    \vspace{0.3cm}
+    $Pr(\mbox{reject} \;\; H_0|H_0 \;\; \mbox{is true})=?$
+    \begin{itemize}
+      \item What is the significance level?
+      \item Is the null true?
+      \item So?
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{MC simulation}
+  \begin{block}{Conceptual Steps}
+    \begin{itemize}
+      \item generate a dataset so that $\beta_1$ (the coefficient on $x$) is zero
+      \begin{align}
+         y=\beta_0+\beta_1 x + v
+      \end{align}
+      \item estimate the model and find $\hat{\beta}_1$ and $\widehat{se(\hat{\beta}_1)}$
+      \item calculate $t$-statistic ($\hat{\beta}_x/\widehat{se(\hat{\beta}_x)}$) and decide whether you reject the null or not
+      \item repeat the above 1000 times
+      \item check how often you reject the null (should be close to 50 times)
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: testing under heteroskedasticity}
+  \begin{block_code}{R code: setup of MC}
+<< het, size='scriptsize',cache=TRUE>>=
+  set.seed(927834)
+  N <- 1000 # number of observations
+  B <- 1000 # number of simulations
+  b_hat_store <- rep(0,B) # beta hat storage
+  t_stat_store <- rep(0,B) # t-stat storage
+  c_value <- qt(0.975,N-2) # critical value
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: testing under heteroskedasticity}
+\begin{block_code}{R code: MC simulation}
+<< het_2, size='scriptsize',cache=TRUE>>=
+
+  #--- x fixed across iterations ---#
+  x <- runif(N,0,1) # x
+
+  for (i in 1:B){
+    #--- generate data ---#
+    het_u <- 3*rnorm(N,mean=0,sd=x) # heteroskedastic error
+    y <- 1 + het_u # y
+    data_temp <- data.table(y=y,x=x)
+
+    #--- regression ---#
+    ols_res <- lm(y~x,data=data_temp)
+    b_hat <- ols_res$coef['x'] # coef estimate on x
+    b_hat_store[i] <- b_hat # save the coef estimate
+    vcov_ols <- vcov(ols_res) # get variance covariance matrix
+    t_stat_store[i] <- b_hat/sqrt(vcov_ols['x','x']) # calculate t-stat
+  }
+@
+\end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Testing under heteroskedasticity}
+
+\begin{block_code}{R code: Consequences}
+<< het_conseq, size='scriptsize',cache=TRUE>>=
+  #--- how many times do you reject? ---#
+  reject_or_not <- abs(t_stat_store) > c_value
+  mean(reject_or_not)
+@
+\end{block_code}
+
+  \only<2->{\begin{block}{The consequence}
+    You rejected the null $\Sexpr{mean(reject_or_not)*100}\%$ of the time, instead of $5\%$.
+    \begin{itemize}
+      \item So, you are more likely to claim that $x$ has a statistically significant impact than you are supposed to.
+      \item The use of the formula $\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}$ seemed to (over/under)-estimate the true variance of the OLS estimators
+      \item The direction of bias is ambiguous. It depends.
+    \end{itemize}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Unbiasedness?}
+ \begin{block_code}{R code: Consequences}
+<< het_unbiased, size='scriptsize',cache=TRUE>>=
+  mean(b_hat_store)
+@
+  \end{block_code}
+  \begin{block}{Consequences}
+    OLS estimators are still unbiased!!
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \title{How should we address this problem?}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \begin{itemize}
+    \item Now, we understand the consequence of heteroskedasticity: $\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}$ is a biased estimator of $Var(\hat{\beta})$, which would makes any kind of testings based on it invalid.
+    \item Can we credibly estimate the variance of the OLS estimators?
+  \end{itemize}
+  \only<2->{\begin{block}{White-Huber-Eicker heteroskedasticity-robust standard error estimator}
+    \begin{itemize}
+      \item valid in the presence of heteroskedasticity of \textcolor{blue}{unknown form}
+      \item heteroskedasticity-robust standard error estimator in short
+    \end{itemize}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Heteroskedasticity-robust standard error estimator}
+  \begin{block}{Heteroskedasticity-robust standard error estimator}
+    \begin{align*}
+      \widehat{Var(\hat{\beta}_j)} = \frac{\sum_{i=1}^n \hat{r}^2_{i,j} \hat{u}^2_i}{SSR^2_j}
+    \end{align*}
+    \begin{itemize}
+      \item $r_{i,j}$: residual from regressing $x_j$ on all other independent variables for $i$th observation
+      \item $SSR^2_j$: the sum of squared residuals from regressing $x_j$ on all other independent variables
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Heteroskedasticity-robust standard error estimator}
+  We spend \textcolor{blue}{NO} time to try to understand what's going on with the estimator.
+  \begin{block}{What you need to do is}
+    \begin{itemize}
+      \item understand the consequence of heteroskedasticity
+      \item know there is an estimator that is appropriate under heteroskedasticity (heteroskedasticity-robust standard error estimator)
+      \item know how to use the heteroskedasticity-robust standard error estimator in $R$ (or some other software)
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{In practice}
+  Here is the well-accepted procedure in econometric analysis:
+
+  \begin{enumerate}
+     \item Estimate the model using OLS (you do nothing special here)
+     \only<2->{\item Assume the error term is heteroskedastic and estimate the variance of the OLS estimators ($Var(\hat{\beta})$)
+     \begin{itemize}
+        \item There are tests to whether error is heteroskedastic or not: \textcolor{blue}{Breusch-Pagan} test and \textcolor{blue}{White} test
+        \item In practice, almost nobody bothers to conduct these tests
+        \item We do not learn how to run these tests
+      \end{itemize}}
+     \only<3->{\item Replace the estimates from $\widehat{Var(\hat{\beta})}_{default}$ with those from $\widehat{Var(\hat{\beta})}_{robust}$ for testing}
+     \only<4->{
+     \item But, we do not replace coefficient estimates.
+     }
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Implementation in $R$}
+  We use
+  \begin{itemize}
+    \item the \textcolor{blue}{$vcovHC()$} function from the \textcolor{blue}{sandwich} package to estimate heteroskedasticity-robust standard errors
+    \item the \textcolor{blue}{$coeftest()$} function from the \textcolor{blue}{lmtest} package to do tests
+  \end{itemize}
+
+  \begin{block_code}{R code: Implementation}
+<< het_implement_1, echo=TRUE, size='scriptsize',cache=TRUE,message=FALSE,warning=FALSE>>=
+  #--- library ---#
+  library(readstata13)
+
+  #--- import the data ---#
+  mlb_data <- read.dta13('MLB1.dta')
+
+  #--- regression ---#
+  reg_mlb <- lm(log(salary)~years+gamesyr+
+    bavg+hrunsyr+rbisyr,data=mlb_data)
+
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{$\widehat{Var(\hat{\beta})}_{default}$ using \textcolor{blue}{$vcov()$}}
+  \begin{block_code}{R code: Implementation}
+<< het_implement_vcov, echo=TRUE, size='scriptsize',cache=TRUE,message=FALSE,warning=FALSE>>=
+  #--- vcov ---#
+  # valid under homoskedasticity
+  vcov_hom <- vcov(reg_mlb)
+  vcov_hom
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Coefficient tests using \textcolor{blue}{$coeftest()$} with $\widehat{Var(\hat{\beta})}_{default}$}
+ \begin{block_code}{R code: Implementation}
+<< coef_test_hom, echo=TRUE, size='scriptsize',cache=  TRUE,message=FALSE,warning=FALSE>>=
+  library(lmtest)
+
+  #--- coefficient test with vcov_default ---#
+  coeftest(reg_mlb,vcov_hom)
+@
+  \end{block_code}
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{$\widehat{Var(\hat{\beta})}_{robust}$ using \textcolor{blue}{$vcovHC()$}}
+\begin{block_code}{R code: Implementation}
+<< het_implement_vcovHC, echo=TRUE, size='scriptsize',cache=TRUE,message=FALSE,warning=FALSE>>=
+  #--- vcovHC ---#
+  # valid under both homoskedasticity and heteroskedasticity
+  library(sandwich)
+  vcov_het <- vcovHC(reg_mlb)
+  vcov_het
+@
+\end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Coefficient tests using \textcolor{blue}{$coeftest()$} with $\widehat{Var(\hat{\beta})}_{robust}$}
+  \begin{block_code}{R code: Implementation}
+<< coef_test_het, echo=TRUE, size='scriptsize',cache=  TRUE,message=FALSE,warning=FALSE>>=
+  #--- coefficient test with vcovHC ---#
+  coeftest(reg_mlb,vcov_het)
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: testing under heteroskedasticity}
+\begin{block_code}{R code: MC simulation}
+<< het_3, size='scriptsize',cache=TRUE>>=
+
+  #--- x fixed across iterations ---#
+  x <- runif(N,0,1) # x
+
+  for (i in 1:B){
+    #--- generate data ---#
+    het_u <- 3*rnorm(N,mean=0,sd=x) # heteroskedastic error
+    y <- 1 + het_u # y
+    data_temp <- data.table(y=y,x=x)
+
+    #--- regression ---#
+    ols_res <- lm(y~x,data=data_temp)
+    b_hat <- ols_res$coef['x'] # coef estimate on x
+    b_hat_store[i] <- b_hat # save the coef estimate
+    vcov_hc <- vcovHC(ols_res) # get variance covariance matrix
+    t_stat_store[i] <- b_hat/sqrt(vcov_hc['x','x']) # calculate t-stat
+  }
+@
+\end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Testing under heteroskedasticity}
+
+\begin{block_code}{R code: Consequences}
+<< het_conseq_3, size='scriptsize',cache=TRUE>>=
+  #--- how many times do you reject? ---#
+  reject_or_not <- abs(t_stat_store) > c_value
+  mean(reject_or_not)
+@
+\end{block_code}
+\end{frame}
+
+
+%===================================
+% Clustered Error
+%===================================
+\title{Clustered Error}
+\author{}
+\date{}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Clustered Error}
+  \begin{block}{Clustered Error}
+    \begin{itemize}
+      \item Often times, observations can be grouped into clusters
+      \item Errors within the cluster can be correlated
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Clustered Error: Examples}
+  \begin{block}{College GPA: cluster by college}
+  \vspace{-0.6cm}
+    \begin{align*}
+      GPA_{col} = \beta_0 + \beta_1 income + \beta_2 GPA_{hs} + u
+    \end{align*}
+    \vspace{-0.6cm}
+    \begin{itemize}
+      \item Your observations consist of students' GPA scores on college A and B.
+      \item Because of some unobserved (omitted) school characteristics, error terms for  individuals in college A might be correlated.
+      \begin{itemize}
+        \item grading policy
+      \end{itemize}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Clustered Error: Examples}
+  \begin{block}{Eduction Impacts on Income: cluster by individual}
+  \begin{itemize}
+     \item Your observations consist of 500 individuals with each individual tracked over the past 10 years
+     \item Because of some unobserved (omitted) individual characteristics, error terms for time-series observations within an individual might be correlated.
+     \begin{itemize}
+       \item innate ability
+     \end{itemize}
+   \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Consequences of ignoring clustered error}
+
+  \begin{block}{Are the OLS estimators unbiased}
+  \begin{itemize}
+    \item (Yes/No)?
+    \only<2->{\item Correlation between $x$ and $u$ would hurt you, but not correlation among $u$}
+  \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Consequences of ignoring clustered error}
+
+  \begin{block}{Are $\widehat{Var(\hat{\beta})}_{default}$ unbiased estimators of $Var(\hat{\beta})$?}
+  \begin{itemize}
+    \item (Yes/No)?
+    \only<2->{\item $\widehat{Var(\hat{\beta})}_{default}$ is unbiased only under homoskedasticity assumption, which assumes no correlation between errors}
+  \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Consequences of ignoring clustered error}
+
+  \begin{block}{Which has more information?}
+    \begin{itemize}
+      \item two errors that are independent
+      \item two errors that are correlated
+    \end{itemize}
+  \end{block}
+
+  \only<2->{\begin{block}{Consequences}
+  \begin{itemize}
+    \item If you were to use $\widehat{Var(\hat{\beta})}_{default}$ to estimate $Var(\hat{\beta})$ in the presence of clustered error, you would (under/over)-estimate the true $Var(\hat{\beta})$.
+    \only<3->{\item This would lead to rejecting null hypothesis (more/less) often than you are supposed to}
+  \end{itemize}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: clustered error}
+
+  \begin{block_code}{R code: data generating process}
+<< cl_error_1, echo=TRUE, size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+  #--- setup ---#
+  library(MASS) # to use the mvrnorm() function later
+  N <- 200 # number of observations per cluster
+
+  #--- error term ---#
+  # don't worry about the code. Here I am generating errors that are correlated
+  # within each group
+  u_1 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+  u_2 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+
+  #--- x ---#
+  x_1 <- runif(N) # x for group 1
+  x_2 <- runif(N) # x for group 2
+
+  #--- y ---#
+  y_1 <- 1 + 0*x_1 + u_1
+  y_2 <- 1 + 0*x_2 + u_2
+
+  #--- data ---#
+  data <- data.table(y=c(y_1,y_2),x=c(x_1,x_2))
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: Conceptual Steps}
+  \begin{enumerate}
+    \item generate data according to the generating process in a way that error within the cluster (two clusters in this example) is correlated
+    \item estimate the model and find $\hat{\beta}_x$ and $\widehat{se(\hat{\beta}_x)}$
+    \item calculate $t$-statistic ($\hat{\beta}_x/\widehat{se(\hat{\beta}_x)}$)
+    \item repeat steps 1-3 for 1000 times
+    \item see how many times out of 1000 times you reject the null hypothesis: $H_0:$ $\beta_x=0$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: clustered error}
+
+  \begin{block_code}{R code: MC simulations}
+<< cl_error_mc, echo=TRUE, size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+  B <- 1000
+  t_stat_store <- rep(0,B)
+  for (i in 1:B){
+    #--- generate data ---#
+    u_1 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+    u_2 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+    x_1 <- runif(N) # x for group 1
+    x_2 <- runif(N) # x for group 2
+    y_1 <- 1 + 0*x_1 + u_1
+    y_2 <- 1 + 0*x_2 + u_2
+    data <- data.table(y=c(y_1,y_2),x=c(x_1,x_2))
+
+    #--- OLS ---#
+    reg <- lm(y~x,data=data)
+
+    #--- get vcov ---#
+    vcov_temp <- vcov(reg)
+
+    #--- calculate t-stat ---#
+    t_stat <- reg$coef['x']/sqrt(vcov_temp['x','x'])
+    t_stat_store[i] <- t_stat
+  }
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: clustered error}
+
+  \begin{block_code}{R code: MC simulations results}
+<< cl_error_mc_results, echo=TRUE, dependson='cl_error_mc', size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+    #--- critical value ---#
+    c_value <- qt(0.975,400-2)
+
+    #--- how often do you reject the null ---#
+    mean(abs(t_stat_store) > c_value)
+@
+  \end{block_code}
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Cluster-robust standard error estimation}
+  There exist estimators of $Var(\hat{\beta})$ that take into account the possibility that errors are clustered.
+
+  \begin{itemize}
+    \item We call such estimators \textcolor{blue}{cluster-robust variance covariance estimator} (denoted as $\widehat{Var(\hat{\beta})}_{cl}$)
+    \item We call estimates from such estimators \textcolor{blue}{cluster-robust variance}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Cluster-robust standard error estimation}
+  I neither derive nor show the mathematical expressions of these estimators
+  \begin{block}{What you need to do is}
+    \begin{itemize}
+      \item understand the consequence of clustered errors
+      \item know there are estimators that are appropriate under clustered error
+      \item know that the estimators we will learn take care of heteroskedasticity at the same time (so, they really are cluster- and heteroskedasticity-robust standard error estimators)
+      \item know how to use the estimators in $R$ (or some other software)
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Obtaining cluster-robust standard errors}
+  We use the recently-developed regression function called \textit{\textcolor{red}{felm}} from the \textcolor{blue}{lfe} package
+  \begin{block}{How it works}
+    \begin{align*}
+      felm(dep\_var \sim indep\_var\_1 + indep\_var\_2+\dots|0|0| \\
+      cluster\_vars,data=dataset\_name)
+    \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Obtaining cluster-robust standard errors}
+  \begin{block_code}{R code: generate data}
+<< cl_error_dg, echo=TRUE, size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+
+    #--- error correlated within group ---#
+    u_1 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+    u_2 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+
+    #--- other variables ---#
+    x_1 <- runif(N) # x for group 1
+    x_2 <- runif(N) # x for group 2
+    y_1 <- 1 + 1*x_1 + u_1 # dep var for group 1
+    y_2 <- 1 + 1*x_2 + u_2 # dep var for group 2
+    g_1 <- rep('group 1',N) # group 1
+    g_2 <- rep('group 2',N) # group 2
+    data <- data.table(y=c(y_1,y_2),x=c(x_1,x_2),group=c(g_1,g_2))
+
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Obtaining cluster-robust standard errors}
+  \begin{block_code}{R code: look at the data}
+<< cl_error_data, echo=TRUE, size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+
+    #--- take a look at the data ---#
+    data
+
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Obtaining cluster-robust standard errors}
+  \begin{block_code}{R code: run OLS with felm()}
+<< cl_error_reg, echo=TRUE, size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+
+  #=== OLS with felm ===#
+  reg_cl <- felm(y~x|0|0|group,data=data)
+
+  #=== regular OLS ===#
+  reg <- lm(y~x,data=data)
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Obtaining cluster-robust standard errors}
+\scriptsize{
+<< cl_error_compare, echo=FALSE, size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE, results='asis'>>=
+
+  #=== regression results ===#
+  stargazer(reg_cl,reg,type='latex')
+@
+}
+\end{frame}
+
+\begin{frame}[c]
+  \begin{block}{Important}
+  \begin{itemize}
+    \item Cluster-robust standard error estimation gets better as the number of groups get larger
+    \item The number of groups of 2 is too small (As a rule of thumb, \# of groups larger than 50 is sufficiently large)
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: clustered error}
+
+  \begin{block_code}{R code: MC simulations}
+<< cl_error_mc_2, echo=TRUE, size='tiny',cache= TRUE,message=FALSE,warning=FALSE>>=
+  B <- 1000
+  t_stat_store <- rep(0,B)
+  for (i in 1:B){
+    #--- generate data ---#
+    u_1 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+    u_2 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+    x_1 <- runif(N) # x for group 1
+    x_2 <- runif(N) # x for group 2
+    y_1 <- 1 + 0*x_1 + u_1
+    y_2 <- 1 + 0*x_2 + u_2
+    data <- data.table(y=c(y_1,y_2),x=c(x_1,x_2),group=c(rep(1,N),rep(2,N)))
+
+    #--- OLS ---#
+    reg <- lm(y~x,data=data)
+
+    #--- get cluster-robust vcov ---#
+    vcov_temp <- cluster.vcov(reg,~group)
+
+    #--- calculate t-stat ---#
+    t_stat <- reg$coef['x']/sqrt(vcov_temp['x','x'])
+    t_stat_store[i] <- t_stat
+  }
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: clustered error}
+
+  \begin{block_code}{R code: MC simulations results}
+<< cl_error_mc_results_2, echo=TRUE, dependson='cl_error_mc', size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+    #--- critical value ---#
+    c_value <- qt(0.975,400-2)
+
+    #--- how often do you reject the null ---#
+    mean(abs(t_stat_store) > c_value)
+@
+  \end{block_code}
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{Obtaining cluster-robust standard errors}
+  \begin{block}{Example: MLB}
+    Cluster by the variable $nl$, which is 1 if the player is in the National league and 0 if in the American league
+  \end{block}
+
+  \begin{block_code}{R code: cluster-robust standard errors}
+<< cl_se_mlb, echo=TRUE, dependson='cl_error_mc', size='scriptsize',cache= TRUE,message=FALSE,warning=FALSE>>=
+    #--- load the lfe package ---#
+    library(lfe)
+
+    #--- cluster-robust estimation ---#
+    reg_mlb_cl <- felm(log(salary)~years+gamesyr+
+      bavg+hrunsyr+rbisyr|0|0|nl,data=mlb_data)
+@
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Cluster-robust standard errors}
+\scriptsize{
+<< cl_se_comp_mlb, echo=FALSE, dependson='cl_se_mlb', size='scriptsize',cache= TRUE, message=FALSE,warning=FALSE, results='asis'>>=
+    stargazer(reg_mlb,reg_mlb_cl,type='latex')
+@
+}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Cluster-robust standard error estimation}
+  \begin{itemize}
+    \item Just like the heteroskedasticity-present case before,
+    \begin{enumerate}
+       \item Estimate the model using OLS (you do nothing special here)
+       \only<2->{\item Assume the error term is clustered and/or heteroskedastic, and estimate the variance of the OLS estimators ($Var(\hat{\beta})$) using cluster-robust standard error estimators
+       }
+       \only<3->{\item Replace the estimates from $\widehat{Var(\hat{\beta})}_{default}$ with those from $\widehat{Var(\hat{\beta})}_{cl}$ for testing}
+       \only<4->{
+       \item But, we do not replace coefficient estimates.
+       }
+    \end{enumerate}
+  \item \textcolor{blue}{felm} function does all this for you
+  \end{itemize}
+\end{frame}
+
+\end{document}
+

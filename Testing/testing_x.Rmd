@@ -1,0 +1,1572 @@
+---
+title: "Statistical Hypothesis Testing"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    # css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 13:16
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, child = './../setup_full.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Testing/")
+```
+
+# Before we start 
+
+## Learning objectives
+
+Learn the theory of statistical hypothesis testing and learn how to conduct various tests. 
+
+## Table of contents
+
+1. [Review on statistical hypothesis testing](#review)
+2. [Testing (linear model)](#linear)
+3. [Confidence interval](#conf)
+4. [Testing with multiple coefficients](#multiple-coefs)
+5. [Multiple Linear Restrictions: F-test](#f)
+
+---
+class: inverse, center, middle
+name: review
+
+# Review on Statistical Hypothesis Testing
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+
+# Hypothesis Testing: General Steps 
+
+Here is the general step of any hypothesis testing:
+
++ Step 1: specify the null $(H_0)$ and alternative $(H_1)$ hypotheses
+
++ Step 2: find the distribution of the test statistic .red[if the null hypothesis is true]
+
++ Step 3: calculate the test statistic based on the data and regression results
+
++ Step 4: define the significance level
+
++ Step 5: check how unlikely that you get the actual test statistic (found at Step 3) .red[if indeed the null hypothesis is true]
+
+---
+
+# Hypothesis testing: An Example 
+
+.content-box-red[**Setup**]
+
+Suppose you want to test if the expected value of a normally distributed random variable (`x`) is 1 or not.
+
+We do know the variance of `x` is 4 for some reason.
+
+Your estimator is the sample mean: $\theta = \sum_{i=1}^J x_i/J$
+
+We know that $\theta \sim N(\alpha, 4/J)$ (of course $\alpha$ is not known).
+
+This means that $\sqrt{J} \times (\theta - \alpha)/2 \sim N(0, 1)$.
+
+.content-box-red[**Test statistic and its distribution under the null hypothesis**]
+
+The null hypothesis is $\alpha = 1$. 
+
+Suppose $\alpha = 1$ is indeed 1, then $\sqrt{J} \times (\theta - 1)/2 \sim N(0, 1)$.
+
+So, if the null hypothesis is indeed true, this is the distribution of your test statistic: $\sqrt{J} \times (\theta - 1)/2$
+
+```{r echo = F, out.width = "50%"}
+x <- seq(-4, 4, length = 1000)
+y <- dnorm(x, sd = 1)
+plot_data <- data.table(x = x,y = y)
+ggplot(data = plot_data) +
+  geom_line(aes(x = x,y = y),color = 'black')
+```
+
+---
+
+# Hypothesis testing: An Example (Cont.) 
+
+```{r echo = F, out.width = "50%"}
+x <- seq(-4, 4, length = 1000)
+y <- dnorm(x, sd = 1)
+plot_data <- data.table(x = x,y = y)
+ggplot(data = plot_data) +
+  geom_line(aes(x = x,y = y),color = 'black')
+```
+
+--
+
+.content-box-red[**Case 1**]
+
+Suppose you have obtained 100 samples $(J = 100)$ and calculated $\theta$ (sample mean), which turned out to be 2.
+
+Then, your test statistic is $\sqrt{100} \times (2-1)/2 = 5$.
+
+How unlikely is it to get the number you got (5) if the null hypothesis is indeed true?
+
+--
+
+.blue[Very unlikely! So, the null is very much likely wrong!]
+
+--
+
+.content-box-red[**Case 2**]
+
+Suppose you have obtained 400 samples $(J = 400)$ and calculated $\theta$ (sample mean), which turned out to be 1.02.
+
+Then, your test statistic is $\sqrt{400} \times (1.02-1)/2 = 0.2$.
+
+How unlikely is it to get the number you got (0.2) if the null hypothesis is indeed true?
+
+--
+
+.blue[Very much possible! So, we cannot say confidently that the null is wrong.]
+
+---
+
+# Hypothesis testing: Side Note
+
+Note that you do not really need to use $\sqrt{J} \times (\theta - \alpha)/2$ as your test statistic. 
+
+--
+
+You could alternatively use $\theta - \alpha$. But, in that case, you need to be looking at $N(0, 4/J)$ instead of $N(0, 1)$. When the number of observations is 100 $(J = 100)$,
+
+```{r echo = F, out.width = "50%"}
+x <- seq(-4, 4, length = 1000)
+y <- dnorm(x, sd = 2/10)
+plot_data <- data.table(x = x,y = y)
+ggplot(data = plot_data) +
+  geom_line(aes(x = x,y = y),color = 'black')
+```
+
+--
+
+.content-box-red[**Reconsider the case 1**]
+
+Suppose you have obtained 100 samples $(J = 100)$ and calculated $\theta$ (sample mean), which turned out to be 2.
+
+Then, your test statistic is $2-1 = 1$. 
+
+Is is unlikely for you to get 1 if the null hypothesis is true? 
+
+The conclusion would be exactly the same as using $\sqrt{J} \times (\theta - \alpha)/2$ because the distribution under the null is adjusted according to the test statistic you use.
+
+--
+
+.content-box-green[**Note**]
+
+We always use normalize test statistic so that we can always look up the same distribution.
+
+---
+class: inverse, center, middle
+name: coef
+
+# Hypothesis Testing of the Coefficients of a Linear Model
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+
+# Hypothesis Testing of the Coefficients  
+
+.content-box-red[**Hypotheses examples**]:
+
+Consider the following model,
+
+$$wage = \beta_0 + \beta_1 educ + \beta_2 exper + u$$
+
++ Hypothesis 1: education has no impact on wage $(\beta_1=0)$
+
++ Hypothesis 2: experience has a positive impact on wage $(\beta_2>0)$
+
+--
+
+.content-box-red[**Statistical hypothesis testing**]
+
++ If $\hat{\beta}_1$ is non-random, but just a scalar, all you have to do is just check if $\hat{\beta}_1=0$ or not
+
+--
+
++ But, the estimate you get is \textcolor{blue}{just one realization} of the range of values $\hat{\beta}_1$ could take because it is a random varaible
+
+--
+
++ This means that even if $\beta_1=0$ in the population, it is possible to get an estimate that is very far from 0
+
+--
+
+.content-box-red[**Hypothesis Testing in General**]
+
+You have gotten an estimate of $\beta$ $(\hat{\beta})$ and are wondering if the true value of $\beta$ (which you will never know) is $\alpha$ (a specific constant). 
+
+Here is the underlying concept of hypothesis testing.
+
++ What would be the .red[distribution] of $\hat{\beta}$ (the estimator) .red[if] the true value of $\beta$ is indeed $\alpha$?
+
++ If so, how likely that you would have gotten the value you have gotten for $\hat{\beta}$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+So, let's discuss the distribution of $\beta_j$ now.
+
+---
+
+# Hypothesis Testing: Additional Assumption 
+
+So far, we learned that:
+
++ Expected value of the OLS estimators under MLR.1 ~ MLR.4
++ Variance of the OLS estimators under MLR.1 ~ MLR.5
+
+--
+
+We have .red[NOT] made any assumptions about the distribution of the error term!!
+
+--
+
+In order to perform hypothesis testing, we need to make assumptions about the distribution of error term (this is not strictly true, but more on this later)
+
+--
+
+.content-box-red[**Normality Assumption**]
+
+The population error $u$ is .red[independent] of the explanatory variables $x_1,\dots,x_k$ and is .red[normally] distributed with zero mean and variance $\sigma^2$:
+
+$$u\sim Normal(0,\sigma^2)$$
+
+--
+
+
+.content-box-green[**Note**]
+
+The normality assumption is much more than error term being distributed as Normal.
+
+Independence of the error term implies
+
++ $E[u|x] = 0$
++ $Var[u|x]= \sigma^2$
+
+So, we are necessarily assuming MLR.4 and MLR.5 hold by the independence assumption.
+
+---
+
+# The Implications of All the Assumptions
+
+
+.content-box-red[**distribution of the dependent variable**]
+
+The distribution of $y$ conditional on $x$ is a Normal distribution
+
+$y|x \sim Normal(\beta_0+\beta_1 x_1+\dots+\beta_k x_k,\sigma^2)$
+
++ $E[y|x]$ is $\beta_0+\beta_1 x_1+\dots+\beta_k x_k$
++ $u|x$ is $Normal(0,\sigma^2)$
+
+--
+
+.content-box-red[**distribution of the OLS estimator**]
+
+If the MLR.1 through MLR.6 are satisfied, $OLS$ estimators are also Normally distributed!
+
+$\hat{\beta}_j \sim Normal(\beta_j,Var(\hat{\beta}_j))$
+
+which means,
+
+$\frac{\hat{\beta}_j-\beta_j}{sd(\hat{\beta}_j)} \sim Normal(0,1)$
+
+--
+
+Okay, so are we going to use this for testing involving $\beta_j$? 
+
+--
+
+No. 
+
+--
+
+.content-box-red[**t-statistic and t-distribution**]
+
+But, in practice, we need to estimate $sd(\beta_j)$. If we use $se(\hat{\beta}_j)$ instead of $sd(\hat{\beta}_j)$, then,
+
+$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}$
+
+where $n-k-1$ is the degree of freedom of residual.
+
+(Note: $se(\hat{\beta}_j) = \hat{\sigma}^2/\big[SST_X\cdot (1-R_j^2)\big]$)
+
+---
+
+# Null and alternative hypotheses 
+
+
+.content-box-red[**one-sided alternative**]:
+
+$H_0:$ $\beta_j = 0$ 
+$H_1:$ $\beta_j > 0$ 
+
+--
+
+You look at the positive end of the t-distribution to see if the t-statistic you obtained is more extreme than the level of error you accept (significance level). 
+
+--
+
+.content-box-red[**two-sided alternative**]:
+
+$H_0:$ $\beta_j = 0$ 
+$H_1:$ $\beta_j \ne 0$ 
+
+You look at the both ends of the t-distribution to see if the t-statistic you obtained is more extreme than the level of error you accept (significance level). 
+
+--
+
+.content-box-red[**significance level**]
+
+Definition: The probability of rejecting the null when the null is actually true (The probability that you wrongly claim that the null hypothesis is wrong even though it's true in reality: Type I error)
+
+The lower the significance level, you are more sure that the null is indeed wrong when you reject the null hypothesis
+
+---
+
+# One-sided test: 5% significance level
+
+```{r include = F}
+u <- seq(-3.5, 3.5, length = 1000)
+df <- 100-10
+pdf <- dt(u,df=df) # default is mean=0,sd=1
+data <- data.table(x=u,y=pdf)
+
+g_t <- ggplot() +
+  geom_line(data=data,aes(y=y,x=x)) +
+  geom_hline(yintercept=0) +
+  xlab('') +
+  ylab('') +
+  theme(
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()
+    )
+
+ggsave(g_t,file='./t_dist.pdf',width=4,height=3)
+
+alpha <- 0.05
+c_rej <- qt(1-alpha, df = df)
+rej_data <- data[u>=c_rej,]
+
+g_t_005_one <- g_t +
+  geom_ribbon(
+    data = rej_data,
+    aes(ymax = y,ymin = 0,x = x),
+    fill = 'red',alpha = 0.4
+    ) +
+  annotate('text',x = c_rej,y = -0.02,
+    label = as.character(round(c_rej,digits = 2)),
+    size = 4,
+    family = 'Times'
+    ) +
+  annotate('text',x = 2.7,y = 0.1,
+    label = paste('area  =  ',round(alpha,digits = 2),sep = ''),
+    size = 4,
+    family = 'Times'
+    )  
+
+
+alpha <- 0.01
+c_rej <- qt(1-alpha, df = df)
+rej_data_001 <- data[u>=c_rej,]
+
+g_t_001_one <- g_t +
+  geom_ribbon(
+    data = rej_data_001,
+    aes(ymax = y,ymin = 0,x = x),
+    fill = 'red',alpha = 0.4
+    ) +
+  annotate('text',x = c_rej,y = -0.02,
+    label = as.character(round(c_rej,digits = 2)),
+    size = 4,
+    family = 'Times'
+    ) +
+  annotate('text',x = 2.7,y = 0.1,
+    label = paste('area  =  ',round(alpha,digits = 2),sep = ''),
+    size = 4,
+    family = 'Times'
+    )
+```
+
+This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
+
+```{r echo = F, out.width = "60%"}
+g_t_005_one   
+```  
+
+
+.content-box-red[**Decision rule**]
+
+Reject the null hypothesis if the t-statistic is greater than 1.66 (95% quantile of the t-distribution)
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+If you follow the decision rule, then you have a 5% chance that you are wrong in rejecting the null hypothesis of $\beta_j = 0$.
+
+Here, 
+
++ 5% is the .red[significance level]
++ 1.66 is the .red[critical value] above which you will reject the null
+
+---
+
+# One-sided test: 1% significance level
+
+This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
+
+
+```{r echo = F, out.width = "60%"}
+g_t_001_one   
+```  
+
+.content-box-red[**Decision rule**]
+
+Reject the null hypothesis if the t-statistic is greater than 2.37 (99% quantile of the t-distribution)
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+If you follow the decision rule, then you have a 1% chance that you are wrong in rejecting the null hypothesis of $\beta_j = 0$.
+
+Here, 
+
++ 1% is the .red[significance level]
++ 2.37 is the .red[critical value] above which you will reject the null
+
+---
+
+# One-sided test: an example 
+
+
+.content-box-red[**Estimated Model**]
+
+The impact of experience on wage:
+
++ $log(wage) = 0.284+0.092\times educ+0.0041\times exper + 0.022 \times tenure$
++ $se(\hat{\beta}_{exper}) = 0.0017$ 
++ $n = 526$
+
+--
+
+.content-box-red[**Hypothesis**]
+
++ $H_0$: $\beta_{exper}=0$
++ $H_1$: $\beta_{exper}>0$
+
+--
+
+.content-box-red[**Test**]
+
+t-statistic $= 0.0041/0.0017 = 2.41$
+
+The 99% quantile of $t_{526-3-1}$ is $2.33$
+
+Since $2.41 > 2.33$, we reject the null in favor of the alternative hypothesis at the 1% level.
+
+---
+
+# Two-sided test: 5% significance level
+
+```{r t-005-two, include = F}
+u <- seq(-3, 3, length = 1000)
+df <- 500 - 10
+pdf <- dt(u, df = df) # default is mean = 0,sd = 1
+data <- data.table(x = u, y = pdf)
+
+alpha <- 0.05
+
+c_rej <- qt(1-alpha/2, df = df)
+rej_data_high <- data[u >= c_rej,]
+rej_data_low <- data[u <= -c_rej,]
+
+g_t_005_two <- g_t +
+  geom_ribbon(
+    data = rej_data_high,
+    aes(ymax = y, ymin = 0, x = x),
+    fill = 'red', alpha = 0.4
+    ) +
+  geom_ribbon(
+    data = rej_data_low,
+    aes(ymax = y,ymin = 0,x = x),
+    fill = 'red',alpha = 0.4
+    ) +
+  annotate('text',x = c_rej,y = -0.02,
+    label = as.character(round(c_rej,digits = 2)),
+    size = 4,
+    family = 'Times'
+    ) +
+  annotate('text',x = 0, y = 0.1,
+    label = paste('area  = ',round(alpha/2,digits = 3),sep = ''),
+    size = 4,
+    family = 'Times'
+    )  
+```
+
+This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
+
+```{r echo = F, out.width = "60%", dependson = "t-005-two"}
+g_t_005_two   
+```  
+
+(Note: irrespective of the type of tests, the distribution of t-statistics is the same.)
+
+.content-box-red[**Decision rule**]
+
+Reject the null hypothesis if the .red[absolute] value of the t-statistic is greater than 1.96.
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+If you follow the decision rule, then you have a 5% chance that you are wrong in rejecting the null hypothesis of $\beta_j = 0$.
+
+Here, 
+
++ 5% is the .red[significance level]
++ 1.96 is the .red[critical value] above which you will reject the null
+
+---
+
+# p-value 
+
+
+.content-box-red[**Definition**]
+
+The smallest significance level at which the null hypothesis would be rejected (the probability of observing a test statistic at least as extreme as we did if the null hypothesis is true)
+
+```{r p-dist, include = F}
+u <- seq(-3.5, 3.5, length = 1000)
+df <- 500 - 10
+pdf <- dt(u, df = df) # default is mean = 0,sd = 1
+data <- data.table(x = u, y = pdf)
+
+g_t <- ggplot() +
+  geom_line(data=data,aes(y=y,x=x)) +
+  geom_hline(yintercept=0) +
+  xlab('') +
+  ylab('') +
+  theme(
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()
+    )
+
+alpha <- 0.031
+c_rej <- qt(1-alpha/2, df = df)
+rej_data_high <- data[u >= c_rej, ]
+rej_data_low <- data[u <=- c_rej, ]
+
+g_t_0031 <- g_t +
+  geom_ribbon(
+    data = rej_data_high,
+    aes(ymax = y, ymin = 0, x = x),
+    fill = 'red', alpha = 0.4
+    ) +
+  geom_ribbon(
+    data = rej_data_low,
+    aes(ymax = y, ymin = 0, x = x),
+    fill = 'red', alpha = 0.4
+    ) +
+  annotate('text', x = c_rej, y = -0.02,
+    label = as.character(round(c_rej, digits = 2)),
+    size = 4,
+    family = 'Times'
+    ) +
+  annotate('text',x = 0, y = 0.1,
+    label = paste('area  =  ',round(alpha, digits = 3), sep = ''),
+    size = 4,
+    family = 'Times'
+    )  
+```
+
+
+Suppose the t-statistic you got is 2.16. Then, there's a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
+
+--
+
+```{r echo = F, out.width = "60%", dependson = "p-dist"}
+g_t_0031 
+```
+
+So, the lower significance level the null hypothesis is rejected is 3.1%, which is the definition of p-value.
+
+--
+
+.content-box-red[**Decision rule**]
+
+If the p-value is lower than your choice of significance level, then you reject the null. 
+
+This decision rule of course results in the same test results as the one we saw that uses a t-value and critical value.
+
+---
+
+# R implementation  
+
+
+.content-box-red[**Get the data and run a regression**]
+
+```{r }
+#--- get the data ---#
+wage <- read_csv('wage1.csv') 
+
+#--- run a regression ---#
+reg_wage <- lm(wage ~ educ + exper + tenure, data = wage)
+```
+
+--
+
+.content-box-red[**Obtain t-statistics**]
+
+First apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object.
+
+```{r }
+(
+reg_wage_sum <- summary(reg_wage)$coef
+)
+```
+
++ `Estimate`: the coefficient estimates $(\hat{\beta}_j)$
++ `Std. Error`: $se(\hat{\beta}_j$)
++ `t value`: t-statistic for the null of $\beta_j = 0$
++ `Pr(>|t|)`: p-value (for the two sided test with the null of $\beta_j = 0$)
+
+So, for the t-test of of $\beta_j = 0$ is already there. You do not need to do anything further.
+
+For the null hypothesis other than $\beta_j = 0$, you need further work beyond just applying `summary()` to the regression results.
+
+---
+
+# R implementation  (by hand) 
+
+Suppose you are testing the null hypothesis of $\beta_{educ} = 1$ against the alternative hypothesis of $\beta_{educ} \ne 1$ (so, this is a two-sided test). 
+
+The t-value for this test is not available from the summary. 
+
+```{r }
+#--- coefficient estimate on educ ---#
+beta_educ <- reg_wage_sum["educ", "Estimate"] 
+
+#--- se of the coefficient on educ ---#
+se_beta_educ <- reg_wage_sum["educ", "Std. Error"]
+
+#--- t-value ---#
+(
+t_value <- (beta_educ - 1)/se_beta_educ
+)
+```
+
+--
+
+The degree of freedom $(n-k-1)$ of the t-distribution is 
+
+```{r }
+(
+df_t <- reg_wage$df.residual 
+)
+```
+
+--
+
+You can get the 97.5% quantile of the $t_{522}$ using the `qt()` function:
+
+```{r }
+(
+critical_value <- qt(0.975, df = df_t)  
+)
+```
+
+--
+
+Since the absolute value of the t-value (`r t_value`) is greater than the critical value (`r critical_value`), you reject the null.
+
+---
+
+class: inverse, center, middle
+name: conf
+
+# Confidence Interval (CI)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+
+# Confidence Interval (CI): Definition
+
+.content-box-green[**Definition**]
+
+If you calculate 95% CI on multiple different samples, 95% of the time, the calculated CI includes the true parameter
+
+--
+
+.content-box-green[**What confidence interval is not**]
+
+The probability that a realized CI calculated from specific sample data includes the true parameter
+
+
+---
+
+# How to get CI (in general)
+
+.content-box-green[**General Procedure**]:
+
+For the **assumed** distribution of statistic $x$, the $A\%$ confidence interval of $x$ is the range with
+
++ lower bound: 100 − A/2 percent quantile of $x$
++ upper bound: 100-(100 − A)/2 percent quantile of $x$ 
+
+--
+
+.content-box-green[**Example**]: 
+
+For the 95% CI (A = 95), 
+
++ lower bound: 2.5 (100 − 95/2) percent quantile of $x$
++ upper bound: 97.5 (100-(100 − 95)/2) percent quantile of $x$
+
+If $x$ is standard normally distributed $(x \sim N(0, 1))$, then,
+
+```{r norm-95, include = F}
+u <- seq(-3,3,length=1000)
+pdf <- dnorm(u) # default is mean=0,sd=1
+data <- data.table(x = u,y = pdf)
+
+g_norm <- ggplot() +
+  geom_line(data=data,aes(y=y,x=x)) +
+  geom_hline(yintercept=0) +
+  xlab('') +
+  ylab('') +
+  theme(
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()
+    )
+
+alpha <- 0.05
+c_rej <- qnorm(1-alpha/2)
+rej_data_high <- data[u>=c_rej,]
+rej_data_low <- data[u<=-c_rej,]
+
+g_norm_005 <- g_norm +
+  geom_ribbon(
+    data=rej_data_high,
+    aes(ymax=y,ymin=0,x=x),
+    fill='red',alpha=0.4
+    ) +
+  geom_ribbon(
+    data=rej_data_low,
+    aes(ymax=y,ymin=0,x=x),
+    fill='red',alpha=0.4
+    ) +
+  annotate('text',x=c_rej,y=-0.02,
+    label=as.character(round(c_rej,digits=2)),
+    size=4,
+    family='Times'
+    ) +
+  annotate('text',x=2.5,y=0.15,
+    label=paste('area = ',round(alpha/2,digits=3),sep=''),
+    size=4,
+    family='Times'
+    )   
+```
+
+```{r echo = F, out.width = "60%"}
+g_norm_005 
+```
+
+The 2.5% and 97.5% quantiles are -1.96 and 1.96, respectively.
+
+So, the 95% CI of $x$ is [-1.96, 1.96].
+
+---
+
+# How to get the CI of coefficients
+
+Under the assumption of MLR.1 through MLR.6 (which includes the normality assumption of the error), we learned that
+
+$\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}$
+
+--
+
+So, following the general procedure we discussed in the previous slide, the A% confidence interval of $\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}$ is 
+
++ lower bound: $(100 − A)/2$% quantile of the $t_{n-k-1}$ distribution (let's call this $Q_l$)
++ upper bound: $100 - (100 − A)/2$% quantile of the $t_{n-k-1}$ distribution (let's call this $Q_h$)  
+
+--
+
+But, we want the A% CI of $\beta_j$, not $\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}$. Solving for $\beta_j$,
+
+$\beta_j = t_{n-k-1}\times se(\hat{\beta}_j) + \hat{\beta}_j$
+
+--
+
+So, to get the A% CI of $\beta_j$, we scale the CI of $\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}$ by $se(\hat{\beta}_j)$ and then shift by $\hat{\beta}_j$.
+
++ lower bound: $Q_l \times se(\hat{\beta}_j) + \hat{\beta}_j$
++ lower bound: $Q_h \times se(\hat{\beta}_j) + \hat{\beta}_j$
+
+---
+
+# CI: An Example
+
+
+.content-box-green[**Get data**]
+
+```{r get-wage-data}
+wage <- read_csv("wage1.csv") %>% 
+  select(wage, educ, exper, tenure)
+```
+
+Take a look at the data:
+
+```{r see-wage-data}
+head(wage) 
+```
+
+
+.content-box-green[**Run OLS and get its summary**]
+
+```{r run-old}
+wage_reg <- lm(wage ~ educ + exper + tenure, data = wage) 
+```
+
+Apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object to gain access to $\hat{\beta}_j$ and $se(\hat{\beta}_j)$
+
+```{r }
+(
+reg_wage_sum <- summary(reg_wage)$coef
+)
+```
+
+```{r echo = F}
+wage_reg_coef <- tidy(reg_wage) 
+```
+
+`df.residual` of the regression object has the degrees of freedom of residual (n-k-1).
+
+```{r df}
+wage_reg$df.residual
+```
+
+---
+
+# CI: An Example (Cont.) 
+
+We are interested in getting the 90% confidence interval of the coefficient on `educ` $(\beta_{educ})$.
+
+Under all the assumptions (MLR.1 through MLR.6), we know that in general,
+
+$\frac{\hat{\beta}_{educ} - \beta_{educ}}{se(\hat{\beta}_{educ})} \sim t_{n-k-1}$
+
+--
+
+Specifically for this regression,
+
++ $\hat{\beta}_{educ}$ = `r wage_reg_coef %>% filter(term == 'educ') %>% pull(estimate)`
+
++ $se(\hat{\beta}_{educ})$ = `r wage_reg_coef %>% filter(term == 'educ') %>% pull(std.error)`
+
++ n-k-1 = `r wage_reg$df.residual`
+
+```{r }
+#--- coefficient estimate on educ ---#
+beta_educ <- reg_wage_sum["educ", "Estimate"] 
+
+#--- se of the coefficient on educ ---#
+se_beta_educ <- reg_wage_sum["educ", "Std. Error"]
+
+#--- n-k-1 ---#
+wage_reg$df.residual
+```
+
+```{r include = F}
+u <- seq(-3, 3, length = 1000)
+df <- wage_reg$df
+pdf <- dt(u, df = df) # default is mean=0,sd=1
+data <- data.table(x = u, y = pdf)
+
+g_t <- ggplot() +
+  geom_line(data = data,aes(y = y,x = x)) +
+  geom_hline(yintercept = 0) +
+  xlab('') +
+  ylab('') +
+  theme(
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()
+    )
+
+alpha <- 0.05
+c_rej <- qt(1-alpha/2, df = df)
+rej_data_high <- data[u >= c_rej, ]
+rej_data_low <- data[u <= -c_rej, ]
+
+g_t_005 <- g_t +
+  geom_ribbon(
+    data=rej_data_high,
+    aes(ymax=y,ymin=0,x=x),
+    fill='red',alpha=0.4
+    ) +
+  geom_ribbon(
+    data=rej_data_low,
+    aes(ymax=y,ymin=0,x=x),
+    fill='red',alpha=0.4
+    )  
+```
+
+  
+---
+
+# CI: An Example (Cont.)  
+
+Here is the distribution of $t_{522}$:
+
+```{r echo = F, out.width = "60%", fig.dim = c(4,2)}
+g_t_005     
+```
+
+--
+
+Now, we need to find the 5% ((100-90)/2) and 95% (100-(100-90)/2) quantile of $t_{522}$.
+
+```{r }
+qt(0.05, df = 522)  
+```
+
+```{r }
+qt(0.95, df = 522)  
+```
+
+Yes, we could have just gotten one of them and multiply it by -1 to get the other since t distribution is symmetric around 0.
+
+--
+
+So, the 90% CI of $\frac{0.599 - \beta_{educ}}{0.051} \sim t_{522}$ is [`r qt(0.05, df = 522)`, `r qt(0.95, df = 522)`]
+
+--
+
+By scaling and shifting, the lower and upper bounds of the 90% CI of $\beta_{educ}$ are:
+
++ lower bound: 0.599 + 0.051 $\times$ `r qt(0.05, df = 522)` = `r 0.599 + 0.051 * qt(0.05, df = 522)`
+
++ upper bound: 0.599 + 0.051 $\times$ `r qt(0.95, df = 522)` = `r 0.599 + 0.051 * qt(0.95, df = 522)`
+
+---
+
+# In practice ...
+
+You can just use `tidy()` with `conf.int = TRUE`, `conf.level = confidence level` like below:
+
+```{r }
+tidy(wage_reg, conf.int = TRUE, conf.level = 0.9) %>% 
+  relocate(term, conf.low, conf.high)
+```
+
+---
+class: inverse, center, middle
+name: multiple-coefs
+
+# Linear Combination of Multiple Coefficients
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+
+
+# Linear Combination of Multiple Coefficients
+
+.content-box-green[**Example**]
+
+$$log(wage) = \beta_0+\beta_1 jc+ \beta_2 univ + \beta_3 exper + u$$
+
++ $jc$: 1 if you attended 2-year college, 0 otherwise
++ $univ$: 1 if you attended 4-year college, 0 otherwise
+
+--
+
+Does the impact of education on wage is greater if you attend a 4-year college than 2-year college?
+
+--
+
+The null and alternative hypotheses would be:
+
++ $H_1:$ $\beta_1 < \beta_2$
++ $H_0:$ $\beta_1 = \beta_2$
+
+--
+
+Rewriting them,
+
++ $H_1:$ $\beta_1-\beta_2 < 0$
++ $H_0:$ $\beta_1 - \beta_2 =0$
+
+--
+
+Or,  
+
++ $H_1:$ $\alpha < 0$
++ $H_0:$ $\alpha =0$
+
+where $\alpha = \beta_1 - \beta_2$
+
+Note that $\alpha$ is a linear combination of $\beta_1$ and  $\beta_2$.
+
+---
+
+# Linear Combination of Multiple Coefficients  
+
+.content-box-green[**Important fact**]
+
+For any linear combination of the OLS coefficients, denoted as $\hat{\alpha}$, the following holds:
+
+$$\frac{\hat{\alpha}-\alpha}{se(\hat{\alpha})} \sim t_{n-k-1}$$
+
+Where $\alpha$ is the true value (it is $\beta_1 - \beta_2$ in the example in the previous slide).
+
+--
+
+So, using the example, this means that 
+
+$$\frac{\hat{\alpha}-\alpha}{se(\hat{\alpha})} = \frac{\hat{\beta}_1-\hat{\beta}_2-(\beta_1 - \beta_2)}{se(\hat{\beta}_1-\hat{\beta}_2)} \sim t_{n-k-1}$$
+
+--
+
+This is great because we know how to do t-test!
+
+--
+
+.content-box-green[**Going back to the example**]
+
+Our null hypothesis is $\alpha = 0$ (or $\beta_1 - \beta_2 = 0$).
+
+So, .red[If] indeed the null hypothesis is true, then
+
+$$\frac{\hat{\alpha}-0}{se(\hat{\alpha})} = \frac{\hat{\beta}_1-\hat{\beta}_2-0}{se(\hat{\beta}_1-\hat{\beta}_2)} \sim t_{n-k-1}$$
+
+--
+
+So, all you need to do is to substitute $\hat{\beta}_1$, $1-\hat{\beta}_2$, $se(\hat{\beta}_1 - \hat{\beta}_2)$ into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
+
+---
+
+# Linear Combination of Multiple Coefficients  
+
+But, 
+
+$$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) \ne \sqrt{Var(\hat{\beta}_1)+Var(\hat{\beta}_2)}$$
+
+--
+
+If the following was true,
+
+$$se(\hat{\beta}_1-\hat{\beta}_2) = \sqrt{Var(\hat{\beta}_1)+Var(\hat{\beta}_2)}$$
+
+then, we could have just extracted $Var(\hat{\beta}_1)$ and $Var(\hat{\beta}_2)$ individually from the regression object on R, sum them up, and take a square root of it.
+
+--
+
+.content-box-green[**Math Aside**]
+
+$$Var(ax+by) = a^2 Var(x) + 2abCov(x,y) + b^2 Var(y)$$
+
+--
+
+So, 
+
+$$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) = \sqrt{Var(\hat{\beta}_1)-2Cov(\hat{\beta}_1,\hat{\beta}_2)+Var(\hat{\beta}_2)}$$
+
+---
+
+# Demonstration using R  
+
+.content-box-red[**Regression**]
+
+```{r }
+twoyear <- readRDS('twoyear.rds') # import data
+
+reg_sc <- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
+```
+
+--
+
+.content-box-red[**Variance covariance matrix**]
+
+Variance covariance matrix is a matrix where
+
++ $VCOV_{i,i}$: the variance of $i$th variable's coefficient estimator
++ $VCOV_{i,j}$: the covariance between $i$th and $j$th variables' estimators
+
+You can get is by applying `vcov()` to regression results:
+
+```{r }
+(
+vcov_sc <- vcov(reg_sc) # variance covariance matrix
+)
+```
+
+--
+
+.content-box-red[**Calculate the t-statistic**]
+
+
+```{r }
+numerator <- reg_sc$coef["jc"]-reg_sc$coef["univ"]
+denomenator <- sqrt(
+  vcov_sc["jc","jc"]-2*vcov_sc["jc","univ"]+vcov_sc["univ","univ"]
+  )
+t_stat <- numerator/denomenator
+t_stat
+```
+
+---
+class: inverse, center, middle
+name: f
+
+# Multiple Linear Restrictions: F-test
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+
+# Multiple Linear Restrictions: F-test
+
+
+.content-box-red[**Example**]
+
+$$log(salary) =  \beta_0 + \beta_1 years + \beta_2 gamesyr + \beta_3 bavg + \beta_4 hrunsyr + \beta_5 rbisyr + u$$
+
++ $salary$: salary in 1993
++ $years$: years in the league
++ $gamesyr$: average games played per year
++ $bavg$: career batting average
++ $hrunsyr$: home runs per year
++ $rbisyr$: runs batted in per year
+
+--
+
+.content-box-red[**Hypothesis**]
+
+Once years in the league and games per year have been controlled for, the statistics measuring performance ( $bavg$, $hrunsyr$, $rbisyr$) have no effect on salary collectively.
+
+$H_0$: $\beta_3=0$, $\beta_4=0$, and $\beta_5=0$
+
+$H_1$: $H_0$ is not true
+
+--
+
+.content-box-green[**Questions**]
+  
+How do we test this?
+
++ $H_0$ holds if all of $\beta_3$, $\beta_4$, or $\beta_5$ are zero.
++ Conduct t-test for each coefficient individually?
+
+---
+
+# Individual t-test on the coefficients 
+
+
+.content-box-red[**Running a regression**]
+
+```{r }
+library(readstata13)
+
+#--- red the data ---#
+mlb_data <- read.dta13('MLB1.dta')
+
+#--- run a rergession ---#
+mlb_reg <- lm(log(salary)~years+gamesyr+bavg
+  +hrunsyr+rbisyr,data=mlb_data)
+
+#--- take a look at the results ---#
+tidy(mlb_reg) 
+```
+
+--
+
+.content-box-red[**Question**]
+
+What do you find?
+
+--
+
+None of the coefficients on `bavg`, `hrunsyr`, and `rbisyr` is statistically significantly different from 0 even at the 10% level!!
+
+So, does this mean that they collectively have no impact on the salary of MLB players?
+
+--
+
+If you were to conclude that they do not have statistically significant impact jointly, you would turn out to be wrong!!
+
+$SSR$ (or $R^2$) turns out to be useful for testing their impacts jointly.
+
+---
+
+# F-test 
+
+In doing an F-test of the null hypothesis, we compare sum of squared residuals ($SSR$) of two models:
+
+.content-box-red[**Unrestricted Model**]
+
+$$log(salary) = \beta_0 + \beta_1 years + \beta_2 gamesyr + \beta_3 bavg + \beta_4 hrunsyr + \beta_5 rbisyr + u$$
+
+
+.content-box-red[**Restricted Model**]
+
+$$log(salary) = \beta_0 + \beta_1 years + \beta_2 gamesyr + u$$
+
+The coefficients on $bavg$, $hrunsyr$, and $rbisyr$ are restricted to be 0 following the null hypothesis. 
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+
+.content-box-green[**Question**]
+
+If the null hypothesis is indeed true, then what do you think is going to happen if you compare the SSE of the two models?
+
+---
+
+# Sum of Squared Residuals (SSR) for F-test 
+
+.content-box-red[**SSR of the unrestricted model**]: $SSR_u$.
+
+```{r }
+#--- run OLS ---#
+res_u <- lm(log(salary) ~ years + gamesyr + bavg
+   + hrunsyr + rbisyr, data = mlb_data)
+
+#--- SSR ---#
+sum(res_u$residuals^2)   
+```  
+
+.content-box-red[**SSR of the restricted model**]: $SSR_r$.
+
+```{r }
+#--- run OLS ---#
+res_r <- lm(log(salary) ~ years + gamesyr, data = mlb_data)
+
+#--- SSR ---#
+sum(res_r$residuals^2)  
+```
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+.content-box-green[**Questions**]
+
++ Which SSR is larger? Does that make sense?
+
+--
+
+$SSR_r$ should be large because the restricted model has a smaller explanatory power than the unrestricted model.
+
+--
+
++ What does $SSR_r - SSR_u$ measure?
+
+--
+
+The contribution from the three excluded variables in explaining the dependent variable.  
+
+--
+
++ Is the contribution large enough to say that the excluded variables are important? 
+
+--
+
+Cannot tell at this point. 
+
+---
+
+# F-test in general 
+
+
+.content-box-red[**Setup**]
+
+Consider a following general model:
+
+$$
+y = \beta_0 +\beta_1 x_1 + \dots+\beta_k x_k +u
+$$
+
+Suppose we have $q$ restrictions to test: that is, the null hypothesis states that $q$ of the variables have zero coefficients.
+
+$$H_0: \beta_{k-q+1} =0, \beta_{k-q+2} =0, \dots, \beta_k=0$$
+
+When we impose the restrictions under $H_0$, the restricted model is the following:
+
+$$y = \beta_0 +\beta_1 x_1 + \dots+\beta_{k-q} x_{k-q} + u$$
+
+
+.content-box-red[**F-statistic**]
+
+.red[If] the null hypothesis is true, then,
+
+$$F = \frac{(SSR_r-SSR_u)/q}{SSR_u/(n-k-1)} \sim F_{q,n-k-1}$$
+
++ $q$: the number of restrictions
++ $n-k-1$: degrees of freedom of residuals
+
+
+.content-box-green[**Questions**]
+
++ Is the above $F$-statistic always positive?
+
+--
+
+Yes, because $SSR_r-SSR_u$ is always positive.
+
+--
+
++ The greater the joint contribution of the $q$ variables, the (greater or smaller) the $F$-statistic?
+
+--
+
+Greater.
+
+---
+
+# F-distribution and F-test steps
+
+.content-box-red[**F-distribution**]
+
+```{r echo = F, out.width = "70%"}
+x <- seq(0,4,length=1000)
+y_1 <- df(x,df1=4,df2=200)
+y_2 <- df(x,df1=7,df2=400)
+
+f_plot <- data.table(x=x,'F(2,100)'=y_1,'F(4,400)'=y_2) %>%
+  melt(id.var='x')
+
+ggplot(data=f_plot) +
+  geom_line(aes(x=x,y=value,color=variable)) +
+  scale_color_discrete(name='') +
+  theme(
+    legend.position='bottom'
+    )  
+```
+
+.content-box-red[**F-test steps**]
+
++ Define the null hypothesis
++ Estimate the unrestricted and restricted models to obtains their $SSR$
++ Calculate $F$-statistic
++ Define the significance level and corresponding critical value according to the F distribution with appropriate degrees of freedoms
++ Reject if your $F$-statistic is greater than the critical value, otherwise do not reject
+
+---
+
+# F-test by hand 
+
+.content-box-red[**Step 1: estimate the unrestricted and restricted models**]
+
+```{r }
+#--- unrestricted model ---#
+reg_u <- lm(log(salary)~years+gamesyr+
+  bavg+hrunsyr+rbisyr,data=mlb_data)
+
+SSR_u <- sum(reg_u$residuals^2)
+
+#--- restricted model ---#
+reg_r <- lm(log(salary)~years+gamesyr,data=mlb_data)
+
+SSR_r <- sum(reg_r$residuals^2)
+```
+
+--
+
+.content-box-red[**Step 2: calculate F-stat**]
+
+```{r }
+df_q <- 3 # the number of restrictions
+df_ur <- reg_u$df.residual # degrees of freedom for the unrestricted model
+F_stat_num <- (SSR_r-SSR_u)/df_q # numerator of F-stat
+F_stat_denom <- SSR_u/df_ur # denominator of F-stat
+F_sta <- F_stat_num/F_stat_denom # F-stat
+F_sta  
+```
+
+--
+
+.content-box-red[**Step 3: find the critical value**]
+
+```{r }
+alpha <- 0.05 # 5%  significance level
+c_value <- qf(1-alpha, df1 = df_q, df2 = df_ur)
+c_value
+```
+
+--
+
+.content-box-red[**Step 4: F-stat > critical value?**]
+
+```{r }
+F_sta > c_value
+```
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+So, the performance variables have statistically significant impacts on salary .red[jointly]!!
+
+--
+
+What happened?
+
+---
+
+# Simulation (multicollinearity, t-test, and F-test) 
+
+.content-box-red[**Data generation**]
+
+```{r }
+N <- 300 # num observations
+mu <- runif(N) # term shared by indep vars 1 and 2
+x1 <- 0.1*runif(N)+2*mu # indep 1
+x2 <- 0.1*runif(N)+2*mu # indep 2
+x3 <- runif(N) # indep 3
+u <- rnorm(N) # error
+y <- 1 + x1 + x2 + x3 + u # generate y
+data <- data.table(y=y,x1=x1,x2=x2) # combine into a data.table
+```
+
+`x1` and `x2` are highly correlated with each other:
+
+```{r }
+cor(x1, x2) # correlation between x1 and x2
+```  
+
+.content-box-red[**Regression**]
+
+```{r }
+reg_u <- lm(y~x1+x2+x3,data=data) # OLS
+tidy(reg_u) # results  
+```
+
+Both `x1` and `x2` are statistically insignificant individually. 
+
+---
+
+# Simulation (multicollinearity, t-test, and F-test)  
+
+.content-box-red[**F-test**]
+
+```{r }
+#--- unrestricted ---#
+SSR_u <- sum(reg_u$residuals^2)
+
+#--- restricted ---#
+reg_r <- lm(y ~ x3,data=data)
+SSR_r <- sum(reg_r$residuals^2)
+
+#--- F ---#
+F_stat <- ((SSR_r-SSR_u)/2)/(SSR_u/reg_u$df.residual)
+
+#--- critical value ---#
+alpha <- 0.05
+c_value <- qf(1-alpha,df1=2,df2=reg_u$df.residual)
+```
+
+The F-statistic for the hypothesis testing is:
+
+```{r }
+#--- F > critical value? ---#
+F_stat
+F_stat > c_value  
+```
+
+The F-statistic is very high, meaning they collectively affect the dependent variable significantly.
+
+--
+
+.content-box-green[**Important**]
+
+Standard error of the coefficients on `x1` and `x2` are very high because they are so highly correlated that your estimation of the model had such a difficult time to distinguish the their individual impacts.
+
+But, collectively, they have large impacts. $F$-test was able to detect the statistical significance of their impacts .red[collectively].
+
+---
+
+# MLB example 
+
+Here is the correlation coefficients between the three variables:
+
+```{r cor}
+select(mlb_data,bavg,hrunsyr,rbisyr) %>% cor() 
+```
+
+--
+
+As you can see, `brunsyr` and `hrunsyr` are highly correlated with each other. 
+
+They are not so highly correlated with `bavg`.
+
+---
+
+# F-test in practice  
+
+You can use the `linearHypothesis()` function from the `car` package
+
+.content-box-red[**Syntax**]
+
+```{r eval = F}
+linearHypothesis(regression, hypothesis)
+```
+
+`regression` is the name of the regression results of the unrestricted model
+
+`hypothesis` is a text of null hypothesis:
+
+
+.content-box-green[**example**]
+
+`c("x1 = 0", "x2 = 1")` means the coefficients on $x1$ and $x2$ are $0$ and $1$, respectively
+
+
+.content-box-red[**Demonstration**]
+
+```{r }
+#--- load the car package ---#
+library(car)
+
+#--- unrestricted regression ---#
+reg_u <- lm(y ~ x1 + x2 + x3, data = data)
+
+#--- F-test ---#
+linearHypothesis(reg_u,c('x1=0','x2=0'))  
+```
+
+---
+
+# Multiple coefficients again 
+
+The test of a linear combination of the parameters we looked at earlier is a special case where the number of restriction is 1
+
+We can actually use $F$-test for this type of hypothesis testing because $F_{1,t-n-k} \sim t_{t-n-k}^2$.
+
+```{r }
+#--- F-test ---#
+F_res <- linearHypothesis(reg_sc,c("jc-univ=0"))
+F_res
+
+#--- F-stat ---#
+sqrt(F_res$F)  
+```

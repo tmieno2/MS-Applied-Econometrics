@@ -1,0 +1,23 @@
+\frametitle{Direction of the Bias}
+\begin{block}{Bias}
+  \vspace{-0.6cm}
+  \begin{align*}
+    E[\tilde{\beta_1}] = \beta_1 + \textcolor{red}{\beta_2 \tilde{\sigma_1} \;\;(\mbox{bias})}
+  \end{align*}
+\end{block}
+\vspace{1cm}
+
+\begin{block}{Direction of Bias}
+  \begin{center}
+  \begin{tabular}{ccc}
+  \hline
+  & $Corr(x_1,x_2)>0$ & $Corr(x_1,x_2)<0$ \\\hline
+  $\beta_2 > 0$ & positive bias& negative bias \\
+  $\beta_2 < 0$ & negative bias& positive bias \\\hline
+  \end{tabular}
+  \end{center}
+\end{block}
+
+\begin{block}{Magnitude of Bias}
+  Obvious
+\end{block}

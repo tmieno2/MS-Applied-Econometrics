@@ -1,0 +1,26 @@
+\frametitle{A partialling out interpretation: Demonstration using R}
+  \begin{block_code}{R code: FWL theorem}
+  \footnotesize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{N} \hlkwb{<-} \hlnum{100} \hlcom{# sample size}
+  \hlstd{x1} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlstd{x2} \hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- method 1 (one-step) ---#}
+  \hlstd{beta_m1} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1}\hlopt{+}\hlstd{x2,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS}
+
+  \hlcom{#--- method 3 (three-step) ---#}
+  \hlstd{y_res} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x2,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{residuals} \hlcom{# OLS}
+  \hlstd{x1_res} \hlkwb{<-} \hlkwd{lm}\hlstd{(x1}\hlopt{~}\hlstd{x2,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{residuals} \hlcom{# OLS}
+  \hlstd{beta_m2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x,}\hlkwc{data}\hlstd{=}\hlkwd{data.frame}\hlstd{(}\hlkwc{y}\hlstd{=y_res,}\hlkwc{x}\hlstd{=x1_res))}\hlopt{$}\hlstd{coef[}\hlstr{'x'}\hlstd{]}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}

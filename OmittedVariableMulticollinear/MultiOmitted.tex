@@ -1,0 +1,1226 @@
+\documentclass[fleqn]{beamer}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+% \usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlysmall]{structurebold}
+\usepackage[normalem]{ulem} % use normalem to protect \emph
+\newcommand\hl{\bgroup\markoverwith
+  {\textcolor{yellow}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{wasysym}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{qtree}
+\usepackage{inconsolata}
+\usepackage{framed}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+\usepackage[justification=centering]{caption}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\usepackage[space]{grffile}
+\usefonttheme[onlymath]{serif}
+% \usepackage{tikz}
+% \usetikzlibrary{calc,matrix}
+\usepackage{sgame}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\mode<presentation>
+%\usetheme{Frankfurt}
+\usetheme{boxes}
+\usecolortheme{beaver}
+%\usetheme{Singapore}
+%\usetheme{Hannover}
+
+\newcommand*{\captionsource}[2]{%
+  \caption[{#1}]{%
+    #1%
+    \\\hspace{\linewidth}%
+    {\small\textbf{Source:} #2}%
+  }%
+}
+
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}}
+
+%Then \begin{changemargin}{-1cm}{-1cm} makes the margin 1 cm wider on either side of the page until \end{changemargin} appears.
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{blocks}[rounded]
+\newenvironment<>{block_code}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \begin{block}#2{#1}}{\end{block}}
+
+%--------------------------
+% Reduce the spacing between R code and output
+%--------------------------
+\usepackage{etoolbox}
+\makeatletter
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+
+\renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{}
+
+%===================================
+% Coloring change
+%===================================
+\definecolor{darkred}{rgb}{0.8,0,0}
+\setbeamercolor{block title}{fg=darkred,bg=structure.fg!20!bg!50!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg}
+
+
+
+\title{Multicollinearity and Omitted Variable Bias}
+\author{Taro Mieno}
+\date{AECN 896-003: Applied Econometrics}
+\everymath{\displaystyle}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+
+
+%===================================
+% Multicollinearity and omitted variable bias
+%===================================
+%--- New Frame ---%
+
+\begin{frame}
+  \frametitle{What variables to include or not include}
+  You often
+  \begin{itemize}
+    \item face the decision of whether you should be including a particular variable or not: \textcolor{red}{how do you make a right decision?}
+    \item miss a variable that you know is important because it is not simply available: \textcolor{red}{what are the consequences?}
+  \end{itemize}
+
+  \begin{block}{Two important (intertwined) concepts you need to be aware of}
+    \begin{itemize}
+      \item Multicollinearity
+      \item Omitted Variable Bias
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Multicollinearity}
+  \begin{block}{Multicollinearity}
+    A phenomenon where two or more variables are highly correlated (negatively or positively) with each other (\textcolor{blue}{consequences?})
+  \end{block}
+  \begin{block}{Omitted Variable Bias}
+    Bias caused by not including (omitting) \textcolor{blue}{important} variables in the model
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Multicollinearity and Omitted Variable Bias}
+  Consider the following model,
+  \begin{block}{The model}
+  \vspace{-0.6cm}
+  \begin{align*}
+     y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+  \end{align*}
+  (\textcolor{blue}{your interest is in the impact of $x_1$ on $y$})
+  \end{block}
+  \only<2->{\begin{block}{Objectives}
+    Using this simple model, we discuss what happens to the coefficient estimate on $x_1$ if you include/omit $x_2$
+  \end{block}}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Multicollinearity and Omitted Variable Bias}
+  \begin{block}{Questions}
+    \begin{enumerate}
+      \item What happens if $\beta_2=0$, but \textcolor{blue}{include} $x_2$ that is \textcolor{blue}{not} correlated with $x_1$?
+      \item What happens if $\beta_2=0$, but \textcolor{blue}{include} $x_2$ that is \textcolor{red}{highly} correlated with $x_1$?
+      \item What happens if $\beta_2\ne 0$, but \textcolor{red}{omit} $x_2$ that is \textcolor{blue}{not} correlated with $x_1$?
+      \item What happens if $\beta_2\ne 0$, but \textcolor{red}{omit} $x_2$ that is \textcolor{red}{highly} correlated with $x_1$?
+    \end{enumerate}
+  \end{block}
+  \only<2->{\begin{block}{Key consequences of interest}
+     \begin{itemize}
+       \item Is $\hat{\beta_1}$ still unbiased ($E[\hat{\beta_1}]=\beta_1$)?
+       \item What happens to $Var(\hat{\beta_1})$?
+     \end{itemize}
+  \end{block}}
+\end{frame}
+
+%===================================
+% Case 1
+%===================================
+\begin{frame}[c]
+  \title{Case 1}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 1}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2=0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+  \only<2-2>{
+    \begin{block}{An example: randomized N trial}
+      \vspace{-0.6cm}
+      \begin{align}
+          \text{Corn yield} = \beta_0 + \beta_1 N + \beta_2 \text{farmer's height} + u
+      \end{align}
+    \end{block}
+  }
+  \only<3->{\begin{block}{Two estimating equations (EE)}
+  \vspace{-0.6cm}
+    \begin{align*}
+      (EE_1):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + v_i \;\;(\beta_2 x_{2,i} + u_i) \\
+      (EE_2):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+  \end{block}}
+  \only<3->{\begin{block}{What do you think is gonna happen? Any guess?}
+       \begin{itemize}
+         \item $E[\hat{\beta_1}]=\beta_1$ in $EE_1$? (omitted variable bias?)
+         \item How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+       \end{itemize}
+  \end{block}}
+
+%===================================
+% put this in the final version
+%===================================
+% \only<2->{\begin{block}{Short answers}
+%   \begin{itemize}
+%     \item $E[\hat{\beta_1}]=\beta_1$
+%     \item $Var(\hat{\beta_1})$ remains the same (no loss in efficiency)
+%   \end{itemize}
+% \end{block}}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 1: MC simulations}
+  \begin{block_code}{R code: Case 1}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{N} \hlkwb{<-} \hlnum{100} \hlcom{# sample size}
+\hlstd{B} \hlkwb{<-} \hlnum{1000} \hlcom{# the number of iterations}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,B,}\hlnum{2}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{x1} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlnum{0}\hlopt{*}\hlstd{x2}\hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_ee1} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+  \hlstd{beta_ee2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1}\hlopt{+}\hlstd{x2,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE2}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i,}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee1}
+  \hlstd{estiamtes_strage[i,}\hlnum{2}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee2}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 1: MC simulations}
+  \begin{block_code}{R code: Case 1 (continued)}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b_ee1} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{1}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 1'}\hlstd{)}
+\hlstd{b_ee2} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{2}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 2'}\hlstd{)}
+\hlstd{plot_data} \hlkwb{<-} \hlkwd{rbind}\hlstd{(b_ee1,b_ee2)}
+\hlstd{g_case_1} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(}\hlkwc{data}\hlstd{=plot_data)} \hlopt{+}
+  \hlkwd{geom_density}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=V1,}\hlkwc{fill}\hlstd{=type),}\hlkwc{alpha}\hlstd{=}\hlnum{0.5}\hlstd{)}\hlopt{+}
+  \hlkwd{scale_fill_discrete}\hlstd{(}\hlkwc{name}\hlstd{=}\hlstr{'Estimating Equation'}\hlstd{)}\hlopt{+}
+  \hlkwd{theme}\hlstd{(}
+    \hlkwc{legend.position}\hlstd{=}\hlstr{'bottom'}
+    \hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 1: MC simulations}
+  \begin{centering}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=3in,height=3in]{figure/case_1_viz-1} 
+
+\end{knitrout}
+  \end{centering}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 1: Theoretical Investigation (Unbiasedness)}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + u_i (\beta_2 x_{2,i}+v_i)
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2=0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$E[v_i|x_{1,i}]=0?$} \only<3->{$\Rightarrow$ \textcolor{red}{Yes, because $x_1$ is not correlated with either of $x_2$ and $u$.}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0?$} \only<5->{$\Rightarrow$ \textcolor{red}{Yes, because $x_1$ is not correlated with $u$.}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 1: Theoretical Investigation (Variance)}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2=0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}
+    \end{align*}
+  where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+  \end{block}
+  \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$R^2_j?$} \only<3->{$\Rightarrow$ \textcolor{red}{0}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$R^2_j?$} \only<5->{$\Rightarrow$ \textcolor{red}{0 on average because $cor(x_1,x_2)=0$}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 3: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2\ ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+  \end{block}
+  \begin{block}{$\sigma^2$}
+  \textcolor{blue}{$Var(v_i) \;\;? \;\;Var(u_i)$} $\Rightarrow$ \textcolor{red}{$Var(v_i) = Var(u_i)$ because $x_2$ has no explanatory power}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Summary}
+  \begin{itemize}
+    \item If you include an irrelevant variable that has no explanatory power beyond $x_1$ and is not correlated with $x_1$ ($EE_2$), then the variance of the OLS estimator on $x_1$ will be the same as when you do not include $x_2$ as a covaraite ($EE_1$)
+    \item If you omit an irrelevant variable that has no explanatory power beyond $x_1$ ($EE_1$) and is not correlated with $x_1$, then the the OLS estimator on $x_1$ is still unbiased
+  \end{itemize}
+\end{frame}
+
+%===================================
+% Case 2
+%===================================
+\begin{frame}[c]
+  \title{Case 2}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) \ne 0$}, \textcolor{blue}{$\beta_2=0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+  \only<2-2>{
+    \begin{block}{An example: income in a job sector where only age matters}
+      \vspace{-0.6cm}
+      \begin{align}
+          \text{Income} = \beta_0 + \beta_1 Age + \beta_2 \text{\# of wrinkles} + u
+      \end{align}
+    \end{block}
+  }
+  \only<3->{
+    \begin{block}{Two estimating equations (EE)}
+    \vspace{-0.6cm}
+      \begin{align*}
+        (EE_1):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + v_i \;\; (\beta_2 x_{2,i} + u_i) \\
+        (EE_2):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+      \end{align*}
+    \end{block}
+    \begin{block}{What do you think is gonna happen? Any guess?}
+         \begin{itemize}
+           \item $E[\hat{\beta_1}]=\beta_1$ in $EE_1$?
+           \item How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+         \end{itemize}
+    \end{block}
+  }
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 2: MC simulations}
+  \begin{block_code}{R code: Case 2}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,B,}\hlnum{2}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{mu} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# common term shared by x1 and x2}
+  \hlstd{x1} \hlkwb{<-} \hlnum{0.1}\hlopt{*}\hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.9}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlnum{0.1}\hlopt{*}\hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.9}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlnum{0}\hlopt{*}\hlstd{x2}\hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_ee1} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+  \hlstd{beta_ee2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1}\hlopt{+}\hlstd{x2,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE2}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i,}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee1}
+  \hlstd{estiamtes_strage[i,}\hlnum{2}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee2}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 2: MC simulations}
+  \begin{block_code}{R code: Case 2 (continued)}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b_ee1} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{1}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 1'}\hlstd{)}
+\hlstd{b_ee2} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{2}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 2'}\hlstd{)}
+\hlstd{plot_data} \hlkwb{<-} \hlkwd{rbind}\hlstd{(b_ee1,b_ee2)}
+\hlstd{g_case_2} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(}\hlkwc{data}\hlstd{=plot_data)} \hlopt{+}
+  \hlkwd{geom_density}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=V1,}\hlkwc{fill}\hlstd{=type),}\hlkwc{alpha}\hlstd{=}\hlnum{0.5}\hlstd{)}\hlopt{+}
+  \hlkwd{scale_fill_discrete}\hlstd{(}\hlkwc{name}\hlstd{=}\hlstr{'Estimating Equation'}\hlstd{)}\hlopt{+}
+  \hlkwd{theme}\hlstd{(}
+    \hlkwc{legend.position}\hlstd{=}\hlstr{'bottom'}
+    \hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 2: MC simulations}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=3in,height=3in]{figure/case_2_viz-1} 
+
+\end{knitrout}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 2: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) \ne 0$}, \textcolor{blue}{$\beta_2 = 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$E[v_i|x_{1,i}]=0?$} \only<3->{$\Rightarrow$ \textcolor{red}{Yes, because $x_1$ is not correlated with either of $x_2$ and $u$.}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0?$} \only<5->{$\Rightarrow$ \textcolor{red}{Yes, because $x_1$ is not correlated with $u$.}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 2: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) \ne 0$}, \textcolor{blue}{$\beta_2 = 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+  \end{block}
+
+   \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$R^2_j?$} \only<3->{$\Rightarrow$ \textcolor{red}{0}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$R^2_j?$} \only<5->{$\Rightarrow$ \textcolor{red}{high because $x_1$ and $x_2$ are highly correlated.}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 2: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2\ ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+  \end{block}
+  \begin{block}{$\sigma^2$}
+  \textcolor{blue}{$Var(v_i) \;\;? \;\;Var(u_i)$} $\Rightarrow$ \textcolor{red}{$Var(v_i) = Var(u_i)$ because $x_2$ has no explanatory power}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Summary}
+  \begin{itemize}
+    \item If you include an irrelevant variable that has no explanatory power beyond $x_1$, but is highly correlated with $x_1$ ($EE_2$), then the variance of the OLS estimator on $x_1$ is larger compared to when you do not include $x_2$ ($EE_1$)
+    \item If you omit an irrelevant variable that has no explanatory power beyond $x_1$ ($EE_1$), but is highly correlated with $x_1$, then the the OLS estimator on $x_1$ is still unbiased
+  \end{itemize}
+\end{frame}
+
+%===================================
+% Case 3
+%===================================
+\begin{frame}[c]
+  \title{Case 3}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 3}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2\ne0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \only<2-2>{
+    \begin{block}{An example: Randomized N trial}
+      \vspace{-0.6cm}
+      \begin{align}
+        yield = \beta_0 + \beta_1 N + \beta_2 Organic\;\; Matter + u
+      \end{align}
+    \end{block}
+  }
+
+  \only<3->{
+    \begin{block}{Two estimating equations (EE)}
+    \vspace{-0.6cm}
+      \begin{align*}
+        (EE_2):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + v_i\;\; (\beta_2 x_{2,i} + u_i)\\
+        (EE_1):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+      \end{align*}
+    \end{block}
+    \begin{block}{What do you think is gonna happen? Any guess?}
+         \begin{itemize}
+           \item $E[\hat{\beta_1}]=\beta_1$ in $EE_2$?
+           \item How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+         \end{itemize}
+    \end{block}
+  }
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 3: MC simulations}
+  \begin{block_code}{R code: Case 3}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,B,}\hlnum{2}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{x1} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlstd{x2} \hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_ee1} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+  \hlstd{beta_ee2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1}\hlopt{+}\hlstd{x2,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE2}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i,}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee1}
+  \hlstd{estiamtes_strage[i,}\hlnum{2}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee2}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 3: MC simulations}
+  \begin{block_code}{R code: Case 3 (continued)}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b_ee1} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{1}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 1'}\hlstd{)}
+\hlstd{b_ee2} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{2}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 2'}\hlstd{)}
+\hlstd{plot_data} \hlkwb{<-} \hlkwd{rbind}\hlstd{(b_ee1,b_ee2)}
+\hlstd{g_case_3} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(}\hlkwc{data}\hlstd{=plot_data)} \hlopt{+}
+  \hlkwd{geom_density}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=V1,}\hlkwc{fill}\hlstd{=type),}\hlkwc{alpha}\hlstd{=}\hlnum{0.5}\hlstd{)}\hlopt{+}
+  \hlkwd{scale_fill_discrete}\hlstd{(}\hlkwc{name}\hlstd{=}\hlstr{'Estimating Equation'}\hlstd{)}\hlopt{+}
+  \hlkwd{theme}\hlstd{(}
+    \hlkwc{legend.position}\hlstd{=}\hlstr{'bottom'}
+    \hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 3: MC simulations}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=3in,height=3in]{figure/case_3_viz-1} 
+
+\end{knitrout}
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 3: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2 \ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$E[v_i|x_{1,i}]=0?$} \only<3->{$\Rightarrow$ \textcolor{red}{Yes, because $x_1$ is not correlated with either of $x_2$ and $u$.}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0?$} \only<5->{$\Rightarrow$ \textcolor{red}{Yes, because $x_1$ is not correlated with $u$.}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 3: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2\ ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+  \end{block}
+   \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$R^2_j?$} \only<3->{$\Rightarrow$ \textcolor{red}{0}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$R^2_j?$} \only<5->{$\Rightarrow$ \textcolor{red}{0 on average because $cor(x_1,x_2)=0$}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 3: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2\ ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+  \end{block}
+  \begin{block}{$\sigma^2$}
+  \textcolor{blue}{$Var(v_i) \;\;? \;\;Var(u_i)$} $\Rightarrow$ \textcolor{red}{$Var(v_i) > Var(u_i)$ because $x_2$ has some explanatory power}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Summary}
+  \begin{itemize}
+    \item If you include a variable that has some explanatory power beyond $x_1$, but is not correlated with $x_1$ ($EE_2$), then the variance of the OLS estimator on $x_1$ is smaller compared to when you do not include $x_2$ ($EE_1$)
+    \item If you omit an variable that has some explanatory power beyond $x_1$ ($EE_1$), but is not correlated with $x_1$, then the the OLS estimator on $x_1$ is still unbiased
+  \end{itemize}
+\end{frame}
+
+
+%===================================
+% Case 4
+%===================================
+\begin{frame}[c]
+  \title{Case 4}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 4}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) \ne 0$}, \textcolor{blue}{$\beta_2\ne0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \only<2-2>{
+    \begin{block}{An example: Income}
+      \vspace{-0.6cm}
+      \begin{align}
+        income = \beta_0 + \beta_1 education + \beta_2 ability + u
+      \end{align}
+    \end{block}
+  }
+
+  \only<3->{
+    \begin{block}{Two estimating equations (EE)}
+    \vspace{-0.6cm}
+      \begin{align*}
+        (EE_1):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + v_i \;\; (\beta_2 x_{2,i} + u_i) \\
+        (EE_2):\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+      \end{align*}
+    \end{block}
+    \begin{block}{What do you think is gonna happen? Any guess?}
+         \begin{itemize}
+           \item $E[\hat{\beta_1}]=\beta_1$ in $EE_2$?
+           \item How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+         \end{itemize}
+    \end{block}
+  }
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 4: MC simulations}
+  \begin{block_code}{R code: Case 4}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,B,}\hlnum{2}\hlstd{)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{mu} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# common term shared by x1 and x2}
+  \hlstd{x1} \hlkwb{<-} \hlnum{0.1}\hlopt{*}\hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.9}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlnum{0.1}\hlopt{*}\hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.9}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlnum{1}\hlopt{*}\hlstd{x2}\hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_ee1} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+  \hlstd{beta_ee2} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1}\hlopt{+}\hlstd{x2,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE2}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i,}\hlnum{1}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee1}
+  \hlstd{estiamtes_strage[i,}\hlnum{2}\hlstd{]} \hlkwb{<-} \hlstd{beta_ee2}
+\hlstd{\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 4: MC simulations}
+  \begin{block_code}{R code: Case 4 (continued)}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{b_ee1} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{1}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 1'}\hlstd{)}
+\hlstd{b_ee2} \hlkwb{<-} \hlkwd{data.table}\hlstd{(bhat} \hlkwb{<-} \hlstd{estiamtes_strage[,}\hlnum{2}\hlstd{],}\hlkwc{type}\hlstd{=}\hlstr{'EE 2'}\hlstd{)}
+\hlstd{plot_data} \hlkwb{<-} \hlkwd{rbind}\hlstd{(b_ee1,b_ee2)}
+\hlstd{g_case_4} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(}\hlkwc{data}\hlstd{=plot_data)} \hlopt{+}
+  \hlkwd{geom_density}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=V1,}\hlkwc{fill}\hlstd{=type),}\hlkwc{alpha}\hlstd{=}\hlnum{0.5}\hlstd{)}\hlopt{+}
+  \hlkwd{scale_fill_discrete}\hlstd{(}\hlkwc{name}\hlstd{=}\hlstr{'Estimating Equation'}\hlstd{)}\hlopt{+}
+  \hlkwd{theme}\hlstd{(}
+    \hlkwc{legend.position}\hlstd{=}\hlstr{'bottom'}
+    \hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 4: MC simulations}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=3in,height=3in]{figure/case_4_viz-1} 
+
+\end{knitrout}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Case 4: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) \ne 0$}, \textcolor{blue}{$\beta_2 \ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$E[v_i|x_{1,i}]=0?$} \only<3->{$\Rightarrow$ \textcolor{red}{No, because $x_1$ is correlated with $x_2$.}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0?$} \only<5->{$\Rightarrow$ \textcolor{red}{Yes, because $x_1$ is not correlated with $u$.}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 4: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) \ne 0$}, \textcolor{blue}{$\beta_2\ ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+  \end{block}
+   \only<2->{\begin{block}{EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$}
+  \textcolor{blue}{$R^2_j?$} \only<3->{$\Rightarrow$ \textcolor{red}{0}}
+  \end{block}}
+
+  \only<4->{\begin{block}{EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$}
+  \textcolor{blue}{$R^2_j?$} \only<5->{$\Rightarrow$ \textcolor{red}{high because $x_1$ and $x_2$ are highly correlated.}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Case 4: Theoretical Investigation}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \mbox{true model}:\;\; & y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i
+    \end{align*}
+    (\textcolor{blue}{$cor(x_1,x_2) = 0$}, \textcolor{blue}{$\beta_2\ \ne 0$}, and \textcolor{blue}{$E[u_i|x_{1,i},x_{2,i}]=0$})
+  \end{block}
+
+  \begin{block}{Variance}
+  \vspace{-0.6cm}
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+  \end{block}
+  \begin{block}{$\sigma^2$}
+  \textcolor{blue}{$Var(v_i) \;\;? \;\;Var(u_i)$} $\Rightarrow$ \textcolor{red}{$Var(v_i) > Var(u_i)$ because $x_2$ has some explanatory power beyond $x_1$}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{The Magnitude of the Omitted Variable Bias}
+  \begin{block}{What do you expect?}
+    \begin{itemize}
+      \item As $\beta_2$ gets larger (the more influential $x_{2,i}$), the magnitude of the bias on the coefficient estimator on $x_{1,i}$ gets (greater or smaller)
+      \item As $cor(x_{1},x_{2})$ gets larger in magnitude, the magnitude of the bias on the coefficient estimator on $x_{1,i}$ gets (greater or smaller)
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Magnitude of Bias: MC simulations}
+  \begin{block_code}{R code: Low impact of $x_2$}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,B)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{mu} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# common term shared by x1 and x2}
+  \hlstd{x1} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.5}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.5}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlstd{x2}\hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_hat} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i]} \hlkwb{<-} \hlstd{beta_hat}
+\hlstd{\}}
+\hlcom{#--- bias ---#}
+\hlkwd{mean}\hlstd{(estiamtes_strage)}\hlopt{-}\hlnum{1}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2022757
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Magnitude of Bias: MC simulations}
+  \begin{block_code}{R code: High impact of $x_2$}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,B)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{mu} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# common term shared by x1 and x2}
+  \hlstd{x1} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.5}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.5}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlnum{3}\hlopt{*}\hlstd{x2}\hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_hat} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i]} \hlkwb{<-} \hlstd{beta_hat}
+\hlstd{\}}
+\hlcom{#--- bias ---#}
+\hlkwd{mean}\hlstd{(estiamtes_strage)}\hlopt{-}\hlnum{1}
+\end{alltt}
+\begin{verbatim}
+[1] 0.6056892
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Summary}
+  As $\beta_2$ gets larger (the more influential $x_{2,i}$), the magnitude of the bias on the coefficient estimator on $x_{1,i}$ gets gureater
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Magnitude of Bias: MC simulations}
+  \begin{block_code}{R code: Low impact of $x_2$}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,B)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{mu} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# common term shared by x1 and x2}
+  \hlstd{x1} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.5}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{0.5}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlstd{x2}\hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_hat} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i]} \hlkwb{<-} \hlstd{beta_hat}
+\hlstd{\}}
+\hlcom{#--- bias ---#}
+\hlkwd{mean}\hlstd{(estiamtes_strage)}\hlopt{-}\hlnum{1}
+\end{alltt}
+\begin{verbatim}
+[1] 0.2022757
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Magnitude of Bias: MC simulations}
+  \begin{block_code}{R code: High impact of $x_2$}
+  \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#--- preparation ---#}
+\hlkwd{set.seed}\hlstd{(}\hlnum{37834}\hlstd{)}
+\hlstd{estiamtes_strage} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,B)}
+
+\hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{} \hlcom{# iterate the same process B times}
+  \hlcom{#--- data generation  ---#}
+  \hlstd{mu} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# common term shared by x1 and x2}
+  \hlstd{x1} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{2}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{x2} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlopt{+} \hlnum{2}\hlopt{*}\hlstd{mu} \hlcom{# independent variable}
+  \hlstd{u} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(N)} \hlcom{# error}
+  \hlstd{y} \hlkwb{<-} \hlnum{1} \hlopt{+} \hlstd{x1} \hlopt{+} \hlstd{x2}\hlopt{+} \hlstd{u} \hlcom{# dependent variable}
+  \hlstd{data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{y}\hlstd{=y,}\hlkwc{x1}\hlstd{=x1,}\hlkwc{x2}\hlstd{=x2)}
+
+  \hlcom{#--- OLS ---#}
+  \hlstd{beta_hat} \hlkwb{<-} \hlkwd{lm}\hlstd{(y}\hlopt{~}\hlstd{x1,}\hlkwc{data}\hlstd{=data)}\hlopt{$}\hlstd{coef[}\hlstr{'x1'}\hlstd{]} \hlcom{# OLS with EE1}
+
+  \hlcom{#--- store estimates ---#}
+  \hlstd{estiamtes_strage[i]} \hlkwb{<-} \hlstd{beta_hat}
+\hlstd{\}}
+\hlcom{#--- bias ---#}
+\hlkwd{mean}\hlstd{(estiamtes_strage)}\hlopt{-}\hlnum{1}
+\end{alltt}
+\begin{verbatim}
+[1] 0.8034367
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Summary}
+  As $cor(x_{1},x_{2})$ gets larger in magnitude, the magnitude of the bias on the coefficient estimator on $x_{1,i}$ gets greater
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Omitted Variable Bias: Theoretical Investigation}
+  \begin{itemize}
+    \item true model: $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+    \item EE1: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+    \begin{itemize}
+      \item Let \textcolor{blue}{$\tilde{\beta_1}$} denote the estimator of $\beta_1$
+    \end{itemize}
+    \item EE2: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+    \begin{itemize}
+      \item Let \textcolor{blue}{$\hat{\beta_1}$} and \textcolor{blue}{$\hat{\beta_2}$} denote the estimator of $\beta_1$ and $\beta_2$
+    \end{itemize}
+    \item $x_1$ on $x_2$: $x_{1,i} = \sigma_0 + \sigma_1 x_{2,i} + \mu_{i}$
+    \begin{itemize}
+      \item Let \textcolor{blue}{$\tilde{\sigma_1}$} denote the estimator of $\sigma_1$
+    \end{itemize}
+  \end{itemize}
+
+  \begin{block}{Bias}
+  \vspace{-0.6cm}
+  \begin{align*}
+    \tilde{\beta_1} & = \hat{\beta_1} + \hat{\beta_2}\times \tilde{\sigma_1} \\
+    \Rightarrow E[\tilde{\beta_1}] & = E[\hat{\beta_1}] + E[\hat{\beta_2}]\times \tilde{\sigma_1}\\
+    & = \beta_1 + \textcolor{red}{\beta_2 \tilde{\sigma_1} \;\;(\mbox{bias})}
+  \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Direction of the Bias}
+\begin{block}{Bias}
+  \vspace{-0.6cm}
+  \begin{align*}
+    E[\tilde{\beta_1}] = \beta_1 + \textcolor{red}{\beta_2 \tilde{\sigma_1} \;\;(\mbox{bias})}
+  \end{align*}
+\end{block}
+\vspace{1cm}
+
+\begin{block}{Direction of Bias}
+  \begin{center}
+  \begin{tabular}{ccc}
+  \hline
+  & $Corr(x_1,x_2)>0$ & $Corr(x_1,x_2)<0$ \\\hline
+  $\beta_2 > 0$ & positive bias& negative bias \\
+  $\beta_2 < 0$ & negative bias& positive bias \\\hline
+  \end{tabular}
+  \end{center}
+\end{block}
+
+\begin{block}{Magnitude of Bias}
+  Obvious
+\end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Dropping a variable}
+  \begin{block}{Question}
+    Should I drop $x_2$ because it is highly correlated with $x_1$, which makes the estimation of the coefficient on $x_1$ very imprecise?
+  \end{block}
+  \begin{block}{Answer}
+    No!! Your coefficient estimation on $x_1$ would be biased unless you know that $x_2$ has no explanatory power on $y$ beyond $x_1$
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Multicolinearity between control variables}
+  \begin{block}{Question}
+    Should you be concerned about multicolinearity between control variables (variables you are not interested in)?
+  \end{block}
+  \begin{block}{Answer}
+    No, because you don't care about the precise estimationf of the coefficient on control variables individually.
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Summary}
+  \begin{itemize}
+    \item Whether you should include a variable ($x_2$) depends crucially on how $x_2$ is related with $x_1$ and how influential $x_2$ is
+    \item If $x_2$ are extremely highly correlated with $x_1$ and $x_2$ has big impacts on $y$, then you are doomed:
+    trade-off: severe bias or extremely variable estimator
+    \item If $x_2$ are extremely highly correlated with $x_1$, but $x_2$ has very small impacts on $y$, then you might be better off omitting $x_2$ (small bias, large gain in efficiency)
+  \end{itemize}
+\end{frame}
+
+\end{document}
+

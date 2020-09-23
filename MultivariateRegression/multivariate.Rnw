@@ -1,0 +1,445 @@
+\documentclass[fleqn]{beamer}
+
+% \usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlysmall]{structurebold}
+\usepackage[normalem]{ulem} % use normalem to protect \emph
+\newcommand\hl{\bgroup\markoverwith
+  {\textcolor{yellow}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{wasysym}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{qtree}
+\usepackage{inconsolata}
+\usepackage{framed}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+\usepackage[justification=centering]{caption}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\usepackage[space]{grffile}
+\usefonttheme[onlymath]{serif}
+% \usepackage{tikz}
+% \usetikzlibrary{calc,matrix}
+\usepackage{sgame}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\mode<presentation>
+%\usetheme{Frankfurt}
+\usetheme{boxes}
+\usecolortheme{beaver}
+%\usetheme{Singapore}
+%\usetheme{Hannover}
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{blocks}[rounded]
+\newenvironment<>{block_code}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \begin{block}#2{#1}}{\end{block}}
+
+%--------------------------
+% Reduce the spacing between R code and output
+%--------------------------
+\usepackage{etoolbox}
+\makeatletter
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+
+\renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{}
+
+%===================================
+% Coloring change
+%===================================
+\definecolor{darkred}{rgb}{0.8,0,0}
+\setbeamercolor{block title}{fg=darkred,bg=structure.fg!20!bg!50!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg}
+
+\title{Multivariate Regression}
+\author{Taro Mieno}
+\date{AECN 896-003: Applied Econometrics}
+\everymath{\displaystyle}
+
+\begin{document}
+
+<<prep, echo=FALSE, message=F, warning=F>>=
+library(tidyverse)
+library(stargazer)
+library(data.table)
+opts_chunk$set(comment = NA)
+@
+
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{Univariate regression model}
+  \begin{block}{Drawback}
+    The most important assumption $E[u|x]$ is almost always violated (unless you data comes from randomized experiments)
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Multivariate regression model}
+  \begin{block}{Improvement over univariate regression model}
+    More independent variables mean less factors left in the error term, which makes the endogeneity problem \textcolor{blue}{less} severe
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Two independent variables}
+  \begin{block}{Bi-variate vs. uni-variate}
+  \vspace{-0.6cm}
+    \begin{align*}
+    wage = & \beta_0 + \beta_1 educ + \beta_2 exper + u_2 \\
+    wage = & \beta_0 + \beta_1 educ + u_1 (=u_2+\beta_2 exper)
+  \end{align*}
+  \end{block}
+  \begin{block}{What's different?}
+    \begin{description}
+      \item [bi-variate]: able to measure the effect of education on wage, \textcolor{blue}{holding experience fixed} because experience is modeled explicitly (\textcolor{red}{We say $exper$ is controlled for.})
+
+      \item [univariate]: $\hat{\beta_1}$ is biased unless experience is uncorrelated with education because experience was in error term
+    \end{description}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Two independent variables}
+  \begin{block}{Another example}
+  The impact of per student spending (\textit{expend}) on standardized test score (\textit{avgscore}) at the high school level
+    \begin{align*}
+    avgscore= & \beta_0+\beta_1 expend + u_1 (=u_2+\beta_2 avginc) \notag \\
+    avgscore= & \beta_0+\beta_1 expend +\beta_2 avginc + u_2 \notag
+    \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Two independent variables}
+  More generally,
+  \begin{align}
+    y=\beta_0+\beta_1 x_1 + \beta_2 x_2 + u
+  \end{align}
+  \begin{description}
+    \item [$\beta_0$]: intercept
+    \item [$\beta_1$]: measure the change in $y$ with respect to $x_1$, holding other factors fixed
+    \item [$\beta_2$]: measure the change in $y$ with respect to $x_1$, holding other factors fixed
+  \end{description}
+\end{frame}
+
+
+
+\begin{frame}[c]
+  \frametitle{The Crucial Condition (Assumption) for Unbiasedness of OLS}
+  \begin{block}{Uni-variate}
+    $E[u|x]=0$
+  \end{block}
+
+  \begin{block}{Bi-variate}
+  \begin{itemize}
+    \item Mathematically: $E[u|x_1,x_2]=0$
+    \item Verbally: for any values of $x_1$ and $x_2$, the expected value of the unobservables is zero
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Mean independence condition}
+  In the following wage model,
+  \begin{align*}
+    wage = & \beta_0 + \beta_1 educ + \beta_2 exper + u
+  \end{align*}
+  Mean independence condition is,
+  \begin{align*}
+   E[u|educ,exper]=0
+  \end{align*}
+  This condition would be satisfied if innate ability of students is on average unrelated to education level and experience.
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{The model with $k$ independent variables}
+  \begin{block}{Multivariate regression model (in general)}
+  \vspace{-0.6cm}
+     \begin{align*}
+        y=\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k x_k + u
+     \end{align*}
+   \end{block}
+  \only<2->{\begin{block}{Mean independence assumption?}
+  $\beta_{OLS}$ (OLS estimators of $\beta$s) is unbiased if,
+    \begin{align*}
+       E[u|x_1,x_2,\dots,x_k]=0
+    \end{align*}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Deriving OLS estimators}
+  \begin{block}{OLS}
+    Find the combination of $\beta$s that minimizes the sum of squared residuals
+  \end{block}
+
+  \begin{block}{So,}
+  Denoting the collection of $\hat{\beta}$s as $\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})$,
+  \begin{align*}
+     Min_{\theta} \sum_{i=1}^n \Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]^2
+  \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Deriving OLS estimators}
+  \only<1-1>{Find the FOCs by partially differentiating the objective function (sum of squared residuals) wrt each of $\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})$,
+  \begin{align*}
+     \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = & 0 \;\; (\beta_0) \\
+     \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_1) \\
+    \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_2) \\
+    \vdots \\
+    \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_k) \\
+  \end{align*}}
+  \only<2->{
+  Or more succinctly,
+  \begin{align*}
+    \sum_{i=1}^n \hat{u}_i = & 0 \;\; (\beta_0) \\
+    \sum_{i=1}^n x_{i,1}\hat{u}_i = & 0  \;\; (\beta_1) \\
+    \sum_{i=1}^n x_{i,2}\hat{u}_i = & 0  \;\; (\beta_2) \\
+    \vdots \\
+    \sum_{i=1}^n x_{i,k}\hat{u}_i = & 0  \;\; (\beta_k) \\
+  \end{align*}
+  }
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Implementation of multivariate OLS}
+  \begin{block_code}{R code: Implementation in R}
+  \footnotesize{
+<< r_imp, tidy=F, echo=T>>=
+  #--- generate data ---#
+  N <- 100 # sample size
+  x1 <- rnorm(N) # independent variable
+  x2 <- rnorm(N) # independent variable
+  u <- rnorm(N) # error
+  y <- 1 + x1 + x2 + u # dependent variable
+  data <- data.frame(y=y,x1=x1,x2=x2)
+
+  #--- OLS ---#
+  reg <- lm(y~x1+x2,data=data)
+  reg_sum <- summary(reg) # get summary
+  reg_sum$coef # print out coef estimates
+@
+  }
+  \end{block_code}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{A partialling out interpretation}
+  Consider the following simple model,
+  \begin{align*}
+    y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_3 x_{3,i} + u_i
+  \end{align*}
+  Suppose you are interested in estimating $\beta_1$.
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{A partialling out interpretation}
+Let's consider the following two methods,
+  \begin{block}{Method 1: Regular OLS}
+    regress $y$ on $x_1$, $x_2$, and $x_3$ with an intercept to estimate $\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$ at the same time (just like you normally do)
+  \end{block}
+  \begin{block}{Method 2: 3-step}
+    \begin{enumerate}
+      \item regress $y$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_y$
+      \item regress $x_1$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_{x_1}$
+      \item regress $\hat{u}_y$ on $\hat{u}_{x_1}$ ($\hat{u}_y=\alpha_1 \hat{u}_{x_1}+v_3$)
+    \end{enumerate}
+  \end{block}
+
+\end{frame}
+
+
+
+\begin{frame}[c]
+  \frametitle{A partialling out interpretation}
+ \begin{block}{Frisch-–Waugh-–Lovell theorem}
+ Methods 1 and 2 produces the same coefficient estimate on $x_1$
+  \begin{align*}
+     \hat{\beta_1} = \hat{\alpha_1}
+  \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{A partialling out interpretation: Demonstration using R}
+  \begin{block_code}{R code: FWL theorem}
+  \footnotesize{
+<< ex2, tidy=F, echo=T>>=
+  #--- data generation  ---#
+  N <- 100 # sample size
+  x1 <- rnorm(N) # independent variable
+  x2 <- rnorm(N) # independent variable
+  u <- rnorm(N) # error
+  y <- 1 + x1 + x2 + u # dependent variable
+  data <- data.frame(y=y,x1=x1,x2=x2)
+
+  #--- method 1 (one-step) ---#
+  beta_m1 <- lm(y~x1+x2,data=data)$coef['x1'] # OLS
+
+  #--- method 3 (three-step) ---#
+  y_res <- lm(y~x2,data=data)$residuals # OLS
+  x1_res <- lm(x1~x2,data=data)$residuals # OLS
+  beta_m2 <- lm(y~x,data=data.frame(y=y_res,x=x1_res))$coef['x']
+@
+  }
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{What does this mean?}
+  \begin{block}{Method 2: 3-step}
+    \begin{enumerate}
+      \item $y_i=\gamma_0+\gamma_2 x_2 + \gamma_3 x_3 + v_1$
+      \item $x_i=\delta_0+\delta_2 x_2 + \delta_3 x_3 + v_2$
+      \item $\hat{v}_1=\alpha_1 \hat{v}_2+v_3$
+    \end{enumerate}
+  \end{block}
+  \begin{block}{Partialling out}
+  \begin{itemize}
+    \item $\hat{\beta_1}$ is the impact of $x_1$ with the impacts of the other variables \textcolor{blue}{netted out}!!
+    \item including other variables (take them out from the error term)
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS Estimators}
+  \begin{block}{Unbiasedness}
+    OLS estimators of multivariate models are unbiased under \textcolor{blue}{certain} conditions
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS Estimators}
+  \begin{block}{Condition 1}
+    Your model is correct (Assumption $MLR.1$)
+  \end{block}
+  \begin{block}{Condition 2}
+    Random sampling (Assumption $MLR.2$)
+  \end{block}
+  \begin{block}{Conditions 3}
+    No perfect collinearity (Assumption $MLR.3$)
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Perfect Collinearity}
+  \begin{block}{No Perfect Collinearity}
+    Any variable cannot be a linear function of the other variables
+  \end{block}
+  \begin{block}{Example (silly)}
+  \vspace{-0.6cm}
+  \begin{align*}
+     wage = \beta_0 + \beta_1 educ + \beta_2 (3\times educ) + u
+  \end{align*}
+  (\textcolor{blue}{More on this later when we talk about dummy variables})
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Unbiasedness of OLS Estimators}
+  \begin{block}{Zero Conditional Mean}
+  \vspace{-0.6cm}
+     \begin{align*}
+         E[u|x_1,x_2,\dots,x_k]=0 \;\;\mbox{(Assumption $MLR.4$)}
+     \end{align*}
+  \end{block}
+  \begin{block}{Unbiasedness of OLS estimators}
+    If all the conditions $MLR.1\sim MLR.4$ are satisfied, OLS estimators are unbiased.
+    \begin{align*}
+      E[\hat{\beta}_j]=\beta_j \;\; ^\forall j=0,1,\dots,k
+    \end{align*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Endogeneity ($E[u|x_1,x_2,\dots,x_k]\ne 0$)}
+  \begin{block}{What could cause endogeneity problem?}
+    \begin{itemize}
+      \item functional form misspecification
+      \begin{align*}
+        wage = & \beta_0 + \beta_1 log(x_1) + \beta_2 x_2 + u_1 \;\;\mbox{(true)}\\
+        wage = & \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u_2 (=log(x_1)-x_1) \;\; \mbox{(yours)}
+      \end{align*}
+      \item omission of variables that are correlated with any of $x_1,x_2,\dots,x_k$ (\textcolor{blue}{more on this soon})
+      \item \textcolor{blue}{other sources of enfogeneity later}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Variance of the OLS estimators}
+  \begin{block}{Homoeskedasticity}
+  \vspace{-0.6cm}
+    \begin{align*}
+      Var(u|x_1,\dots,x_k)=\sigma^2 \;\;\mbox{(Assumption $MLR.5$)}
+    \end{align*}
+  \end{block}
+
+  \begin{block}{Variance}
+    Under conditions $MLR.1$ through $MLR.5$, conditional on the sample values of the independent variables,
+    \begin{align*}
+       Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+    \end{align*}
+    where $SST_j= \sum_{i=1}^n (x_{ji}-\bar{x_j})^2$ and $R_j^2$ is the R-squared from regressing $x_j$ on all other independent variables including an intercept. (\textcolor{blue}{We will revisit this equation})
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Estimating $\sigma^2$}
+  Just like uni-variate regression, you need to estimate $\sigma^2$ if you want to estimate the variance (and standard deviation) of the OLS estimators.
+
+  \begin{block}{uni-variate regression}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \hat{\sigma}^2=\sum_{i=1}^b \frac{\hat{u}_i^2}{n-\textcolor{blue}{2}}
+    \end{align*}
+  \end{block}
+
+  \begin{block}{multi-variate regression (\textcolor{blue}{k} independent variables with intercept)}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \hat{\sigma}^2=\sum_{i=1}^b \frac{\hat{u}_i^2}{n-\textcolor{blue}{(k+1)}}
+    \end{align*}
+    You solved $k+1$ simultaneous equations to get $\hat{\beta}_j$ ($j=0,\dots,k$). So, once you know the value of $n-k-1$ of the residuals, you know the rest.
+  \end{block}
+\end{frame}
+
+% \begin{frame}[c]
+%   \frametitle{Gauss-Markov Theorem}
+%   \begin{block}{Gauss-Markov Theorem}
+%     Under conditions $MLR.1$ through $MLR.5$, OLS estimators are the best linear unbiased estimators (BLUEs)
+%   \end{block}
+%   \begin{block}{Meaning,}
+%     No other \textcolor{blue}{unbiased linear}  estimators have smaller variance than the OLS estimators
+%   \end{block}
+% \end{frame}
+
+
+
+\end{document}
+

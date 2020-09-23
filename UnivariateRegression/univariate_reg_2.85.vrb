@@ -1,0 +1,32 @@
+\frametitle{R code to generate the variance figure \hyperlink{var_frame}{\beamerbutton{go back}}}
+ \scriptsize{
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+  \hlkwd{set.seed}\hlstd{(}\hlnum{38495}\hlstd{)}
+  \hlstd{B} \hlkwb{<-} \hlnum{1000}
+  \hlstd{theta_smart} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,B)}
+  \hlstd{theta_stupid} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,B)}
+  \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{B)\{}
+    \hlstd{x} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1000}\hlstd{)}
+    \hlstd{theta_smart[i]} \hlkwb{<-} \hlkwd{mean}\hlstd{(x)}
+    \hlstd{theta_stupid[i]} \hlkwb{<-} \hlkwd{mean}\hlstd{(x[}\hlnum{1}\hlopt{:}\hlnum{10}\hlstd{])}
+  \hlstd{\}}
+
+  \hlstd{smart_data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{value}\hlstd{=theta_smart,}\hlkwc{type}\hlstd{=}\hlstr{'Smart'}\hlstd{)}
+  \hlstd{stupid_data} \hlkwb{<-} \hlkwd{data.table}\hlstd{(}\hlkwc{value}\hlstd{=theta_stupid,}\hlkwc{type}\hlstd{=}\hlstr{'Stupid'}\hlstd{)}
+  \hlstd{plot_data} \hlkwb{<-} \hlkwd{rbind}\hlstd{(smart_data,stupid_data)}
+
+  \hlstd{g_var} \hlkwb{<-} \hlkwd{ggplot}\hlstd{(}\hlkwc{data}\hlstd{=plot_data)} \hlopt{+}
+    \hlkwd{geom_density}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{x}\hlstd{=value,}\hlkwc{fill}\hlstd{=type),}\hlkwc{alpha}\hlstd{=}\hlnum{0.5}\hlstd{,}\hlkwc{size}\hlstd{=}\hlnum{0.5}\hlstd{)} \hlopt{+}
+    \hlkwd{scale_fill_discrete}\hlstd{(}\hlkwc{name}\hlstd{=}\hlstr{'Estimator'}\hlstd{)} \hlopt{+}
+    \hlkwd{xlab}\hlstd{(}\hlstr{'Sample Mean'}\hlstd{)} \hlopt{+}
+    \hlkwd{theme}\hlstd{(}
+      \hlkwc{legend.position}\hlstd{=}\hlstr{'bottom'}
+      \hlstd{)}
+  \hlkwd{ggsave}\hlstd{(}\hlstr{'./variance.pdf'}\hlstd{,}\hlkwc{width}\hlstd{=}\hlnum{4}\hlstd{,}\hlkwc{height}\hlstd{=}\hlnum{2.8}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+}
+

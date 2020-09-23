@@ -1,0 +1,1980 @@
+---
+title: "Omitted Variable Bias and Multicollinearity"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 13:16
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, child = './../setup.Rmd'}
+```
+
+# What variables to include or not 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+You often
+
++ face the decision of whether you should be including a particular variable or not: <span style="color:red"> how do you make a right decision? </span>
+
++ miss a variable that you know is important because it is not simply available: <span style="color:red"> what are the consequences? </span>
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+Two important concepts you need to be aware of:
+
++ Multicollinearity
++ Omitted Variable Bias
+
+---
+
+# Multicollinearity and Omitted Variable Bias
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+  
+**Multicollinearity**:
+
+A phenomenon where two or more variables are highly correlated (negatively or positively) with each other (<span style="color:blue"> consequences? </span>)
+
+**Omitted Variable Bias**:
+
+Bias caused by not including (omitting) <span style="color:blue"> important </span> variables in the model
+
+---
+
+
+# Multicollinearity and Omitted Variable Bias 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+Consider the following model,
+
+$$y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$$
+
+Your interest is in estimating the impact of $x_1$ on $y$.
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+## Objectives:
+
+Using this simple model, we investigate what happens to the coefficient estimate on $x_1$ if you include/omit $x_2$
+
+---
+
+
+# Questions we tackle to answer
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+The model: $$y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$$
+
+**Question 1**:
+
+What happens if $\beta_2=0$, but <span style="color:blue">include</span> $x_2$ that is <span style="color:blue">not</span> correlated with $x_1$?
+
+**Question 2**:
+
+What happens if $\beta_2=0$, but <span style="color:blue">include</span> $x_2$ that is <span style="color:blue">highly</span> correlated with $x_1$?
+
+**Question 3**:
+
+What happens if $\beta_2\ne 0$, but <span style="color:blue">omit</span> $x_2$ that is <span style="color:blue">not</span> correlated with $x_1$?
+
+**Question 4**:
+
+What happens if $\beta_2\ne 0$, but <span style="color:blue">omit</span> $x_2$ that is <span style="color:blue">highly</span> correlated with $x_1$?
+
+---
+
+
+# Key consequences of interest 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
++ Is $\hat{\beta_1}$ unbiased, that is $E[\hat{\beta_1}]=\beta_1$?
+
++ $Var(\hat{\beta_1})$? (how accurate the estimation of $\hat{\beta_1}$ is)
+
+---
+
+class: inverse, center, middle
+name: case-2
+
+# Case 1
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+---
+
+# Case 1 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<span style="color:blue"> Example: </span>
+
+$\mbox{corn yield} = \beta_0 + \beta_1 \times N + \beta_2 \mbox{farmers' height} + u$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two estimating equations (EE) </span>
+
+$EE_1$: $y_i=\beta_0 + \beta_1 x_{1,i} + v_i (\beta_2 x_{2,i} + u_i)$
+
+$EE_2$: $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> What do you think is gonna happen? Any guess? </span>
+
++ $E[\hat{\beta_1}]=\beta_1$ in $EE_1$? (omitted variable bias?)
+
++ How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+
+---
+
+# Case 1: Monte Carlo Simulation
+
+```{r }
+#--------------------------
+# Monte Carlo Simulation
+#--------------------------
+set.seed(37834)
+
+N <- 100 # sample size
+B <- 1000 # the number of iterations 
+estiamtes_strage <- matrix(0,B,2)
+
+for (i in 1:B){ # iterate the same process B times 
+  
+  #--- data generation ---#
+  x1 <- rnorm(N) # independent variable
+  x2 <- rnorm(N) # independent variable
+  u <- rnorm(N) # error
+  y <- 1 + x1 + 0*x2+ u # dependent variable 
+  data <- data.frame(y=y,x1=x1,x2=x2)
+
+  #--- OLS ---#
+  beta_ee1 <- lm(y ~ x1,data=data)$coef['x1'] # OLS with EE1
+  beta_ee2 <- lm(y ~ x1+x2,data=data)$coef['x1'] # OLS with EE2
+
+  #--- store estimates ---#
+  estiamtes_strage[i,1] <- beta_ee1
+  estiamtes_strage[i,2] <- beta_ee2
+}
+
+#--------------------------
+# Visualize the results
+#--------------------------
+b_ee1 <- data.table(
+  bhat =  estiamtes_strage[,1], 
+  type='EE 1'
+)
+
+b_ee2 <- data.table(
+  bhat =  estiamtes_strage[,2],
+  type='EE 2'
+)
+
+plot_data <- rbind(b_ee1,b_ee2)
+
+g_case_1 <- ggplot(data = plot_data) +
+  geom_density(aes(x = bhat, fill = type), alpha = 0.5)+ scale_fill_discrete(name='Estimating Equation') + 
+   theme(legend.position='bottom') 
+```
+ 
+---
+
+# MC Results
+
+```{r }
+g_case_1 
+```
+
+---
+
+# Case 1: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+---
+
+# Case 1: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+<span style="color:red"> Yes, because $x_1$ is not correlated with either of $x_2$ and $u$. </span>
+
+---
+
+# Case 1: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+---
+
+# Case 1: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+<span style="color:red"> Yes, because $x_1$ and $x_2$ are not correlated with $u$ (by assumption). </span>
+
+---
+
+# Case 1: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 1: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> 0 because there are no other variables included in the model.</span>
+
+---
+
+# Case 1: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 1: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> 0 on average because $cor(x_1, x_2)=0$ </span>
+
+---
+
+
+# Case 1: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+---
+
+# Case 1: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+<span style="color:red"> They are the same because $\beta_2 = 0$, meaning $u = v$. </span>
+
+---
+
+
+# Case 1: Summary 
+
++ If you include an irrelevant variable that has no explanatory power beyond $x_1$ and is not correlated with $x_1$ (EE2), then the variance of the OLS estimator on $x_1$ will be the same as when you do not include $x_2$ as a covariate (EE1)
+
++ If you omit an irrelevant variable that has no explanatory power beyond $x_1$ (EE1) and is not correlated with $x_1$, then the the OLS estimator on $x_1$ is still unbiased
+
+
+---
+
+class: inverse, center, middle
+name: case-2
+
+# Case 2
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+---
+
+# Case 2 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<span style="color:blue"> Example: </span>
+
+$\mbox{Income} = \beta_0 + \beta_1 \times Age + \beta_2 \times \mbox{# of wrinkles} + u$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Two estimating equations (EE) </span>
+
+$EE_1$: $y_i=\beta_0 + \beta_1 x_{1,i} + v_i (\beta_2 x_{2,i} + u_i)$
+
+$EE_2$: $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> What do you think is gonna happen? Any guess? </span>
+
++ $E[\hat{\beta_1}]=\beta_1$ in $EE_1$? (omitted variable bias?)
+
++ How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+
+---
+
+# Case 2: Monte Carlo Simulation
+
+```{r }
+#--------------------------
+# Monte Carlo Simulation
+#--------------------------
+set.seed(37834)
+
+N <- 100 # sample size
+B <- 1000 # the number of iterations 
+estiamtes_strage <- matrix(0,B,2)
+
+for (i in 1:B){ # iterate the same process B times 
+
+  #--- data generation ---#
+  mu <- rnorm(N) # common term shared by x1 and x2 
+  x1 <- 0.1 * rnorm(N) + 0.9 * mu # independent variable 
+  x2 <- 0.1 * rnorm(N) + 0.9 * mu # independent variable
+  u <- rnorm(N) # error
+  y <- 1 + x1 + 0 * x2+ u # dependent variable 
+  data <- data.frame(y=y,x1=x1,x2=x2)
+
+  #--- OLS ---#
+  beta_ee1 <- lm(y ~ x1,data=data)$coef['x1'] # OLS with EE1
+  beta_ee2 <- lm(y ~ x1+x2,data=data)$coef['x1'] # OLS with EE2
+
+  #--- store estimates ---#
+  estiamtes_strage[i,1] <- beta_ee1
+  estiamtes_strage[i,2] <- beta_ee2
+}
+
+#--------------------------
+# Visualize the results
+#--------------------------
+b_ee1 <- data.table(
+  bhat =  estiamtes_strage[,1], 
+  type='EE 1'
+)
+
+b_ee2 <- data.table(
+  bhat =  estiamtes_strage[,2],
+  type='EE 2'
+)
+
+plot_data <- rbind(b_ee1,b_ee2)
+
+g_case_2 <- ggplot(data = plot_data) +
+  geom_density(aes(x = bhat, fill = type), alpha = 0.5)+ scale_fill_discrete(name='Estimating Equation') + 
+   theme(legend.position='bottom') 
+```
+ 
+---
+
+# MC Results
+
+```{r }
+g_case_2
+```
+
+---
+
+# Case 2: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+---
+
+# Case 2: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+<span style="color:red"> Yes, because $\beta_2 = 0$, meaning that $x_2$ is actually not part of the error term ($u$). </span>
+
+---
+
+# Case 2: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+---
+
+# Case 2: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+<span style="color:red"> Yes, because $x_1$ and $x_2$ are not correlated with $u$ (by assumption). </span>
+
+---
+
+# Case 2: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 2: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> 0 because there are no other variables included in the model.</span>
+
+---
+
+# Case 2: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 2: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> Very high because $x_1$ and $x_2$ are highly correlated! </span>
+
+<span style="color:red"> So, the estimation accuracy of $\beta_1$ in $EE_2$ is much lower that in $EE_1$!.</span>
+
+---
+
+# Case 2: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+---
+
+# Case 2: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2=0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+<span style="color:red"> They are the same because $\beta_2 = 0$, meaning $u = v$. </span>
+
+---
+
+# Case 2: Summary 
+
++ If you include an irrelevant variable that has no explanatory power beyond $x_1$, but is highly correlated with $x_1$ (EE2), then the variance of the OLS estimator on $x_1$ is larger compared to when you do not include $x_2$ (EE1)
+
++ If you omit an irrelevant variable that has no explanatory power beyond $x_1$ (EE1), but is highly correlated with $x_1$, then the the OLS estimator on $x_1$ is still unbiased
+
+---
+
+class: inverse, center, middle
+name: case-3
+
+# Case 3
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+---
+
+# Case 3 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<span style="color:blue"> Example: Randomized N trial</span>
+
+$\mbox{corn yield} = \beta_0 + \beta_1 \times N + \beta_2 \times \mbox{organic matter} + u$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Two estimating equations (EE) </span>
+
+$EE_1$: $y_i=\beta_0 + \beta_1 x_{1,i} + v_i (\beta_2 x_{2,i} + u_i)$
+
+$EE_2$: $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> What do you think is gonna happen? Any guess? </span>
+
++ $E[\hat{\beta_1}]=\beta_1$ in $EE_1$? (omitted variable bias?)
+
++ How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+
+---
+
+# Case 3: Monte Carlo Simulation
+
+```{r }
+#--------------------------
+# Monte Carlo Simulation
+#--------------------------
+set.seed(37834)
+
+N <- 100 # sample size
+B <- 1000 # the number of iterations 
+estiamtes_strage <- matrix(0,B,2)
+
+for (i in 1:B){ # iterate the same process B times 
+
+  #--- data generation ---#
+  x1 <- rnorm(N) # independent variable
+  x2 <- rnorm(N) # independent variable
+  u <- rnorm(N) # error
+  y <- 1 + x1 + x2 + u # dependent variable 
+  data <- data.frame(y=y,x1=x1,x2=x2)
+
+  #--- OLS ---#
+  beta_ee1 <- lm(y ~ x1,data=data)$coef['x1'] # OLS with EE1
+  beta_ee2 <- lm(y ~ x1+x2,data=data)$coef['x1'] # OLS with EE2
+
+  #--- store estimates ---#
+  estiamtes_strage[i,1] <- beta_ee1
+  estiamtes_strage[i,2] <- beta_ee2
+}
+
+#--------------------------
+# Visualize the results
+#--------------------------
+b_ee1 <- data.table(
+  bhat =  estiamtes_strage[,1], 
+  type='EE 1'
+)
+
+b_ee2 <- data.table(
+  bhat =  estiamtes_strage[,2],
+  type='EE 2'
+)
+
+plot_data <- rbind(b_ee1,b_ee2)
+
+g_case_3 <- ggplot(data = plot_data) +
+  geom_density(aes(x = bhat, fill = type), alpha = 0.5)+ scale_fill_discrete(name='Estimating Equation') + 
+   theme(legend.position='bottom') 
+```
+ 
+---
+
+# MC Results
+
+```{r }
+g_case_3
+```
+
+---
+
+# Case 3: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+---
+
+# Case 3: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+<span style="color:red"> Yes, because $x_1$ and $x_2$ are not correlated. </span>
+
+---
+
+# Case 3: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+---
+
+# Case 3: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+<span style="color:red"> Yes, because $x_1$ and $x_2$ are not correlated with $u$ (by assumption). </span>
+
+---
+
+# Case 3: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 3: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> 0 because there are no other variables included in the model.</span>
+
+---
+
+# Case 3: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 3: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> Very high because $x_1$ and $x_2$ are highly correlated! </span>
+
+<span style="color:red"> 0 on average because $x_1$ and $x_2$ are note correlated. </span>
+
+---
+
+# Case 3: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+---
+
+# Case 3: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) = 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+<span style="color:red"> $Var(v_i) > Var(u_i)$ because $\beta_2 x_{2}$ (non-zero) is part of $v_i$ on top of $u_i$.</span>
+
+<span style="color:red"> So, the estimation of $\beta_1$ is more efficient in $EE_2$ than in $EE_1$.</span>
+---
+
+# Case 3: Summary 
+
++ If you include a variable that has some explanatory power beyond $x_1$, but is not correlated with $x_1$ (EE2), then the variance of the OLS estimator on $x_1$ is smaller compared to when you do not include $x_2$ (EE1)
+
++ If you omit an variable that has some explanatory power beyond $x_1$ (EE1), but is not correlated with $x_1$, then the the OLS estimator on $x_1$ is still unbiased
+
+---
+
+class: inverse, center, middle
+name: case-3
+
+# Case 4
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+---
+
+# Case 4 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<span style="color:blue"> Example</span>
+
+$\mbox{income} = \beta_0 + \beta_1 \times education + \beta_2 \times \mbox{ability} + u$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Two estimating equations (EE) </span>
+
+$EE_1$: $y_i=\beta_0 + \beta_1 x_{1,i} + v_i (\beta_2 x_{2,i} + u_i)$
+
+$EE_2$: $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> What do you think is gonna happen? Any guess? </span>
+
++ $E[\hat{\beta_1}]=\beta_1$ in $EE_1$? (omitted variable bias?)
+
++ How does $Var(\hat{\beta_1})$ in $EE_2$ compared to its counterpart in $EE_1$?
+
+---
+
+# Case 4: Monte Carlo Simulation
+
+```{r }
+#--------------------------
+# Monte Carlo Simulation
+#--------------------------
+set.seed(37834)
+
+N <- 100 # sample size
+B <- 1000 # the number of iterations 
+estiamtes_strage <- matrix(0,B,2)
+
+for (i in 1:B){ # iterate the same process B times 
+
+  #--- data generation ---#
+  mu <- rnorm(N) # common term shared by x1 and x2 
+  x1 <- 0.1*rnorm(N) + 0.9*mu # independent variable 
+  x2 <- 0.1*rnorm(N) + 0.9*mu # independent variable 
+  u <- rnorm(N) # error
+  y <- 1 + x1 + 1*x2+ u
+  data <- data.frame(y=y,x1=x1,x2=x2)
+
+  #--- OLS ---#
+  beta_ee1 <- lm(y ~ x1,data=data)$coef['x1'] # OLS with EE1
+  beta_ee2 <- lm(y ~ x1+x2,data=data)$coef['x1'] # OLS with EE2
+
+  #--- store estimates ---#
+  estiamtes_strage[i,1] <- beta_ee1
+  estiamtes_strage[i,2] <- beta_ee2
+}
+
+#--------------------------
+# Visualize the results
+#--------------------------
+b_ee1 <- data.table(
+  bhat =  estiamtes_strage[,1], 
+  type='EE 1'
+)
+
+b_ee2 <- data.table(
+  bhat =  estiamtes_strage[,2],
+  type='EE 2'
+)
+
+plot_data <- rbind(b_ee1,b_ee2)
+
+g_case_4 <- ggplot(data = plot_data) +
+  geom_density(aes(x = bhat, fill = type), alpha = 0.5)+ scale_fill_discrete(name='Estimating Equation') + 
+   theme(legend.position='bottom') 
+```
+ 
+---
+
+# MC Results
+
+```{r }
+g_case_4
+```
+
+---
+
+# Case 4: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+---
+
+# Case 4: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[v_i|x_{1,i}]=0?$
+
+<span style="color:red"> No, because $x_1$ and $x_2$ are  correlated. </span>
+
+<span style="color:red"> So, the estimation of $\beta_1$ in $EE_1$ is biased! </span>
+
+
+---
+
+# Case 4: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+---
+
+# Case 4: Theoretical Insights (Bias)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
+
+<span style="color:blue"> Question: </span>
+
+$E[u_i|x_{1,i},x_{2,i}]=0$?
+
+<span style="color:red"> Yes, because $x_1$ and $x_2$ are not correlated with $u$ (by assumption). </span>
+
+---
+
+# Case 4: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 4: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> 0 because there are no other variables included in the model.</span>
+
+---
+
+# Case 4: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+---
+
+# Case 4: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> The estimated model </span>
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+$R_j^2$?
+
+<span style="color:red"> Very high because $x_1$ and $x_2$ are highly correlated! </span>
+
+---
+
+# Case 4: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+---
+
+# Case 4: Theoretical Insights (Var)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> True Model: </span>
+
+$y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
++ $cor(x_1,x_2) \ne 0$
++ $\beta_2 \ne 0$
++ $E[u_i|x_{1,i},x_{2,i}]=0$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Two models: </span>
+
+
+$EE_1$: $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+$EE_2$: $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:red"> Question: </span>
+
+Which in $EE_1$ and $EE_2$ is $\sigma^2$ larger?
+
+<span style="color:red"> $Var(v_i) > Var(u_i)$ because $\beta_2 x_{2}$ (non-zero) is part of $v_i$ on top of $u_i$.</span>
+
+---
+
+# Estimation efficiency
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+<span style="color:blue"> Variance: </span>
+
+$Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)}$
+
+where $R^2_j$ is the $R^2$ when you regress $x_j$ on all the other covariates.
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
+
+Summarizing the results about the components of $Var(\hat{\beta}_j)$, 
+
++ $R_j^2$ is very high for $EE_2$ because $x_1$ and $x_2$ are highly correlated, while it is $0$ for $EE_1$.
+
++ $Var(v_i) > Var(u_i)$ because $\beta_2 x_{2}$ (non-zero) is part of $v_i$ on top of $u_i$.
+
+--
+
+So, whether $EE_1$ is more efficient than $EE_2$ or not is ambiguous. It depends on 
+
++ the degree of the correlation between $x_1$ and $x_2$
++ the magnitude of $\beta_2$
+
+---
+
+# Case 4: Summary 
+
++ There exists bias-variance trade-off when independent variables are both important (their coefficients are non-zero) and they are correlated
+
++ Economists tend to opt for unbiasedness
+
+---
+
+
+# Omitted Variable Bias
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+<span style="color:blue"> True model: 
+
+</span> $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+<span style="color:blue"> EE1: 
+
+</span> $y_i = \beta_0 + \beta_1 x_{1,i} + v_{i} \;\; (\beta_2 x_{2,i} + u_{i})$
+
+Let $\tilde{\beta_1}$ denote the estimator of $\beta_1$ from this model
+
+--
+
+<span style="color:blue"> EE2: 
+
+</span> $y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_{i}$
+
+Let $\hat{\beta_1}$ and $\hat{\beta_2}$ denote the estimator of $\beta_1$ and $\beta_2$
+
+--
+
+<span style="color:blue"> Relationship between $x_1$ and $x_2$ </span>
+
+$x_{1,i} = \sigma_0 + \sigma_1 x_{2,i} + \mu_{i}$
+
+Let $\tilde{\sigma_1}$ denote the estimator of $\sigma_1$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>  
+
+Then, 
+
+$E[\tilde{\beta_1}] = \beta_1 + \beta_2 \tilde{\sigma_1}$
+
+where $\beta_2 \tilde{\sigma_1}$ is the bias.
+
+---
+
+# Magnitude and direction of bias
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>  
+
+Then, 
+
+$E[\tilde{\beta_1}] = \beta_1 + \beta_2 \tilde{\sigma_1}$
+
+where $\beta_2 \tilde{\sigma_1}$ is the bias.
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+<span style="color:blue"> Direction of bias </span>
+
++ $Cor(x_1, x_2) > 0$ and $\beta_2 >0$, then $bias > 0$
++ $Cor(x_1, x_2) > 0$ and $\beta_2 <0$, then $bias < 0$
++ $Cor(x_1, x_2) < 0$ and $\beta_2 >0$, then $bias < 0$
++ $Cor(x_1, x_2) < 0$ and $\beta_2 <0$, then $bias > 0$
+
+--
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+<span style="color:blue"> Magnitude of bias </span>
+
++ The greater the correlation between $x_1$ and $x_2$, the greater the bias 
+
++ The greater $\beta_1$ is, the greater the bias 
+
+
+

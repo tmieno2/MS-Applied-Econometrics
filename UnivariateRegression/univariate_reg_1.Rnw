@@ -1,0 +1,480 @@
+\documentclass[fleqn]{beamer}
+
+\usefonttheme[onlysmall]{structurebold}
+\usepackage[normalem]{ulem} % use normalem to protect \emph
+\newcommand\hl{\bgroup\markoverwith
+  {\textcolor{yellow}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{wasysym}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{qtree}
+\usepackage{inconsolata}
+\usepackage{framed}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+\usepackage[justification=centering]{caption}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\usepackage[space]{grffile}
+\usefonttheme[onlymath]{serif}
+\usepackage{sgame}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\mode<presentation>
+\usetheme{boxes}
+\usecolortheme{beaver}
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{blocks}[rounded]
+\newenvironment<>{block_code}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \begin{block}#2{#1}}{\end{block}}
+
+%===================================
+% Coloring change
+%===================================
+\definecolor{darkred}{rgb}{0.8,0,0}
+\setbeamercolor{block title}{fg=darkred,bg=structure.fg!20!bg!50!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg}
+
+
+\title{Simple Univariate Regression: Part 1}
+\everymath{\displaystyle}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+<<chunk_option,echo=FALSE>>=
+library(knitr)
+opts_chunk$set(
+  comment = NA,
+  message = FALSE,
+  echo = FALSE,
+  warning = FALSE,
+  tidy=FALSE,
+  fig.align='center'
+  )
+@
+
+
+<<setup>>=
+source('~/Box/R_libraries_load/library.R')
+# source('~/Box/MySoftware/MyR/ggplot2/ggplot2_default_teaching.R')
+source('~/Box/Teaching/R_functions/functions.R')
+library(xtable)
+library(stargazer)
+opts_knit$set(
+  root.dir = "~/Box/Teaching/UNL/AppliedEconometrics_MS/LectureNotes"
+  )
+# setwd('~/Box/Teaching/UNL/EconometricsMaster/aecn892_2019/lectures/UnivariateRegression')
+@
+
+\begin{frame}[c]
+  Plan:
+  \begin{itemize}
+    \item simple univariate regression analysis for the next two weeks
+    \item multivariate regression after that
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Population and Sample}
+  \begin{block}{Population}
+    A set of $ALL$ individuals, items, phenomenon, that you are interested in learning about
+  \end{block}
+  \begin{block}{Example}
+  \begin{itemize}
+    \item Suppose you are interested in the impact of eduction on income across the U.S. Then, the population is all the individuals in U.S.
+    \item Suppose you are interested in the impact of water pricing on irrigation water demand for farmers in NE. Then, your population is all the farmers in NE.
+  \end{itemize}
+  \end{block}
+  \begin{block}{Important}
+    Population differs depending on the scope of your interest
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Population and Sample}
+  \begin{block}{Sample}
+    Sample is a subset of population that you observe
+  \end{block}
+  \begin{block}{Example}
+    \begin{itemize}
+      \item data on education, income, and many other things for 300 individuals from each State
+      \item data on water price, irrigation water use, and many other things for 500 farmers who farm in the Upper Republican Basin (southwest corner of NE)
+    \end{itemize}
+  \end{block}
+  \begin{block}{Question}
+    Are the samples representative of the population you are interested in learning about?
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Econometrics}
+  \begin{block}{Econometrics}
+    learn about the population using sample
+  \end{block}
+\end{frame}
+
+% \begin{frame}[c]
+%   \frametitle{Econometrics}
+%   \begin{block}{The model in the population}
+%     The \textcolor{blue}{true} model that governs the data generating process (how the data are generated) in the population
+%   \end{block}
+
+% \end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Simple linear regression model}
+  Consider a phenomenon in the population that is correctly represented by the following model (\textcolor{blue}{This is the model you want to learn about using sample}),
+  \begin{block}{A simple model in the population}
+  \vspace{-0.6cm}
+    \begin{align}
+    y=\beta_0+\beta_1 x + u \notag
+    \end{align}
+  \end{block}
+  \begin{itemize}
+    \item $y$: to be explained by $x$ (\textcolor{blue}{dependent variable})
+    \item $x$: explain $y$ (\textcolor{blue}{independent variable}, \textcolor{blue}{covariate})
+    \item $u$: parts of $y$ that cannot be explained by $x$ (\textcolor{blue}{error term})
+    \item $\beta_0$ and $\beta_1$: real numbers that gives the model a quantitative meaning (\textcolor{blue}{parameters})
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Simple linear model}
+ \begin{block}{A simple model}
+  \vspace{-0.6cm}
+    \begin{align}
+    y=\beta_0+\beta_1 x + u \notag
+    \end{align}
+  \end{block}
+  \begin{block}{What does $\beta_1$ measure?}
+  \vspace{-0.6cm}
+    \begin{align*}
+      \Delta y =\beta_1\Delta x + \Delta u
+    \end{align*}
+    If you change $x$ by $1$ unit ($\Delta x=1$) while holding $u$ (everything else) constant ($\Delta u=0$),
+    \begin{align*}
+      \Delta y = \beta_1
+    \end{align*}
+    That is, $y$ changes by $\beta_1$. We call $\beta_1$ the \textcolor{blue}{ceteris paribus} (with everything else fixed) causal impact of $x$ on $y$.
+  \end{block}
+\end{frame}
+
+<< cp_data, echo=F >>=
+set.seed(9947398)
+N <- 500
+ab_A <- pmax(rnorm(N)*1.5+7,0)
+ab_B <- pmax(rnorm(N)*1.2+5,0)
+inc_A <- 60 + 10*ab_A
+inc_B <- 40 + 10*ab_B
+inc_A_e <- inc_A + 30*rnorm(N)
+inc_B_e <- inc_B + 30*rnorm(N)
+mean_inc_A <- mean(inc_A_e)
+mean_inc_B <- mean(inc_B_e)
+data_A <- data.table(x=ab_A,y=inc_A_e,yline=inc_A,University='A')
+data_B <- data.table(x=ab_B,y=inc_B_e,yline=inc_B,University='B')
+data <- rbind(data_A,data_B)
+@
+
+\begin{frame}[c]
+  \frametitle{Why do we fish for \textcolor{blue}{ceteris paribus} causal impact?}
+
+  \only<1-1>{\begin{block}{Example: Quality of College}
+  You
+  \begin{itemize}
+    \item have been admitted to University A (better) and B (worse)
+    \item are trying to decide which school to attend
+    \item are interested in knowing a boost in your future income to make a decision
+  \end{itemize}
+  \end{block}}
+
+  \only<2-3>{\begin{block}{You have found the following data}
+    \begin{center}
+    \begin{tabular}{ccc}
+           & A & B \\ \hline
+    average income         & \multirow{2}{*}{$\Sexpr{round(mean_inc_A,0)}$K} & \multirow{2}{*}{$\Sexpr{round(mean_inc_B,0)}$K} \\
+    after graduation &&\\
+    sample size & 500 & 500 \\
+    \end{tabular}
+    \end{center}
+  \end{block}}
+
+  \only<3-4>{\begin{block}{Question}
+    Should you assume the difference ($\Sexpr{round(mean_inc_A,0)-round(mean_inc_B,0)}K$) is the expected boost you would get if you are to attend A instead of B?
+  \end{block}}
+
+  \only<4->{\begin{block}{What would you be interested in?}
+  Let's say your ability score is $6$ out of $10$ (the higher, the better),
+  \only<2->{\begin{align*}
+     \;\;\mbox{(1)}\;\; & E[inc|A,ability=9]\\
+     & -E[inc|B,ability=6] ?
+  \end{align*}}
+  \only<3->{\begin{align*}
+     \;\;\mbox{(2)}\;\; & E[inc|A,ability=6]\\
+     & -E[inc|B,ability=6] ?
+  \end{align*}}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Ceteris Paribus Impact of School Quality}
+  \begin{block}{Why ceteris paribus impact?}
+  \begin{itemize}
+    \item you want ability (an unobservable) to stay fixed when you change the quality of school because your innate ability is not going to miraculously increase by simply attending school A
+    \item you don't want the impact of school quality to be confounded with something else
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Why do we want ceteris paribus causal impact?}
+
+<<cp, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+g_cI_1 <- ggplot(data=data) +
+  geom_point(aes(x=x,y=y,color=University),size=0.5)+
+  geom_smooth(aes(x=x,y=yline,color=University),method = "lm",se=FALSE)+
+  geom_hline(yintercept=mean_inc_A,color='red')+
+  geom_hline(yintercept=mean_inc_B,color='blue')+
+  annotate('text',x=1,y=150,label=paste(round(mean_inc_A,0),sep=''),family='Times',color='red')+
+  annotate('text',x=1,y=70,label=paste(round(mean_inc_B,0),sep=''),family='Times',color='blue')+
+  xlab('ability') +
+  ylab('Annual Income') +
+  theme(
+    legend.position='bottom'
+    )
+# ggsave('./cp_impact.pdf',width=4,height=3)
+g_cI_1
+@
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{What does $\beta_0$ measure?}
+  \begin{block}{A simple model}
+  \vspace{-0.6cm}
+    \begin{align}
+    y=\beta_0+\beta_1 x + u \notag
+    \end{align}
+  \end{block}
+  \begin{block}{What does $\beta_0$ measure?}
+    When $x = 0$ and $u=0$,
+    \begin{align*}
+    y=\beta_0
+    \end{align*}
+    So, $\beta_0$ represents the intercept (let's see this graphically).
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+ \frametitle{Graphical representation of the model}
+
+\begin{columns}[onlytextwidth]
+  \begin{column}{0.6\textwidth}
+<<fig_1, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+x <- seq(0,5,length=1000)
+y <- 1+2*x
+g_1 <- ggplot(data=data.table(y=y,x=x)) +
+  geom_line(aes(y=y,x=x))+
+  geom_hline(yintercept=0)+
+  geom_vline(xintercept=0)
+g_1
+@
+  \end{column}
+  \begin{column}{0.4\textwidth}
+    \only<2-2>{\begin{description}
+        \item [$\beta_0$:] intercept
+        \item [$\beta_1$:] coefficient (slope)
+    \end{description}}
+  \end{column}
+​\end{columns}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Example of a simple linear model}
+  \begin{block}{Corn yield and fertilizer}
+  \vspace{-0.6cm}
+     \begin{align*}
+         yield=\beta_0+\beta_1 fertilizer+u \notag
+     \end{align*}
+   \end{block}
+   \begin{block}{Questions}
+      \begin{itemize}
+        \item what is in the error term?
+        \item are you comfortable with this model?
+      \end{itemize}
+   \end{block}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{Estimating $\beta_1$ using sample}
+  \begin{align*}
+    yield=\beta_0+\beta_1 fertilizer+u \notag
+  \end{align*}
+
+  \begin{itemize}
+    \item you do not know $\beta_0$ and $\beta_1$, and would like to estimate them
+    \item you observe a series of $\{yield_i,fertilizer_i\}$ combinations ($i=1,\dots,n$)
+    \item you would like to estiamte $\beta_1$, the impact of fertilizer on yield, \textbf{ceteris paribus} (with everything else fixed)
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Estimating $\beta_1$ using sample}
+  \begin{block}{Question}
+    How could we possibly find the \textbf{ceteris paribus} impact of fertilizer on yield when we do not observe whole bunch of other factors (error term)?
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Crucial conditions to identify the ceteris paribus impact}
+  \begin{block}{Before that...}
+    You can always assume $E(u)=0$ as long as an intercept is included in the model.
+    \begin{align}
+        y = & \beta_0 + \beta_1 x + u_1,\;\; \mbox{where}\;\; E(u_1)=\alpha \notag\\
+          = & \beta_0 + \alpha + \beta_1 x + u_1 - \alpha\\
+          = & \gamma_0 + \beta_1 x + u_2,
+    \end{align}
+  where, $\gamma_0=\beta_0+\alpha$ and $u_2=u_1-\alpha$. Now, $E[u_2]=0$.
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Crucial conditions to identify the ceteris paribus impact}
+  \begin{block}{Remember}
+    You are trying to find the \textbf{ceteris paribus} impact of $x$ (fertilizer) on $y$ (yield), while not observing whole bunch of other factors, $u$
+  \end{block}
+  It turns out, the following condition between $x$ and $u$ needs to be satisfied,
+  \begin{block}{Mean independence (Important)}
+  \begin{itemize}
+    \item mathematically:
+    \begin{align}
+      E(u|x)=E(u) \notag
+    \end{align}
+    \item verbally: the average value of the unobservables is the same at any value of x, and that the common average is equal to the average of $u$ over the entire population
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Crucial conditions to identify the ceteris paribus impact}
+  \begin{block}{Combined with $E(u)=0$}
+  \vspace{-0.6cm}
+    \begin{align}
+      \mbox{mean independence:}\;\; & E(u|x)=E(u) \notag \\
+      \Rightarrow  \mbox{\textcolor{blue}{zero conditional mean}:}\;\; & E(u|x)=0 \notag
+    \end{align}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}[c]
+  \frametitle{Correlation and Mean Independence}
+  \begin{block}{In practice}
+    We use correlation and mean independence interchangeably (though not entirely correct)
+  \end{block}
+\end{frame}
+
+%--- New Frame ---%
+
+\begin{frame}
+  \frametitle{In the context of yield-fertilizer relationship,}
+  \begin{align*}
+      yield=\beta_0+\beta_1 fertilizer+u \notag
+  \end{align*}
+
+  \begin{block}{Questions:}
+    (Think about what you would do if you are a famer)
+    \begin{itemize}
+      \item What's in $u$?
+      \item Is it correlated with fertilizer?
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+<<college_income_data, echo=F >>=
+set.seed(38943)
+N <- 1000
+college_effect <- 20
+ab_A <- pmax(rnorm(N)*1.1+5,0)
+ab_B <- pmax(rnorm(N)*1.1+5,0)
+inc_A <- 40 + college_effect + 10*ab_A
+inc_B <- 40 + 10*ab_B
+inc_A_e <- inc_A + 20*rnorm(N)
+inc_B_e <- inc_B + 20*rnorm(N)
+mean_inc_A <- mean(inc_A_e)
+mean_inc_B <- mean(inc_B_e)
+data_A <- data.table(x=ab_A,y=inc_A_e,yline=inc_A,University='A')
+data_B <- data.table(x=ab_B,y=inc_B_e,yline=inc_B,University='B')
+data_cI <- rbind(data_A,data_B)
+@
+
+%--- New Frame ---%
+
+\begin{frame}
+  \frametitle{Going back to the college-income example}
+  \begin{align*}
+    Income = \beta_0+\beta_1 College\;\; A + u
+  \end{align*}
+  where $College\;\; A$ is 1 if attending college A, 0 if attending college B, and $u$ is the error term that includes ability.
+  \begin{block}{Zero conditional mean?}
+    \begin{align*}
+      E[u(ability)|college A] = 0?
+    \end{align*}
+  \end{block}
+\end{frame}
+
+%--- New Frame ---%
+
+\begin{frame}
+  \frametitle{Going back to the college-income example: $E[u|x]\ne 0$}
+<<college_income_g, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+  g_cI_1
+@
+\end{frame}
+
+%--- New Frame ---%
+
+\begin{frame}
+  \frametitle{Going back to the college-income example: $E[u|x] = 0$}
+<<college_income_g_unbiased, echo=FALSE,out.height='3in',out.width='3in',dev='pdf'>>=
+  ggplot(data=data_cI) +
+    geom_point(aes(x=x,y=y,color=University),size=0.5)+
+    geom_smooth(aes(x=x,y=yline,color=University),method = "lm",se=FALSE)+
+    geom_hline(yintercept=mean_inc_A,color='red')+
+    geom_hline(yintercept=mean_inc_B,color='blue')+
+    annotate('text',x=1,y=120,label=paste(round(mean_inc_A,0),sep=''),family='Times',color='red')+
+    annotate('text',x=1,y=70,label=paste(round(mean_inc_B,0),sep=''),family='Times',color='blue')+
+    xlab('ability') +
+    ylab('Annual Income') +
+    theme(
+      legend.position='bottom'
+      )
+  # ggsave('./cp_impact.pdf',width=4,height=3)
+@
+\end{frame}
+
+
+\end{document}
+
+
+

@@ -1,0 +1,20 @@
+\frametitle{MC Simulation: Exercise 2}
+  \begin{block}{Problem}
+    Using MC simulations, find out how the variation in $x$ affects the OLS estimators
+  \end{block}
+  \begin{block}{Model set up}
+  \vspace{-0.6cm}
+    \begin{align*}
+        y = \beta_0 + \beta_1 x_1 + u \\
+        y = \beta_0 + \beta_1 x_2 + u
+    \end{align*}
+  \vspace{-0.6cm}
+  \begin{itemize}
+    \item $x_1\sim N(0,1)$ and $x_2\sim N(0,9)$
+    \item $u\sim N(0,1)$
+    \item $E[u_1|x]=0$ and $E[u_2|x]=0$
+  \end{itemize}
+  \end{block}
+  \begin{block}{Question}
+    What should you expect?
+  \end{block}

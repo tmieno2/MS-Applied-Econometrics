@@ -1,0 +1,22 @@
+\frametitle{Graphical representation of the model}
+
+\begin{columns}[onlytextwidth]
+  \begin{column}{0.6\textwidth}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=3in,height=3in]{figure/fig_1-1}
+
+}
+
+
+
+\end{knitrout}
+  \end{column}
+  \begin{column}{0.4\textwidth}
+    \only<2-2>{\begin{description}
+        \item [$\beta_0$:] intercept
+        \item [$\beta_1$:] coefficient (slope)
+    \end{description}}
+  \end{column}
+​\end{columns}
