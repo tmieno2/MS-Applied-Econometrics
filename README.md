@@ -7,8 +7,8 @@ This is the repository for AECN 396/AECN896-002 at University of Nebraska Lincol
 
 + Lecture 1: Introduction ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Introduction/Introduction.pdf))
 + Lecture 2: Univariate Regression 
-    * [slide 1](https://tmieno2.github.io/MS-Applied-Econometrics/UnivariateRegression/univariate_reg_1.pdf)
-    * [slide 2](https://tmieno2.github.io/MS-Applied-Econometrics/UnivariateRegression/univariate_reg_2.pdf)
+    * Part 1 ([slide 1](https://tmieno2.github.io/MS-Applied-Econometrics/UnivariateRegression/univariate_reg_1.pdf))
+    * Part 2 ([slide 2](https://tmieno2.github.io/MS-Applied-Econometrics/UnivariateRegression/univariate_reg_2.pdf))
 + Lecture 3: Multivariate Regression ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/MultivariateRegression/multivariate.pdf))
 + Lecture 4: Monte Carlo Simulation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/MonteCarloSimulation/MC.pdf))
 + Lecture 5: Omitted Variable Bias and Multicollinearity ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/OmittedVariableMulticollinear/OmittedMulticollinear_x.html))
