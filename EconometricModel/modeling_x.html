@@ -373,7 +373,7 @@ slides &gt; slide {
 class: inverse, center, middle
 name: review
 
-# Heteroskedasticity
+# More on functional forms
 
 &lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
 
@@ -841,6 +841,10 @@ reg_int &lt;- feols(wage ~ female + exper + I(exper*educ), data = wage)
    &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; (0.002) &lt;/td&gt;
   &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Std. errors &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Standard &lt;/td&gt;
+  &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;tfoot&gt;
 &lt;tr&gt;
@@ -927,9 +931,9 @@ linearHypothesis(reg_int,'exper+10*I(exper * educ)=0')
 ## Model 1: restricted model
 ## Model 2: wage ~ female + exper + I(exper * educ)
 ## 
-##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
-## 1    523 5279.0                           
-## 2    522 5254.2  1    24.789 2.4627 0.1172
+##   Df  Chisq Pr(&gt;Chisq)
+## 1                     
+## 2  1 2.4627     0.1166
 ```
 
 ---
@@ -1336,11 +1340,357 @@ If you suspect that the underlying process of how the dependent variable is dete
 
 You estimate the model that allows to estimate separate models across groups within a single regression analysis.     
 
-`\(cumgpa = &amp; \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female) + \beta_2 hsperc + \sigma_2 (hsperc \times female) + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u\)`
+`$$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female)$$`
+          `$$\;\; + \beta_2 hsperc + \sigma_2 (hsperc \times female)$$`
+          `$$\qquad + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u$$`
+
+---
 
 
+.content-box-red[**The flexible model**]
+
+`$$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female)$$`
+          `$$\;\; + \beta_2 hsperc + \sigma_2 (hsperc \times female)$$`
+          `$$\qquad + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u$$`
 
 
+.content-box-green[**Male**]
+
+`\(E[cumgpa] = \beta_0 + \beta_1 sat + \beta_2 hsperc + \beta_3 tothrs\)`
+
+.content-box-green[**Feale**]
+
+`\(E[cumgpa] = (\beta_0 +\sigma_0) + (\beta_1+\sigma_1) sat + (\beta_2+\sigma_2) hsperc + (\beta_3+\sigma_3) tothrs\)`
+
+
+.content-box-red[**Interpretation**]
+
++ `\(\beta\)`s are commonly shared by female and male students 
++ `\(\sigma\)`s capture the differences between female and male students 
+
+---
+
+.content-box-red[**Hypothesis (verbal)**]
+The model of GPA for male and female students are not structurally different.
+
+.content-box-red[**Null Hypothesis**]
+
+`\(H_0: \;\; \sigma_0=0,\;\; \sigma_1=0, \;\; \sigma_2=0, \;\; \mbox{and} \;\; \sigma_3=0\)`
+
+
+.content-box-green[**Question**]
+
+What test do we do? t-test or F-test?
+
+---
+
+
+.content-box-red[**R code**]
+
+Run the unrestricted model with all the interaction terms:
+
+
+```r
+gpa &lt;- read.dta13("GPA3.dta") %&gt;% 
+    filter(!is.na(ctothrs)) %&gt;%
+    #--- create interaction terms ---#
+    mutate(
+      female_sat:=female*sat,
+      female_hsperc:=female*hsperc,
+      female_tothrs:=female*tothrs
+      )
+
+#--- regression with female dummy ---#
+reg_full &lt;- feols(cumgpa~female
+  +sat+female_sat
+  +hsperc+female_hsperc
+  +tothrs+female_tothrs,
+  data=gpa
+)   
+```
+
+---
+
+.left5[
+
+.content-box-red[**What do you see?**]
+
++ None of the variables that involve `\(female\)` are statistically significant at the 5% level individually. 
+
++ Does this mean that `\(male\)` and `\(female\)` students have the same regression function?
+
++ No, we are testing the joint significance of the coefficients. We need to do an `\(F\)`-test!
+
+]
+
+.right5[
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Model 1 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.481*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.207) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; female &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.353 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.411) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; female_hsperc &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.001 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.003) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; female_sat &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.001* &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.000) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; female_tothrs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.002) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hsperc &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.008*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.001) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; sat &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.001*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.000) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; tothrs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.002*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (0.001) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;
+&lt;tr&gt;
+&lt;td style="padding: 0; border:0;" colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; * p &amp;lt; 0.1, ** p &amp;lt; 0.05, *** p &amp;lt; 0.01&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tfoot&gt;
+&lt;/table&gt;
+]
+
+---
+
+
+```r
+linearHypothesis(reg_full, 
+  c(
+    "female = 0", 
+    "female_hsperc = 0", 
+    "female_sat = 0", 
+    "female_tothrs = 0"
+  )
+)  
+```
+
+```
+## Linear hypothesis test
+## 
+## Hypothesis:
+## female = 0
+## female_hsperc = 0
+## female_sat = 0
+## female_tothrs = 0
+## 
+## Model 1: restricted model
+## Model 2: cumgpa ~ female + sat + female_sat + hsperc + female_hsperc + 
+##     tothrs + female_tothrs
+## 
+##   Df  Chisq Pr(&gt;Chisq)    
+## 1                         
+## 2  4 32.716  1.365e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+class: inverse, center, middle
+name: review
+
+# More on `\(R^2\)` 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+# Goodness of fit: `\(R^2\)` 
+
+.content-box-red[**Important**]
+
+Small value of `\(R^2\)` does not mean the end of the world (In fact, we could not care less about it.)
+
+---
+
+.content-box-green[**Example**]
+
+`$$ecolabs = \beta_0 + \beta_1 regprc + \beta_2 ecoprc$$`
+
++ `\(ecolabs\)`: the (hypothetical) pounds of ecologically friendly (ecolabled) apples a family would demand
++ `\(regprc\)`: prices of regular apples 
++ `\(ecoprc\)`: prices of the hypothetical ecolabled apples
+
+.content-box-red[**Key**]
++ The data was obtained via survey and `\(ecoprc\)` was set randomly (So, we know `\(E[u|x] = 0\)`).
++ The objective of the study is to understand the impact of the price of ecolabled apple on the demand for ecolabled apples.
+
+
+---
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="1" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;ecolbs&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;regprc&lt;/td&gt;&lt;td&gt;3.029&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.711)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;ecoprc&lt;/td&gt;&lt;td&gt;-2.926&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.588)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;1.965&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.380)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;660&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.036&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+ 
+---
+
+Suppose you are challenged by somebody who claim that your regression is not .blue[good] because the `\(R^2\)` is tiny. How would your respond to his/her attack?
+
+---
+
+class: inverse, center, middle
+name: review
+
+# Scaling 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+
+.content-box-green[**Questions**]
+
+What happens if you scale up/down variables used in regression? 
+
++ coefficients
++ standard errors
++ t-statistics
++ `\(R^2\)`
+
+---
+
+
+```r
+#--- regression with female dummy ---#
+reg_no_scale &lt;- lm(wage ~ female + educ, data = wage) 
+reg_scale &lt;- lm(wage ~ female + I(educ * 12), data = wage)  
+```
+  
+---
+
+
+```r
+tidy(reg_no_scale) 
+```
+
+```
+## # A tibble: 3 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    0.623    0.673      0.926 3.55e- 1
+## 2 female        -2.27     0.279     -8.15  2.76e-15
+## 3 educ           0.506    0.0504    10.1   7.56e-22
+```
+
+
+```r
+tidy(reg_scale) 
+```
+
+```
+## # A tibble: 3 x 5
+##   term         estimate std.error statistic  p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    0.623    0.673       0.926 3.55e- 1
+## 2 female        -2.27     0.279      -8.15  2.76e-15
+## 3 I(educ * 12)   0.0422   0.00420    10.1   7.56e-22
+```
+
+--
+
+
+.content-box-green[**So,**]
+
++ coefficient: 1/12
++ standard error: 1/12
++ t-stat: the same
+
+---
+
+.content-box-red[**Interpretation**]
+
++ Regression .blue[without] scaling 
+
+hourly wage increases by `\(0.506\)` if education increases by a .blue[year]
+
++ Regression .blue[with] scaling (e.g., 48 means 4 years)
+
+hourly wage increases by `\(0.0422\)` if education increases by a .blue[month]
+
+--
+
+.content-box-green[**Note**]
+
+According to the scaled model, hourly wage increases by `\(0.0422 * 12\)` if education increases by a year (12 months).
+
+That is, the estimated marginal impact of education on wage from the scaled model is the same as that from the unscaled model.
+
+---
+
+
+.content-box-red[**Summary**]
+
+When an independent variable is scaled, 
+
++ its coefficient estimate and standard error are going to be scaled up/back to the exact degree the variable is scaled up/back
++ t-statistics stays the same (as it should be)
++ `\(R^2\)` stays the same (the model does not improve by simply scaling independent variables)
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

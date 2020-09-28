@@ -22,15 +22,17 @@ layout: true
 ```
 
 ```{r echo = F, eval = F}
-setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Heteroskedasticity/")
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/EconometricModel/")
 ```
 
-```{r libraries, include = F, cache = F}
+```{r packages, include = F, cache = F}
 #--- load packages ---#
 suppressMessages(library(broom))
 suppressMessages(library(fixest))
 suppressMessages(library(patchwork))
+suppressMessages(library(readstata13))
 suppressMessages(library(modelsummary))
+suppressMessages(library(stargazer))
 suppressMessages(library(lmtest))
 ```
 
@@ -52,7 +54,7 @@ suppressMessages(library(lmtest))
 class: inverse, center, middle
 name: review
 
-# Heteroskedasticity
+# More on functional forms
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
@@ -954,9 +956,227 @@ If you suspect that the underlying process of how the dependent variable is dete
 
 You estimate the model that allows to estimate separate models across groups within a single regression analysis.     
 
-$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female) + \beta_2 hsperc + \sigma_2 (hsperc \times female) + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u$
+$$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female)$$
+          $$\;\; + \beta_2 hsperc + \sigma_2 (hsperc \times female)$$
+          $$\qquad + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u$$
+
+---
 
 
+.content-box-red[**The flexible model**]
+
+$$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female)$$
+          $$\;\; + \beta_2 hsperc + \sigma_2 (hsperc \times female)$$
+          $$\qquad + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u$$
 
 
+.content-box-green[**Male**]
+
+$E[cumgpa] = \beta_0 + \beta_1 sat + \beta_2 hsperc + \beta_3 tothrs$
+
+.content-box-green[**Feale**]
+
+$E[cumgpa] = (\beta_0 +\sigma_0) + (\beta_1+\sigma_1) sat + (\beta_2+\sigma_2) hsperc + (\beta_3+\sigma_3) tothrs$
+
+
+.content-box-red[**Interpretation**]
+
++ $\beta$s are commonly shared by female and male students 
++ $\sigma$s capture the differences between female and male students 
+
+---
+
+.content-box-red[**Hypothesis (verbal)**]
+The model of GPA for male and female students are not structurally different.
+
+.content-box-red[**Null Hypothesis**]
+
+$H_0: \;\; \sigma_0=0,\;\; \sigma_1=0, \;\; \sigma_2=0, \;\; \mbox{and} \;\; \sigma_3=0$
+
+
+.content-box-green[**Question**]
+
+What test do we do? t-test or F-test?
+
+---
+
+
+.content-box-red[**R code**]
+
+Run the unrestricted model with all the interaction terms:
+
+```{r }
+gpa <- read.dta13("GPA3.dta") %>% 
+    filter(!is.na(ctothrs)) %>%
+    #--- create interaction terms ---#
+    mutate(
+      female_sat:=female*sat,
+      female_hsperc:=female*hsperc,
+      female_tothrs:=female*tothrs
+      )
+
+#--- regression with female dummy ---#
+reg_full <- feols(cumgpa~female
+  +sat+female_sat
+  +hsperc+female_hsperc
+  +tothrs+female_tothrs,
+  data=gpa
+)   
+```
+
+---
+
+.left5[
+
+.content-box-red[**What do you see?**]
+
++ None of the variables that involve $female$ are statistically significant at the 5% level individually. 
+
++ Does this mean that $male$ and $female$ students have the same regression function?
+
++ No, we are testing the joint significance of the coefficients. We need to do an $F$-test!
+
+]
+
+.right5[
+```{r echo = F}
+modelsummary(reg_full, gof_omit = "Obs|R|Log|IC|Std", stars = TRUE)
+```
+]
+
+---
+
+```{r }
+linearHypothesis(reg_full, 
+  c(
+    "female = 0", 
+    "female_hsperc = 0", 
+    "female_sat = 0", 
+    "female_tothrs = 0"
+  )
+)  
+```
+
+---
+
+class: inverse, center, middle
+name: review
+
+# More on $R^2$ 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+
+# Goodness of fit: $R^2$ 
+
+.content-box-red[**Important**]
+
+Small value of $R^2$ does not mean the end of the world (In fact, we could not care less about it.)
+
+---
+
+.content-box-green[**Example**]
+
+$$ecolabs = \beta_0 + \beta_1 regprc + \beta_2 ecoprc$$
+
++ $ecolabs$: the (hypothetical) pounds of ecologically friendly (ecolabled) apples a family would demand
++ $regprc$: prices of regular apples 
++ $ecoprc$: prices of the hypothetical ecolabled apples
+
+.content-box-red[**Key**]
++ The data was obtained via survey and $ecoprc$ was set randomly (So, we know $E[u|x] = 0$).
++ The objective of the study is to understand the impact of the price of ecolabled apple on the demand for ecolabled apples.
+
+
+---
+
+```{r echo = F, results = "asis"}
+apple <- read.dta13('APPLE.dta') 
+reg_apple <- lm(ecolbs~regprc+ecoprc,data=apple)
+stargazer(reg_apple,type='html',no.space = TRUE,omit.stat=c('adj.rsq','ser','f'),table.layout='-ld#-t-s-') 
+```
+ 
+---
+
+Suppose you are challenged by somebody who claim that your regression is not .blue[good] because the $R^2$ is tiny. How would your respond to his/her attack?
+
+---
+
+class: inverse, center, middle
+name: review
+
+# Scaling 
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+
+
+.content-box-green[**Questions**]
+
+What happens if you scale up/down variables used in regression? 
+
++ coefficients
++ standard errors
++ t-statistics
++ $R^2$
+
+---
+
+```{r }
+#--- regression with female dummy ---#
+reg_no_scale <- lm(wage ~ female + educ, data = wage) 
+reg_scale <- lm(wage ~ female + I(educ * 12), data = wage)  
+```
+  
+---
+
+```{r }
+tidy(reg_no_scale) 
+```
+
+```{r }
+tidy(reg_scale) 
+```
+
+--
+
+
+.content-box-green[**So,**]
+
++ coefficient: 1/12
++ standard error: 1/12
++ t-stat: the same
+
+---
+
+.content-box-red[**Interpretation**]
+
++ Regression .blue[without] scaling 
+
+hourly wage increases by $0.506$ if education increases by a .blue[year]
+
++ Regression .blue[with] scaling (e.g., 48 means 4 years)
+
+hourly wage increases by $0.0422$ if education increases by a .blue[month]
+
+--
+
+.content-box-green[**Note**]
+
+According to the scaled model, hourly wage increases by $0.0422 * 12$ if education increases by a year (12 months).
+
+That is, the estimated marginal impact of education on wage from the scaled model is the same as that from the unscaled model.
+
+---
+
+
+.content-box-red[**Summary**]
+
+When an independent variable is scaled, 
+
++ its coefficient estimate and standard error are going to be scaled up/back to the exact degree the variable is scaled up/back
++ t-statistics stays the same (as it should be)
++ $R^2$ stays the same (the model does not improve by simply scaling independent variables)
 
