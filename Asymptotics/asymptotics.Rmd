@@ -1,0 +1,21 @@
+---
+title: "Asymptotics"
+author: "Taro Mieno"
+date: "September 16, 2016"
+output:
+  html_document:
+    number_sections: yes
+    theme: flatly
+    toc_float: yes
+    toc: yes
+  pdf_document:
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+geometry: margin=0.75in
+---
+
+```{r hidden, echo=FALSE}
+setwd('/Users/tmieno2/Dropbox/Teaching/UNL/EconometricsMaster/Assignments/Assignment_1')
+```
+

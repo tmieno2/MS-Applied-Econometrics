@@ -1,0 +1,688 @@
+\documentclass[fleqn]{beamer}
+
+% \usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlysmall]{structurebold}
+\usepackage[normalem]{ulem} % use normalem to protect \emph
+\newcommand\hl{\bgroup\markoverwith
+  {\textcolor{yellow}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+\usepackage{mdframed}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{wasysym}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{qtree}
+\usepackage{animate}
+\usepackage{inconsolata}
+\usepackage{framed}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+\usepackage[justification=centering]{caption}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\usepackage[space]{grffile}
+\usefonttheme[onlymath]{serif}
+% \usepackage{tikz}
+% \usetikzlibrary{calc,matrix}
+\usepackage{sgame}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\mode<presentation>
+%\usetheme{Frankfurt}
+\usetheme{boxes}
+\usecolortheme{beaver}
+%\usetheme{Singapore}
+%\usetheme{Hannover}
+
+\newcommand*{\captionsource}[2]{%
+  \caption[{#1}]{%
+    #1%
+    \\\hspace{\linewidth}%
+    {\small\textbf{Source:} #2}%
+  }%
+}
+
+\newenvironment{changemargin}[2]{% 
+  \begin{list}{}{% 
+    \setlength{\topsep}{0pt}% 
+    \setlength{\leftmargin}{#1}% 
+    \setlength{\rightmargin}{#2}% 
+    \setlength{\listparindent}{\parindent}% 
+    \setlength{\itemindent}{\parindent}% 
+    \setlength{\parsep}{\parskip}% 
+  }% 
+  \item[]}{\end{list}} 
+
+%Then \begin{changemargin}{-1cm}{-1cm} makes the margin 1 cm wider on either side of the page until \end{changemargin} appears. 
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{blocks}[rounded]
+\newenvironment<>{block_code}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \begin{block}#2{#1}}{\end{block}}
+
+%--------------------------
+% Reduce the spacing between R code and output
+%--------------------------
+\usepackage{etoolbox} 
+\makeatletter 
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt } 
+\makeatother
+
+\renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{} 
+
+%===================================
+% Coloring change
+%===================================
+\definecolor{darkred}{rgb}{0.8,0,0}
+\setbeamercolor{block title}{fg=darkred,bg=structure.fg!20!bg!50!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg}
+
+\title{OLS Asymptotics}
+\author{Taro Mieno}
+\date{AECN 896-003: Applied Econometrics}
+\everymath{\displaystyle}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+<<prep, echo=FALSE, message=F, warning=F>>=
+source('~/Dropbox/R_libraries_load/library.R')
+source('~/Dropbox/MySoftware/MyR/ggplot2/ggplot2_default_teaching.R')
+source('~/Dropbox/Teaching/R_functions/functions.R')
+opts_chunk$set(
+  comment = NA,
+  tidy=FALSE,
+  size='footnotesize',
+
+  #--- figure related options ---#
+  fig.align='center',
+  out.height='3in',
+  out.width='3in',
+  dev='pdf'
+  )
+@
+
+\begin{frame}[c,fragile]
+  \frametitle{OLS Asymptotics (Large Sample Properties)}
+  
+  \begin{block}{What is it?}  
+  	\begin{itemize}
+  		\item Properties of OLS that hold only when the sample size is infinite (\textcolor{blue}{very} large) 
+  		\only<2->{\item (loosely put) How OLS estimators behave when the number of observations goes \textcolor{blue}{infinite (really large)}}
+  	\end{itemize}
+  \end{block}
+
+  \only<3->{\begin{block}{Small sample properties}  
+  Under certain conditions,
+    \begin{itemize}
+      \item Unbiasedness of OLS estimators
+      \item Efficiency of OLS estimators
+    \end{itemize} 
+  hold \textcolor{blue}{whatever the sample size is} (including infinite numbers of observations).
+  \end{block}}
+\end{frame}
+
+%===================================
+% Consistency
+%===================================
+\title{Consistency}
+\author{}
+\date{}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}[c]
+	\frametitle{Consistency}
+	\begin{block}{Verbally (and very loosely),}	
+		An estimator is \textcolor{blue}{consistent} if the probability that the estimator produces the true parameter is 1 when sample size is infinite. 
+	\end{block}	
+
+	\only<2->{
+	\begin{block}{Example:}	
+	OLS estimator of the coefficient on $x$ in the following model with all $MLR.1$ through $MLR.4$ satisfied:
+		\begin{align*}
+			y_i = \beta_0 + \beta_1 x_i + u_i
+		\end{align*} 
+	with all the conditions necessary for the unbiasedness property of OLS satisfied.
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: consistency of OLS estimators}
+  \begin{block}{Conceptual steps of MC simulations}  
+    \begin{itemize}
+    \item generate data ($N$ observations) according to $y_i = \beta_0 + \beta_1 x_i + u_i$
+    \item run on the generated data
+    \item store the coefficient estimate
+    \item repeat the above experiment 1000 times
+    \item examine how the coefficient estimates are distributed
+  \end{itemize}
+  \end{block}
+  \only<2->{\begin{block}{What you should see is}  
+    As $N$ gets larger (more observations), the distribution of $\hat{\beta}_1$ get more tightly centered around its true value (here, $1$)
+  \end{block}} 
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Consistency}
+  \begin{block_code}{R code: $N=100$, $1000$, and $10000$}  
+  << ex_mc_co, size='scriptsize',cache=TRUE>>=
+  #--- Preparation ---#
+  B <- 1000 # the number of iterations
+  N_list <- c(100,1000,10000) # sample size
+  N_len <- length(N_list) 
+  estimate_storage <- matrix(0,B,3) # estimates storage
+
+  for (j in 1:N_len){
+  	temp_N <- N_list[j]
+  	for (i in 1:B){
+    	#--- generate data ---#
+    	x <- rnorm(temp_N) # indep var 1
+    	u <- rnorm(temp_N)*0.2 # error
+    	y <- 1 + x + u # dependent variable 1
+    	data <- data.table(y=y,x=x)
+
+    	#--- OLS ---# 
+    	reg <- lm(y~x,data=data) # OLS
+
+    	#--- store coef estimates ---#
+    	estimate_storage[i,j] <- reg$coef[2] 
+  	}
+  }
+  @ 
+  \end{block_code} 
+\end{frame}
+
+\begin{frame}[c,fragile]
+	\frametitle{Consistency}
+	\begin{block_code}{R code: Visualize}  
+  << viz_ex_co, cache=TRUE, dependson='ex_mc_co',warning=FALSE, size='scriptsize'>>=
+  #--- wide to long format ---#
+  plot_data <- melt(data.table(estimate_storage))
+
+  #--- create a figure ---#
+  g_co_ex <- ggplot(data=plot_data) +
+  	geom_density(aes(x=value,fill=variable),alpha=0.4) +
+  	geom_vline(xintercept=1) +
+  	scale_fill_discrete(
+  		name='Sample Size',
+  		labels = c('N=100 ', 'N=1,000 ','N=10,000')
+  		) +
+  	theme(
+  		legend.position='bottom'
+  		)
+  @ 
+  \end{block_code} 
+\end{frame}
+
+\begin{frame}[c,fragile]
+	\frametitle{Consistency}
+	<<fig_co, echo=FALSE, cache=TRUE, dependson='viz_ex_co'>>=
+ 	g_co_ex
+  @ 
+\end{frame}
+
+\begin{frame}[c,fragile]
+	\frametitle{Consistency}
+
+	\begin{block}{Consistency of OLS estimators}	
+		Under $MLR.1$ through $MLR.4$, OLS estimators are consistent
+	\end{block}
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: Inconsistency of OLS estimators}
+  \begin{block}{Conceptual steps of MC simulations}  
+    \begin{itemize}
+    \item generate data ($N$ observations) according to $y_i = \beta_0 + \beta_1 x_i + u_i$ with $E[u_i|x_i]\ne 0$
+    \item run on the generated data
+    \item store the coefficient estimate
+    \item repeat the above experiment 1000 times
+    \item examine how the coefficient estimates are distributed
+  \end{itemize}
+  \end{block}
+  \only<2->{\begin{block}{What should you see?}  
+    Would the bias disappear as N gets larger?
+  \end{block}} 
+\end{frame}
+
+\begin{frame}[c,fragile]
+	\frametitle{Inconsistency}
+	\begin{block_code}{R code: $N=100$, $1000$, and $10000$}  
+  << ex_mc_inco, size='scriptsize',cache=TRUE>>=
+  #--- Preparation ---#
+  N_list <- c(100,1000,10000) # sample size
+  N_len <- length(N_list) 
+  estimate_storage <- matrix(0,B,3) # estimates storage
+
+  for (j in 1:N_len){
+  	temp_N <- N_list[j]
+  	for (i in 1:B){
+    	#--- generate data ---#
+    	mu <- rnorm(temp_N) # shared term between x and u
+    	x <- rnorm(temp_N) + 0.5*mu
+    	u <- rnorm(temp_N) + 0.5*mu 
+    	y <- 1 + x + u # dependent variable 
+    	data <- data.table(y=y,x=x)
+
+    	#--- OLS ---# 
+    	reg <- lm(y~x,data=data) # OLS
+
+    	#--- store coef estimates ---#
+    	estimate_storage[i,j] <- reg$coef[2] 
+  	}
+  }
+  @ 
+  \end{block_code} 
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Inconsistency}
+  \begin{block_code}{R code: Visualize}  
+  << viz_ex_inco, cache=TRUE, dependson='ex_mc_inco',warning=FALSE, size='scriptsize'>>=
+  #--- wide to long format ---#
+  plot_data <- melt(data.table(estimate_storage))
+
+  #--- create a figure ---#
+  g_inco_ex <- ggplot(data=plot_data) +
+    geom_density(aes(x=value,fill=variable),alpha=0.4) +
+    geom_vline(xintercept=1) +
+    scale_fill_discrete(
+      name='Sample Size',
+      labels = c('N=100 ', 'N=1,000 ','N=10,000')
+      ) +
+    theme(
+      legend.position='bottom'
+      )
+  @ 
+  \end{block_code} 
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Inconsistency}
+  <<fig_inco, echo=FALSE, cache=TRUE, dependson='viz_ex_inco'>>=
+  g_inco_ex
+  @ 
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Inconsistency of OLS estimators}
+  \begin{block}{Important}  
+    Bias due to the violation of any of the $MLR.1$ through $MLR.4$ would not go away even if you increase the number of observations. 
+  \end{block}
+\end{frame}
+
+%===================================
+% Asymptotic Normality
+%===================================
+\title{Asymptotic Normality}
+\author{}
+\date{}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Inference}
+  \begin{block}{$MLR.6$: Normality}  
+     The population error $u$ is \textcolor{blue}{independent} of the explanatory variables $x_1,\dots,x_k$ and is \textcolor{blue}{normally} distributed with zero mean and variance $\sigma^2$: 
+     \begin{align*}
+        u\sim Normal(0,\sigma^2) 
+     \end{align*}
+  \end{block}
+  \begin{block}{Remember}  
+  \begin{itemize}
+  \item If $MLR.6$ are violated, t-statistic and F-statistic we constructed before are no longer distributed as t-distribution and F-distribution, respectively
+  \item So, whenever $MLR.6$ is violated, our t- and F-tests are invalid
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Inference}
+  \begin{block}{Fortunately,}  
+    You can continue to use t- and F-tests because (slightly transformed) OLS estimators are \textcolor{blue}{approximately} normally distributed when the sample size is \textcolor{blue}{large enough}.
+   \end{block} 
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Central Limit Theorem (CLT)}
+  \begin{block}{Central Limit Theorem (Lindberg-Levy)}  
+    Suppose $\{x_1,x_2,\dots\}$ is a sequence of \textcolor{blue}{identically independently distributed} random variables with $E[x_i]=\mu$ and $Var[x_i]=\sigma^2<\infty$. Then, as $n$ approaches infinity, 
+    \begin{align*}
+      \sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-\mu)\xrightarrow[]{d} N(0,\sigma^2)
+    \end{align*}
+    Verbally: sample mean less its expected value multiplied by $\sqrt{n}$ is going to be distributed as standard Normal distribution as $n$ goes infinity.
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+	\frametitle{CLT}
+	\begin{block}{$x_i \sim Bern[p=0.3]$}	
+  1 with probability $p$ and 0 with probability $1-p$.
+		\begin{itemize}
+			\item $E[x_i] = p = 0.3$
+			\item $Var[x_i] (\sigma^2) = p(1-p) = 0.21$
+		\end{itemize}
+	\end{block}
+
+	\begin{block}{According to CLT}	
+	\begin{align*}
+		\Big(\sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-\textcolor{blue}{\mu})\xrightarrow[]{d} N(0,\textcolor{blue}{\sigma^2})\Big) \\
+		\sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-0.3)\xrightarrow[]{d} N(0,0.21)
+	\end{align*}
+		
+	\end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{MC simulations: CLT}
+  \begin{block}{Conceptual steps of the MC simulation}  
+    \begin{itemize}
+    \item draw $n$ observations from $x_i\sim Bern(0.3)$ 
+    \item find its mean, subtract the expected value (here, $E[x_i]=0.3$), multiply by $\sqrt{n}$ ($\sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-\textcolor{blue}{\mu}$)
+    \item store the calculated value
+    \item repeat the above experiment 1000 times
+    \item examine how the calculated values are distributed
+  \end{itemize}
+  \end{block}
+  \only<2->{\begin{block}{What you should see is}  
+    As $N$ gets larger (more observations), the distribution of $\sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-\textcolor{blue}{\mu}$) looks more and more like $N(0,Var(x_i)$
+  \end{block}} 
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{CLT}
+  \begin{block_code}{R code: CLT}  
+  << clt_10, cache=TRUE, warning=FALSE, size='scriptsize'>>=
+  set.seed(893269)
+  #--- the number of observations ---# 
+  # this is what we change
+  N <- 10 # number of observations
+  B <- 1000 # number of iterations
+  p <- 0.3 # mean of the Bernoulli distribution
+  storage <- rep(0,B)
+
+  for (i in 1:B){
+    #--- draw from Bern[0.3] (x distributed as Bern[0.3]) ---#
+    x_seq <- runif(N)<=p
+
+    #--- sample mean ---#
+    x_mean <- mean(x_seq) 
+
+    #--- normalize ---#
+    lhs <- sqrt(N)*(x_mean-p)
+
+    #--- save lhs to storage ---#
+    storage[i] <- lhs
+  }
+
+  @ 
+  \end{block_code}  
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{CLT Visualization: $N = 10$}
+  \begin{block_code}{R code: CLT visualize}
+  << clt_viz_10, cache=TRUE, dependson='clt_10', warning=FALSE, size='scriptsize'>>=
+  data_pdf <- data.table(
+      x = seq(-2,2,length=1000),
+      y = dnorm(seq(-2,2,length=1000),sd=sqrt(p*(1-p))) 
+      )
+  g_N_10 <- ggplot() +
+    geom_density(
+      data=data.table(x=storage),
+      aes(x=x,color='sample distribution')
+      ) +
+    geom_line(
+      data=data_pdf,
+      aes(y=y,x=x,color='pdf of N(0,0.21)')
+      ) +
+    scale_color_manual(
+      values=c('sample distribution'='blue','pdf of N(0,0.21)'='red'),
+      name='') +
+    theme(
+      legend.position='bottom' 
+      ) +
+    ggtitle('N=10')
+  @
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c,fragile]
+	\frametitle{CLT Visualization: $N = 10$}
+  << clt_viz_10_show, echo=FALSE, cache=TRUE, dependson='clt_viz_10', warning=FALSE, size='tiny',out.height='3in',out.width='3in'>>=
+  g_N_10
+	@
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{CLT Visualization: $N = 100$}
+  << clt_viz_100, echo=FALSE, cache=TRUE, warning=FALSE, size='tiny',out.height='3in',out.width='3in'>>=
+  set.seed(893269)
+  N <- 100 # the number of observations
+  B <- 1000
+  p <- 0.3
+  storage <- rep(0,B)
+
+  for (i in 1:B){
+    #--- draw from U[0,1] (x distributed as U[0,1]) ---#
+    x_seq <- runif(N)<=0.3
+
+    #--- sample mean ---#
+    x_mean <- mean(x_seq) 
+
+    #--- normalize ---#
+    lhs <- sqrt(N)*(x_mean-0.3)
+
+    #--- save lhs to storage ---#
+    storage[i] <- lhs
+  }
+  data_pdf <- data.table(
+      x = seq(-2,2,length=1000),
+      y = dnorm(seq(-2,2,length=1000),sd=sqrt(p*(1-p))) 
+      )
+  ggplot() +
+    geom_density(
+      data=data.table(x=storage),
+      aes(x=x,color='sample distribution')
+      ) +
+    geom_line(
+      data=data_pdf,
+      aes(y=y,x=x,color='pdf of N(0,0.21)')
+      ) +
+    scale_color_manual(
+      values=c('sample distribution'='blue','pdf of N(0,0.21)'='red'),
+      name='') +
+    theme(
+      legend.position='bottom' 
+      ) +
+    ggtitle('N=100')
+  @
+\end{frame}
+
+\begin{frame}[c,fragile]
+	\frametitle{CLT Visualization: $N = 10,000$}
+  << clt_viz_10000, echo=FALSE, cache=TRUE, warning=FALSE, size='tiny',out.height='3in',out.width='3in'>>=
+  set.seed(893269)
+  N <- 10000 # the number of observations
+  B <- 1000
+  p <- 0.3
+  storage <- rep(0,B)
+
+  for (i in 1:B){
+    #--- draw from U[0,1] (x distributed as U[0,1]) ---#
+    x_seq <- runif(N)<=0.3
+
+    #--- sample mean ---#
+    x_mean <- mean(x_seq) 
+
+    #--- normalize ---#
+    lhs <- sqrt(N)*(x_mean-0.3)
+
+    #--- save lhs to storage ---#
+    storage[i] <- lhs
+  }
+
+  data_pdf <- data.table(
+			x = seq(-2,2,length=1000),
+			y = dnorm(seq(-2,2,length=1000),sd=sqrt(p*(1-p)))	
+			)
+	ggplot() +
+		geom_density(data=data.table(x=storage),aes(x=x,color='sample distribution')) +
+    geom_line(data=data_pdf,aes(y=y,x=x,color='pdf of N(0,0.21)')) +
+    scale_color_manual(values=c('sample distribution'='blue','pdf of N(0,0.21)'='red'),name='') +
+    theme(
+      legend.position='bottom' 
+      ) +
+		ggtitle('N=10,000')
+	@
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{CLT}
+  \begin{block}{Important}
+    CLT holds for \textcolor{blue}{any} distribution of $x_i$ \textcolor{blue}{as long as it has a finite expected value and variance}. 
+  \end{block} 
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Asymptotics}
+
+  Under assumptions $MLR.1$ through $MLR.5$ ($MLR.6$ not necessary!!),
+
+  \begin{block}{Asymptotic Normality of OLS}  
+    \begin{align*}
+    \sqrt{n}(\hat{\beta}_j-\beta_j)\xrightarrow[]{a} N(0,\sigma^2/\alpha_j^2)
+    \end{align*}
+    where $\alpha_j^2=plim(\frac{1}{n}\sum_{i=1}^n r^2_{i,j})$, where $r^2_{i,j}$ are the residuals from regressing $x_j$ on the other independent variables.
+  \end{block}
+  
+  \begin{block}{Consistency of $\hat{\sigma}^2\equiv \frac{1}{n-k-1}\sum_{i=1}^n \hat{u}_i^2$}  
+     $\hat{\sigma}^2$ is a consistent estimator of $\sigma^2$ ($Var(u)$)
+   \end{block} 
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Further,}
+  For each $j$,
+  \begin{itemize}
+    \item $(\hat{\beta}_j-\beta_j)/sd(\hat{\beta}_j) \xrightarrow[]{a} N(0,1)$
+    \item $(\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j) \xrightarrow[]{a} N(0,1)$, where $se(\hat{\beta}_j)=\sqrt{\frac{\hat{\sigma}^2}{SST_j(1-R_j^2})}$
+  \end{itemize}
+\end{frame} 
+
+\begin{frame}[c]
+  \frametitle{Small vs. Large Sample}
+  \begin{block}{Small sample (any sample size)}  
+    Under $MLR.1$ through $MLR.5$ \textcolor{blue}{and} $MLR.6$ ($u_i\sim N(0,\sigma^2)$),
+    \begin{align*}
+      (\hat{\beta}_j-\beta_j)/sd(\hat{\beta}_j) \sim N(0,1)\\
+      (\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j) \sim t_{n-k-1}
+    \end{align*}
+  \end{block} 
+  \begin{block}{Large sample (when $n$ goes infinity)}  
+    Under $MLR.1$ through $MLR.5$ \textcolor{blue}{without} $MLR.6$,
+    \begin{align*}
+     (\hat{\beta}_j-\beta_j)/sd(\hat{\beta}_j) \xrightarrow[]{a} N(0,1) \\
+     (\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j) \xrightarrow[]{a} N(0,1) 
+    \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Testing under large sample}
+  \begin{block}{It turns out,}  
+    You can proceed exactly the same way as you did before (practically speaking)!!
+
+    \begin{enumerate}
+      \item calculate $(\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j)$
+      \item check if the obtained value is greater than (in magnitude) the critical value for the specified significance level under $t_{n-k-1}$
+    \end{enumerate}
+  \end{block}
+  \only<2->{\begin{block}{But,}  
+    Shouldn't we use $N(0,1)$ when you find the critical value?
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Testing under large sample}
+  \begin{block_code}{R code: t vs N distributions}
+  << t_n, warning=FALSE, size='tiny'>>=
+  x <- seq(-3,3,length=1000)
+  y_norm <- dnorm(x) # pdf of N(0,1)
+  y_t_2 <- dt(x,df=2) # pdf of t_{2}
+  y_t_10 <- dt(x,df=10) # pdf of t_{10}
+  y_t_30 <- dt(x,df=30) # pdf of t_{30}
+  y_t_50 <- dt(x,df=50) # pdf of t_{50}
+
+  plot_data <- data.table(
+    x=x,
+    'N(0,1)'=y_norm,
+    't (df=2)'=y_t_2,
+    't (df=10)'=y_t_10,
+    't (df=30)'=y_t_30,
+    't (df=50)'=y_t_50
+    ) %>% 
+    melt(id.var='x')
+
+  g_t_vs_N <- ggplot(data=plot_data) +
+    geom_line(aes(y=value,x=x,color=variable)) +
+    scale_color_discrete(name='') +
+    theme(
+      legend.position='bottom'
+      )
+
+  @
+  \end{block_code}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{t vs Normal distributions}
+  << t_n_viz, echo=FALSE, dependson='t_n', warning=FALSE, size='tiny',out.height='3in',out.width='3in'>>=
+  g_t_vs_N
+  @
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Testing under large sample}
+  Since $t_{n-k-1}$ and $N(0,1)$ are almost identical when $n$ is large, there is very little error in using $t_{n-k-1}$ instead of $N(0,1)$ to find the critical value.
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Homoskedasticity}
+  \begin{block}{Important}  
+  The asymptotic normality of OLS \textcolor{blue}{does} require homoskedasticity assumption ($MLR.5$)!!
+
+  \begin{itemize}
+    \item the usual t-statistics and confidence intervals are invalid no matter how large the sample size is if error is heteroskedastic
+    \item we talk extensively about how we should deal with heteroskedasticity
+  \end{itemize}
+  \end{block} 
+\end{frame}
+
+\end{document}
+
+
+
+
+

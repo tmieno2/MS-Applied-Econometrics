@@ -25,3 +25,8 @@ render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/StandardErrorE
 # Functional form
 #--------------------------
 render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/EconometricModel/modeling_x.Rmd")
+
+#--------------------------
+# Asymptotics
+#--------------------------
+render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Asymptotics/asymptotics_x.Rmd")
