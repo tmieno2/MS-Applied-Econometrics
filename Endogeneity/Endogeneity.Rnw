@@ -1,0 +1,719 @@
+\documentclass[fleqn]{beamer}
+
+% \usefonttheme[onlylarge]{structuresmallcapsserif}
+\usefonttheme[onlysmall]{structurebold}
+\usepackage[normalem]{ulem} % use normalem to protect \emph
+\newcommand\hl{\bgroup\markoverwith
+  {\textcolor{yellow}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{wasysym}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{qtree}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{inconsolata}
+\usepackage{framed}
+\definecolor{shadecolor}{rgb}{1,0.8,0.3}
+\usepackage[justification=centering]{caption}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue}
+\usepackage[space]{grffile}
+\usefonttheme[onlymath]{serif}
+% \usepackage{tikz}
+% \usetikzlibrary{calc,matrix}
+\usepackage{sgame}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\mode<presentation>
+%\usetheme{Frankfurt}
+\usetheme{boxes}
+\usecolortheme{beaver}
+%\usetheme{Singapore}
+%\usetheme{Hannover}
+
+\newcommand*{\captionsource}[2]{%
+  \caption[{#1}]{%
+    #1%
+    \\\hspace{\linewidth}%
+    {\small\textbf{Source:} #2}%
+  }%
+}
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{blocks}[rounded]
+\newenvironment<>{block_code}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \begin{block}#2{#1}}{\end{block}}
+
+%--------------------------
+% Reduce the spacing between R code and output
+%--------------------------
+\usepackage{etoolbox}
+\makeatletter
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+
+\renewenvironment{knitrout}{\setlength{\topsep}{0mm}}{}
+
+%===================================
+% Coloring change
+%===================================
+\definecolor{darkred}{rgb}{0.8,0,0}
+\setbeamercolor{block title}{fg=darkred,bg=structure.fg!20!bg!50!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg}
+
+\title{Endogeneity}
+\author{Taro Mieno}
+\date{AECN 896-003: Applied Econometrics}
+\everymath{\displaystyle}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+<<prep, echo=FALSE, message=F, warning=F>>=
+source('~/Box/R_libraries_load/library.R')
+library(stargazer)
+library(readstata13)
+source('~/Box/MySoftware/MyR/ggplot2/ggplot2_default_teaching.R')
+source('~/Box/Teaching/R_functions/functions.R')
+opts_chunk$set(
+  comment = NA,
+  message = FALSE,
+  warning = FALSE,
+  tidy=FALSE,
+  size='footnotesize',
+  #--- figure related ---#
+  fig.align='center',
+  out.height='2.5in',
+  out.width='2.5in',
+  dev='pdf'
+  )
+# setwd('~/Dropbox/Teaching/UNL/EconometricsMaster/Lectures/Endogeneity')
+@
+
+
+\begin{frame}[c,fragile]
+  \frametitle{Endogeneity}
+  \begin{block}{Endogeneity}
+  \vspace{-0.6cm}
+    \begin{align*}
+      E[u|x_k]\ne 0
+    \end{align*}
+  \end{block}
+  \begin{block}{Endogeneous independent variable}
+    If u (the error term) is, \textcolor{red}{for whatever reason}, correlated with the independent variable $x_k$, then we say that $x_k$ is an endogenous independent variable.
+    \begin{itemize}
+      \item Functional form misspecification
+      \item Measurement error
+      % \item Non-random sampling
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+%===================================
+% Program Evaluation
+%===================================
+% \begin{frame}[c]
+%   \title{Program evaluation}
+%   \author{}
+%   \date{}
+%   \maketitle
+% \end{frame}
+
+% %--- start of frame ---%
+
+% \begin{frame}[c,fragile]
+%   \frametitle{Endogeneity in program evaluation}
+
+% \end{frame}
+
+%--- end of frame ---%
+
+%===================================
+% Functional Form
+%===================================
+\begin{frame}[c]
+  \title{Functional form misspecification}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \begin{block}{True model}
+    \begin{align*}
+      log(wage) = & \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 exper^2 + \beta_4 female \\
+      & + \beta_5 female\cdot educ + u
+    \end{align*}
+  \end{block}
+  \begin{block}{Incorrectly specified model}
+    \begin{align*}
+      log(wage) = & \beta_0 + \beta_1 educ + \beta_2 exper  + \beta_4 female \\
+      & + \beta_5 female\cdot educ + v \;\; (u + \beta_3 exper^2)
+    \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \begin{itemize}
+    \item Often times, adding a quadratic term helps capture non-linear relationship between the dependent and an independent variable
+    \item Whether quadratic or interaction terms should be included can be tested using $F$-test
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Regression Specification Error Test (RESET)}
+  \begin{block}{Idea}
+    If the original model
+    \begin{align*}
+    y = \beta_0+\beta_1 x_1 + \dots + \beta_k x_k + u
+    \end{align*}
+    is correct, then no non-linear functions of the independent variables should be significant when added to equation (9.2)
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Regression Specification Error Test (RESET)}
+  \begin{block}{RESET Steps}
+    \begin{enumerate}
+       \item estimate the original linear model and get $\hat{y}$ (predicted $y$)
+       \item estimate the following model:
+       \begin{align*}
+        y = \beta_0+\beta_1 x_1 + \dots + \beta_k x_k + \sigma_1\textcolor{blue}{\hat{y}^2} + \sigma_2\textcolor{blue}{\hat{y}^3} + u
+       \end{align*}
+       \item test the joint significance of $\sigma_1$ and $\sigma_2$ ($F$-test)
+     \end{enumerate}
+  \end{block}
+  \begin{block}{Notes}
+     RESET is a test against the general form of non-linearity (Not against a specific functional form like quadratic or log)
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Test against \textcolor{blue}{nested} alternatives}
+  \begin{block}{Nested-models}
+    \begin{align*}
+    y=&\beta_0 + \beta_1 x_1 + \beta_2 x_2 + u \\
+    y=&\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_5 x_1 \cdot x_2+ u
+    \end{align*}
+  These models are \textcolor{blue}{nested} because the first model is a special case of the second model when $\beta_3=0$ and $\beta_4=0$
+  \end{block}
+
+  \begin{block}{Testing if the second is appropriate}
+    $F$-test with the null hypothesis: $\beta_3=0$ and $\beta_4=0$
+    \begin{itemize}
+      \item Restricted model: the first model
+      \item Full model: the second model
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{Test against \textcolor{blue}{non-nested} alternatives}
+  \begin{block}{Non-nested models}
+    \begin{align*}
+    y=&\beta_0 + \beta_1 x_1 + \beta_2 x_2 + u \\
+    y=&\beta_0 + \beta_1 log(x_1) + \beta_2 log(x_2) + u
+  \end{align*}
+  These models are \textcolor{blue}{non-nested} because neither of them is a special case of the other
+  \end{block}
+  \begin{block}{Testing}
+    $F$-test cannot be used because one of the model model cannot be a restricted version of the other model
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Test against \textcolor{blue}{non-nested} alternatives}
+  \begin{block}{Davidson-MacKinnon test: Idea}
+  Consider the following alternatives:
+    \begin{align*}
+    y=&\beta_0 + \beta_1 x_1 + \beta_2 x_2 + u \\
+    y=&\beta_0 + \beta_1 log(x_1) + \beta_2 log(x_2) + u
+    \end{align*}
+  If the first linear model is true, then the fitted values from the other model should be insignificant in the first model.
+  \end{block}
+  \begin{block}{DM test: the first against the second}
+    \begin{enumerate}
+      \item estimate the second model (non-linear model) to obtain the fitted values, denoted as $\hat{y}$
+      \item estimate the first model with $\hat{y}$ added:
+      \begin{align*}
+        y=&\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \theta_1 \hat{y}+ u
+      \end{align*}
+      \item conduct a two-sided $t$-test on $\hat{\theta_1}$
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{DM test implementation}
+  \begin{block}{Non-nested testing}
+  \vspace{-0.6cm}
+    \begin{align*}
+    H_0: \;\; & log(wage) = \beta_0 + \beta_1 log(educ) + u \\
+    H_1: \;\; & log(wage) = \beta_0 + \beta_1 educ + \beta_2 educ^2 + u
+    \end{align*}
+  \end{block}
+  << DM_test, tidy=F, echo=T, cache=TRUE, size='scriptsize'>>=
+    #--- load the data ---#
+    wage <- readRDS('wage1.rds')
+    wage <- data.table(wage)
+    wage <- wage[educ!=0,]
+
+    #--- estimate the null model ---#
+    null_lm <- lm(wage~log(educ),data=wage)
+    wage[,y_hat:=null_lm$fitted.value]
+
+    #--- estimate the alternative model with y_hat---#
+    alt_lm <- lm(wage~educ+educ^2+y_hat,data=wage)
+    summary(alt_lm)$coef
+  @
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Test against \textcolor{blue}{non-nested} alternatives}
+\begin{block}{Complications}
+  \begin{itemize}
+     \item Both models could be rejected: there are other functional forms that are more appropriate than the two you tested
+     \item Neither model could be rejected: we could use the adjusted $R^2$
+     \item Rejection of the second (first) model against the first (second) model does not mean that the first (second) model is correct
+   \end{itemize}
+\end{block}
+\end{frame}
+
+
+
+% \begin{frame}[c,fragile]
+%   \begin{block_code}{R code: quadratic}
+%   << crime_reg, tidy=F, echo=F, cache=TRUE>>=
+%     wage <- read.dta13('CRIME1.dta') %>% data.table()
+%     wage[,avgsen_2:=avgsen^2]
+%     quad_reg <- lm(wage~female+educ+educ_2,data=wage)
+%     summary(quad_reg)$coefficients
+%   @
+%   \end{block_code}
+% \end{frame}
+
+\begin{frame}[c]
+  \title{Omitted (Unobserved) Variables}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Omitted Variable}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+  \begin{align*}
+    log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 ablility + u
+  \end{align*}
+  \end{block}
+  \begin{block}{Incorrectly Specified Model}
+  \vspace{-0.6cm}
+  \begin{align*}
+    log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper  + v (u + \beta_3 ablility)
+  \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c,fragile]
+  \frametitle{Use of proxy variables to mitigate bias}
+  One way to mitigate the omitted variable bias is to include a \textcolor{blue}{proxy variable}
+
+  \only<2->{\begin{block}{Proxy Variable}
+    a variable that is related to the unobserved variable that we would like to control
+  \end{block}}
+\end{frame}
+
+
+ebegin{frame}[c]
+  \frametitle{an example}
+  \begin{block}{true model}
+  \vspace{-0.6cm}
+  \begin{align*}
+    log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 ablility + u
+  \end{align*}
+  \begin{description}
+    \item [ability]: not observable
+    \item [iq]: observed, but does not perfectly capture ability
+  \end{description}
+  \end{block}
+  \only<2->{\begin{block}{plug-in method}
+  \vspace{-0.6cm}
+  \begin{align*}
+    log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 iq + v
+  \end{align*}
+  \end{block}}
+  \only<3->{\begin{block}{question}
+    when does this plug-in method work (unbiased estimation of the coefficient on education)?
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{general framework}
+  \begin{align*}
+    y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3^* + u
+  \end{align*}
+  \begin{itemize}
+    \item $x_3^*$: unobserved
+    \item $x_3$: observed
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{When does the plug-in method work?}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+    y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3^* + u
+    \end{align*}
+  \end{block}
+   \begin{block}{1st Condition (obvious)}
+   \textcolor{blue}{Proxy is related to the variable omitted}
+     \begin{align*}
+       x_3^* = \sigma_0 + \sigma_3 x_3 + v
+     \end{align*}
+   \vspace{-0.6cm}
+     \begin{itemize}
+       \item $v$ is the error term (error exists because they are not the same)
+       \item The parameter $\sigma_3$ measures the relationship between $x_3^*$ (ability) and $x_3$ (IQ).
+       \item If \textcolor{blue}{$\sigma_3=0$}, then $x_3$ (IQ) is not a good proxy for $x_3^*$ (ability).
+     \end{itemize}
+   \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{When does the plug-in method work?}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+    y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3^* + u
+    \end{align*}
+  \end{block}
+
+  \begin{block}{Relationship between $x_3^*$ and $x_3$}
+  \vspace{-0.6cm}
+    \begin{align*}
+       x_3^* = \sigma_0 + \sigma_3 x_3 + v
+     \end{align*}
+  \end{block}
+
+  \only<2->{\begin{block}{True Model Re-written}
+  \vspace{-0.6cm}
+    \begin{align*}
+    y & = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3(\sigma_0 + \sigma_3 x_3 + v) + u  \\
+      & = (\beta_0 + \beta_3\sigma_0) + \beta_1 x_1 + \beta_2 x_2 + \beta_3\sigma_3 x_3 + (\beta_3v + u)  \\
+      & = \alpha_0 + \beta_1 x_1 + \beta_2 x_2 + \alpha_3 x_3 + \varepsilon
+    \end{align*}
+    \vspace{-0.6cm}
+    \begin{itemize}
+       \item $\alpha_0=\beta_0 + \beta_3\sigma_0$
+       \item $\alpha_3=\beta_3\sigma_3$
+       \item $\varepsilon=\beta_3(\sigma_0+v) + u$
+     \end{itemize}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{When does the plug-in method work?}
+  \begin{block}{True Model Re-written}
+  \vspace{-0.6cm}
+    \begin{align*}
+    y = \alpha_0 + \beta_1 x_1 + \beta_2 x_2 + \alpha_3 x_3 + \varepsilon\end{align*}
+    \vspace{-0.6cm}
+    \begin{itemize}
+       \item $\alpha_0=\beta_0 + \beta_3\sigma_0$
+       \item $\alpha_3=\beta_3\sigma_3$
+       \item $\varepsilon=\beta_3 v + u$
+     \end{itemize}
+  \end{block}
+  \only<2->{\begin{block}{Question}
+    When you regress $y$ on $x_1$, $x_2$, and $x_3$, what are the conditions for unbiased estimation of the coefficients on the independent variables?
+  \end{block}}
+  \only<3->{\begin{block}{Answer}
+    $E[\varepsilon|x_1,x_2,x_3]=0$
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Investigation the condition}
+  \begin{block}{Conditions for unbiasedness}
+  \vspace{-0.6cm}
+  \begin{align*}
+     & E[\varepsilon|x_1,x_2,x_3]=  0 \\
+    \Rightarrow & E[\beta_3 v + u|x_1,x_2,x_3]=  0
+  \end{align*}
+  \end{block}
+  \begin{block}{Breaking into two conditions,}
+    \vspace{-0.6cm}
+    \begin{align*}
+      E[v|x_1,x_2,x_3]=  0 \\
+      E[u|x_1,x_2,x_3]=  0
+    \end{align*}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{When does the plug-in method work?}
+  \begin{block}{True Model}
+  \vspace{-0.6cm}
+    \begin{align*}
+    y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3^* + u
+    \end{align*}
+  \end{block}
+  \begin{block}{2nd Condition: $E[u|x_1,x_2,x_3]=0$}
+   \textcolor{blue}{$x_1$, $x_2$, and $x_3$ are not correlated with $u$}
+     \begin{itemize}
+       \item $E[u|x_1,x_2]=0$: (standard condition for unbiasedness)
+       \item $E[u|x_3]=0$: $x_3$ does not belong in the true model after you control for $x_1$, $x_2$, and $x_3^*$.
+        \begin{itemize}
+          \item This is essentially true by definition, since $x_3$ (IQ) is a proxy variable for $x_3^*$ (ability): it is $x_3^*$ (ability) that directly affects $y$ (log(wage)), not $x_3$ (IQ)
+        \end{itemize}
+     \end{itemize}
+   \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{When does the plug-in method work?}
+  \begin{block}{Relationship between $x_3^*$ and $x_3$}
+  \vspace{-0.6cm}
+    \begin{align*}
+       x_3^* = \sigma_0 + \sigma_3 x_3 + v
+     \end{align*}
+  \end{block}
+  \begin{block}{3rd Condition: $E[v|x_1,x_2,x_3]=0$}
+   \textcolor{blue}{$x_1$, $x_2$, and $x_3$ are not correlated with $v$}
+     \begin{itemize}
+       \item $E[v|x_1,x_2]=0$: Once $x_3$ (IQ) is partialled out, $x^*_3$ (ability) is uncorrelated with $x_1$ (education) and $x_2$ (experience)
+       \item $E[v|x_3]=0$: always satisfied by construction
+        \end{itemize}
+   \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{When does the plug-in method work?}
+  \begin{block}{3rd Condition}
+   $E[v|x_1,x_2]=0$: Once $x_3$ (IQ) is partialled out, $x^*_3$ (ability) is uncorrelated with $x_1$ (education) and $x_2$ (experience)
+  \end{block}
+  \begin{block}{Put it differently,}
+    Does something in ability other than IQ determine education or experience?
+    \begin{itemize}
+      \item \only<2->{Probably yes. But, since the IQ part is taken out of ability in the error term, $educ$ and $exper$ should be less correlated with the error term now!}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[c,fragile]
+  \frametitle{}
+  \footnotesize{
+<<IQ, tidy=F, echo=F, cache=TRUE,results='asis'>>=
+    wage <- read.dta13('WAGE2.dta') %>% data.table()
+    no_IQ <- lm(log(wage)~educ+exper+tenure+married+south+black+urban,data=wage)
+    with_IQ <- lm(log(wage)~educ+exper+tenure+married+south+black+urban+IQ,data=wage)
+    stargazer(no_IQ,with_IQ,type='latex',single.row=TRUE,omit.stat=c('all'),table.layout='-ld#-t-')
+@
+  }
+\end{frame}
+
+\begin{frame}[c]
+  \title{Measurement Errors}
+  \author{}
+  \date{}
+  \maketitle
+\end{frame}
+
+\begin{frame}[c]
+\begin{block}{Measurement Errors (ME)}
+  Inaccuracy in the values observed as opposed to the actual values
+\end{block}
+\begin{block}{Examples}
+  \begin{itemize}
+    \item reporting errors (any kind of survey has the potential of mis-reporting)
+    \begin{itemize}
+      \item household survey on income and savings
+    \end{itemize}
+    \item the use of estimated values
+      \begin{itemize}
+      \item spatially interpolated weather conditions (precipitation)
+      \item imputed irrigation costs
+      \end{itemize}
+  \end{itemize}
+\end{block}
+\begin{block}{Question}
+  What are the consequences of having measurement errors in variables you use in regression?
+\end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{ME in the dependent variable}
+  \begin{block}{True model}
+  Consider the following general model
+    \begin{align}
+      y^*=  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + u \label{model}
+    \end{align}
+  with MLR.1 through MLR.6 satisfied.
+  \end{block}
+  \begin{block}{Measurement errors}
+  The difference between the observed and actual values
+  \begin{align}
+    e = y-y^* \label{error}
+  \end{align}
+  \end{block}
+
+  \only<2->{\begin{block}{Re-write the true model}
+    Plugging (\ref{error}) into (\ref{model}),
+    \begin{align*}
+    y =  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + v (u + e) \label{model}
+    \end{align*}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{ME in the dependent variable}
+  \begin{block}{Re-write the true model}
+    Plugging (\ref{error}) into (\ref{model}),
+    \begin{align}
+    y =  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + v, \;\;\mbox{where}\;\; v=(u + e) \label{model}
+    \end{align}
+  \end{block}
+
+  \begin{block}{Question}
+    What are the conditions under which OLS estimators are unbiased?
+  \end{block}
+
+  \only<2->{\begin{block}{Answer}
+  \vspace{-0.6cm}
+  \begin{align*}
+    E[v|x_1,\dots,x_k] = 0
+  \end{align*}
+  \textcolor{blue}{So, as long as the measurement error is uncorrelated with the independent variables, OLS estimators are still unbiased.}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{ME in an independent variable}
+  \begin{block}{True Model}
+  Consider the following general model
+    \begin{align}
+      y=  \beta_0 + \beta_1 x_1^* + u \label{model_1}
+    \end{align}
+  with MLR.1 through MLR.6 satisfied.
+  \end{block}
+  \begin{block}{Measurement errors}
+  The difference between the observed and actual values
+  \begin{align}
+    e_1 = x_1-x_1^* \label{error_1}
+  \end{align}
+  \end{block}
+
+  \only<2->{\begin{block}{Re-write the true model}
+    Plugging (\ref{error_1}) into (\ref{model_1}),
+    \begin{align}
+    y =  \beta_0 + \beta_1 x_1 + v, \;\;\mbox{where}\;\; v=(u - \beta e_1)
+    \end{align}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{ME in an independent variable}
+  \begin{block}{Re-write the true model}
+    Plugging (\ref{error_1}) into (\ref{model_1}),
+    \begin{align}
+    y =  \beta_0 + \beta_1 x_1 + v, \;\;\mbox{where}\;\; v=(u - \beta e_1)
+    \end{align}
+  \end{block}
+
+  \begin{block}{Question}
+    What are the conditions under which OLS estimators are unbiased?
+  \end{block}
+
+  \only<2->{\begin{block}{Answer}
+  \vspace{-0.6cm}
+  \begin{align*}
+    E[v|x_1] = 0
+  \end{align*}
+  \end{block}}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{ME in an independent variable}
+  \begin{block}{Classical errors-in-variables (CEV)}
+  The correctly observed variable ($x_1^*$) is uncorrelated with the measurement error ($e_1$):
+  \begin{align*}
+    Cov(x_1^*,e_1)=0
+  \end{align*}
+  \end{block}
+  \begin{block}{Under CEV}
+  The incorrectly observed variable ($x_1$) must be correlated with the measurement error ($e_1$):
+  \begin{align*}
+    Cov(x_1,e_1) & =E[x_1 e_1]-E[x_1]E[e_1]\\
+    & =E[(x_1^*+e_1)e_1]-E[x_1^*+e_1)]E[e_1]\\
+    & = E[x_1^*e_1+e_1^2]-E[x_1^*+e_1)]E[e_1]\\
+    & = \sigma_{e_1}^2=\sigma_{e_1}^2
+  \end{align*}
+  \only<2->{\textcolor{blue}{So, the mis-measured variable $x_1$ is always endogenous}}
+  \end{block}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{ME in an independent variable}
+  \only<1-2>{\begin{block}{The direction of the bias}In general, for the following model:
+  \begin{align*}
+    y = \beta_0 + \beta_1 x_1 + u
+  \end{align*}
+  $sign(bias)=sign(Cov(x,u))$
+  \end{block} }
+
+  \only<2->{\begin{block}{ME in an independent variable}
+  \vspace{-0.6cm}
+   \begin{align*}
+    y =  \beta_0 + \beta_1 x_1 + v, \;\;\mbox{where}\;\; v=(u - \beta e_1)
+    \end{align*}
+    \vspace{-0.6cm}
+   \begin{align*}
+      sign\Big(Cov(x_1,v)\Big) & = sign\Big(Cov(x_1,u-\beta e_1)\Big) \\
+      & = sign\Big(-\beta Cov(x_1,e_1) \Big) \\
+      & = -sign(\beta) sign\Big(Cov(x_1,e_1)\Big) \\
+      & = -sign(\beta)
+   \end{align*}
+  \end{block}}
+
+  \only<3->{
+  \begin{block}{Attenuation Bias}
+    Under CEV, the direction of bias is always the negative of the sign of the coefficient, which leads to a coefficient estimate closer to 0 than it truly is.
+  \end{block}
+  }
+\end{frame}
+
+% \begin{frame}[c]
+%   \title{Self-selection}
+%   \author{}
+%   \date{}
+%   \maketitle
+% \end{frame}
+
+% \begin{frame}[c]
+%   \frametitle{Self-selection}
+
+% \end{frame}
+
+\end{document}
+

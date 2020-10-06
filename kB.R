@@ -30,3 +30,10 @@ render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/EconometricMod
 # Asymptotics
 #--------------------------
 render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Asymptotics/asymptotics_x.Rmd")
+
+#--------------------------
+# Endogeneity
+#--------------------------
+render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/endogeneity_x.Rmd")
+
+

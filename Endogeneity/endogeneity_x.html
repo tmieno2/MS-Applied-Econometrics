@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Endogeneity</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 396/896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Endogeneity
+### AECN 396/896-002
+
+---
+
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+
+# Before we start 
+
+## Learning objectives
+
+Understand the how endogeneity problems arise
+
+## Table of contents
+
+1. [Selection Bias](#select)
+2. [Reverse Causality](#reverse)
+3. [Measurement Error](#ME)
+
+---
+class: middle
+
+# Endogeneity  
+
+.content-box-red[**Endogeneity**]
+  
+`\(E[u|x_k] \ne 0\)` (the error term is not correlated with any of the independent variables)
+
+--
+
+.content-box-red[**Endogenous independent variable**]
+
+If the error term is, .red[for whatever reason], correlated with the independent variable `\(x_k\)`, then we say that `\(x_k\)` is an endogenous independent variable.
+
++ Omitted variable 
++ Selection 
++ Reverse causality 
++ Measurement error
+
+---
+
+# Omitted Variable
+
+.content-box-red[**True Model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 ablility + u\)`
+
+--
+
+.content-box-red[**Incorrectly specified (your) model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper  + v \;\;(u + \beta_3 ablility)\)`
+
+
+---
+class: inverse, center, middle
+name: select
+
+# Selection Bias 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+.content-box-green[**Research Question**]
+
+Does a soil moisture sensor reduce water use for farmers?
+
+--
+
+.content-box-green[**Data**]
+
+Observational (non-experimental) data on soil moisture sensor adoption and irrigation amount
+
+--
+
+.content-box-green[**Model of interest**]
+
+`\(irrigation  = \beta_0 + \beta_1 sensor + u\)`
+
++ `\(irrigation\)`: the amount of irrigation by the farmer
++ `\(sensor\)`: dummy variable that indicates whether the farmer has adopted soil moisture sensor or not 
+
+--
+
+.content-box-green[**Question**]
+
+Is `\(sensor\)` endogenous (is `\(sensor\)` correlated with the error term)? 
+
+---
+class: middle
+
+Farmers do not just randomly adopt a soil moisture sensor, they consider available information to determine it is beneficial for them to adopt it or not.
+
+--
+
+.content-box-green[**Adoption (selection) equation**]
+
+`\(sensor  = \beta_0 + \beta_1 x_2 + \dots + \beta_k x_k + v\)`
+
+--
+
+.content-box-green[**Question**]
+
+What would be variables that farmers look at when they decide whether they should get a soil moisture sensor or not?
+
+--
+
+.content-box-green[**Question**]
+
+Are any of the variables listed above also affect irrigation demand? 
+
+---
+class: middle
+
+.content-box-green[**Example**]
+
+Soil quality/type (hard to accurately measure)
+
++ farmers whose fields are sandy are more likely to adopt a soil moisture sensor (this is just a conjecture)
++ farmers whose fields are sandy are likely to use more water 
+
+--
+
+.content-box-green[**Key**]
+
+Soil quality/type affect .red[both] the decision of soil moisture sensor adoption and irrigation.
+
+--
+
++ `\(sensor\)` is a function of soil quality/type
++ `\(irrigation\)` is a function of soil quality/type, which is in the error term uncontrolled for
+
+--
+
+`\(\Rrightarrow\)` `\(sensor\)` and the error term in the irrigation model are correlated `\(\Rrightarrow\)` bias 
+
+---
+class: middle
+
+.content-box-green[**Important**]
+
+Selection bias is a form of omitted variable bias
+
+--
+
+.content-box-green[**Reasoning**]
+
+If you accurately measure the common factors in the two equations, you can simply include them explicitly in the main model  
+
+--
+
+`\(\Rrightarrow\)`
+
+This will get the common factors out of the error in the main model, which means the adoption variable and the error term are no longer correlated in the main model
+
+--
+
+.content-box-green[**Note**]
+
+We call this kind of omitted variable bias ".red[selection bias]" because of the underlying mechanism through which the variable of interest (here, adoption of a technology) is made endogenous.
+
++ In this example, farmers self-selected into the adoption of a soil moisture sensor 
+
+
+---
+class: inverse, center, middle
+name: reverse
+
+# Reverse Causality 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+.content-box-green[**Research Question**]
+
+Does a particular type of medical treatment improve health?
+
+--
+
+.content-box-green[**Data**]
+
+Observational (non-experimental) .red[cross-sectional] data on a particular type of medical treatment and health 
+
+--
+
+.content-box-green[**Model**]
+
+`\(health  = \beta_0 + \beta_1 treatment + u\)`
+
++ health: indicator of the health of patients
++ treatment: dummy variable that indicates whether the patient is treated or not 
+
+This model basically compares the health of patients who have and have not had the treatment (no before-after comparison, yes this is dumb).
+
+--
+
+.content-box-green[**Question**]
+
+Is `\(treatment\)` endogenous? (Is `\(treatment\)` correlated with the error term?) 
+
+---
+class: middle
+
+.content-box-green[**Key**]
+
+Whether patients get the treatment or not is not randomized, rather it is determined by doctors (like in the real world).
+
+--
+
+.content-box-green[**Question**]
+
+How do doctors decide whether to put their patients under a medical treatment?
+
+--
+
+.content-box-green[**Answer**]
+
+Patients' health condition!!!
+
+
+---
+class: middle
+
+
+.content-box-green[**Selection (treatment decision) model**]
+
+`\(\mbox{treatment}  = \beta_0 + \beta_1 \mbox{health} + u\)`
+
++ `treatment` is affected by `health`
++ `health` is affected by `treatment`
+
+--
+
+.content-box-green[**Consequence**]
+
+`treatment` is endogenous because it is a function of health itself!
+
+--
+
+.content-box-green[**Reverse Causality**]
+
+This type of endogeneity problem is called .red[reverse causality] because the independent variable of interest is causally affected by the dependent variable even though your interest is in the estimation of the impact of the independent variable on the dependent variable.
+
+---
+class: middle
+
+# Another reverse causality example
+
+.content-box-green[**Context**]
+
++ Under the Clean Water Act, some of those who discharge wastes into water (e.g., oil refinery) need to comply with water quality criteria of their discharges set under the law.
+
++ EPA (Environmental Protection Agency) can take enforcement actions (e.g., financial penalties) to those who violate the requirements.  
+
+--
+
+.content-box-green[**Research Question**]
+
+Are enforcement actions effective in improving the water quality of waster discharges?
+
+--
+
+.content-box-green[**Data**]
+
+Annual data on 
+
++ water quality measures of waster discharges by individual firms 
++ enforcement actions taken on firms by EPA
+
+---
+class: middle
+
+.content-box-green[**Model of Interest**]
+
+`\(\mbox{water quality}  = \beta_0 + \beta_1 \mbox{enforcement actions} + u\)`
+
+--
+
+.content-box-green[**Selection (enforcement decision) model**]
+
+`\(\mbox{enforcement actions}  = \beta_0 + \beta_1 \mbox{water quality} + u\)`
+
++ `water quality` is affected by `enforcement actions`
++ `enforcement actions` is affected by `water quality`
+
+--
+
+.content-box-green[**Consequence**]
+
+`enforcement actions` is endogenous because it is a function of water quality itself!
+
+---
+
+class: inverse, center, middle
+name: ME
+
+# Measurement Error (Garbage in, Garbage out)  
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Measurement Error (ME)
+
+.content-box-green[**Definition**]
+
+Inaccuracy in the values observed as opposed to the actual values
+
+--
+
+.content-box-green[**Examples**]
+
++ reporting errors (any kind of survey has the potential of mis-reporting)
+  * household survey on income and savings
+  * survey on rice yield by farmers in developing countries
++ the use of estimated values
+  + spatially interpolated weather conditions (precipitation)
+  + imputed irrigation costs 
+
+--
+
+.content-box-green[**Question**]
+
+What are the consequences of having measurement errors in variables you use in regression?
+
+---
+class: middle
+
+# ME in the Dependent Variable
+
+.content-box-green[**True Model**]
+
+`\(y^*=  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + u\)`
+
+with MLR.1 through MLR.6 satisfied ($u$ is not correlated with any of the independent variables).
+
+--
+
+.content-box-green[**Measurement Errors**]
+
+The difference between the observed `\((y)\)` and actual values `\(y^*\)`
+
+`\(e = y-y^*\)`
+
+--
+
+.content-box-green[**Estimable Model**]
+
+Plugging the second equation into the first equation, your model is 
+
+`\(y =  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + v, \;\;\mbox{where}\;\; v = (u + e)\)` 
+
+
+---
+class: middle
+
+.content-box-green[**Estimable Model**]
+
+Plugging the second equation into the first equation, your model is 
+
+`\(y =  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + v, \;\;\mbox{where}\;\; v = (u + e)\)` 
+
+.content-box-green[**Question**]
+
+What are the conditions under which OLS estimators are unbiased?
+
+--
+
+.content-box-green[**Answer**]
+
+`\(E[e|x_1, \dots, x_k] = 0\)`
+
+--
+
+So, as long as the measurement error is uncorrelated with the independent variables, OLS estimators are still unbiased.
+
+---
+class: middle
+
+# ME in Independent Variables
+
+.content-box-green[**True Model**]
+
+Consider the following general model
+
+`\(y =  \beta_0 + \beta_1 x_1^* + u\)` 
+
+with MLR.1 through MLR.6 satisfied.
+
+--
+
+.content-box-green[**Measurement Errors**]
+
+The difference between the observed `\((x_1)\)` and actual values `\((x_1^*)\)`
+
+`\(e_1 = x_1-x_1^*\)` 
+
+--
+
+.content-box-green[**Estimable Model**]
+
+Plugging the second equation into the first equation,
+
+`\(y =  \beta_0 + \beta_1 x_1 + v, \;\;\mbox{where}\;\; v = (u - \beta e_1)\)`
+
+---
+class: middle
+
+.content-box-green[**Estimable Model**]
+
+Plugging the second equation into the first equation,
+
+`\(y =  \beta_0 + \beta_1 x_1 + v, \;\;\mbox{where}\;\; v = (u - \beta e_1)\)`
+
+.content-box-green[**Question**]
+
+What are the conditions under which OLS estimators are unbiased?
+
+--
+
+.content-box-green[**Answer**]
+
+`\(E[e_1|x_1] = 0\)`
+
+--
+
+Unfortunately, this never holds.
+
+---
+class: middle
+
+.content-box-green[**Classical errors-in-variables (CEV)**]
+  
+The correctly observed variable ($x_1^*$) is uncorrelated with the measurement error ($e_1$):
+
+`\(Cov(x_1^*, e_1) = 0\)`
+
+.content-box-green[**Under CEV**]
+
+The incorrectly observed variable `\((x_1)\)` must be correlated with the measurement error `\((e_1)\)`:
+
+--
+
+So, the mis-measured variable `\((x_1)\)` is 
+
+--
+
+`\(Cov(x_1,e_1) = E[x_1 e_1]-E[x_1]E[e_1]\)`
+
+`\(\quad\quad\quad\quad\quad = E[(x_1^*+e_1)e_1]-E[x_1^*+e_1)]E[e_1]\)`
+
+`\(\quad\quad\quad\quad\quad = E[x_1^*e_1+e_1^2]-E[x_1^*+e_1)]E[e_1]\)`
+
+`\(\quad\quad\quad\quad\quad = \sigma_{e_1}^2 =\sigma_{e_1}^2\)`
+
+--
+
+So, the mis-measured variable `\((x_1)\)` is always correlated with the measurement error `\((e_1)\)`.
+
+---
+class: middle
+
+
+.content-box-green[**Question**]
+
+So, what is the direction of the bias?
+
+.content-box-green[**Note**]
+
+The sign of the bias on `\(x_1\)` is the sign of the correlation between `\(x_1\)` and `\(v = (u - \beta e_1)\)`.
+
+.content-box-green[**Bias?**]
+
++ Correlation between `\(x_1\)` and `\(u\)` is zero
+
++ The sign of the correlation between `\(x_1\)` and `\(e_1\)` is positive (see the previous slide), which means that the sign of the correlation between `\(x_1\)` and `\(- \beta e_1\)` is the sign of `\(- \beta\)`.
+  * if `\(\beta &gt; 0\)`, then the sign of the bias is negative 
+  * if `\(\beta &lt; 0\)`, then the sign of the bias is positive 
+
+---
+class: middle
+
+.content-box-green[**Bias?**]
+
++ Correlation between `\(x_1\)` and `\(u\)` is zero
+
++ The sign of the correlation between `\(x_1\)` and `\(e_1\)` is positive (see the previous slide), which means that the sign of the correlation between `\(x_1\)` and `\(- \beta e_1\)` is the sign of `\(- \beta\)`.
+  * if `\(\beta &gt; 0\)`, then the sign of the bias is negative 
+  * if `\(\beta &lt; 0\)`, then the sign of the bias is positive 
+
+--
+
+.content-box-red[**Attenuation Bias**]
+
++ So, the bias is such that your estimate of the coefficient on `\(x_1\)` is biased toward 0. 
+
++ In other words, your estimated impact of a mis-measured independent variable will look less influential than it actually is 
+
+(Imagine you mislabeled the treatment status of your experiment)
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "4:3",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
