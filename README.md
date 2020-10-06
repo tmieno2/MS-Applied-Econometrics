@@ -15,7 +15,7 @@ This is the repository for AECN896-003 at the University of Nebraska Lincoln, wh
 + Lecture 6: Hypothesis Testing ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Testing/testing_x.html))
 + Lecture 7: Standard Error Estimation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/StandardErrorEstimation/se_estimation_x.html))
 + Lecture 8: More on Econometric Modeling ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/EconometricModel/modeling_x.html))
-+ Lecture 9: OLS Asymptorics ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Asymptotics/asymptotics_x.html))
++ Lecture 9: OLS Asymptotics ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Asymptotics/asymptotics_x.html))
 + Lecture 10: Endogeneity ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Endogeneity/endogeneity_x.html))
 
 ## Assignments
