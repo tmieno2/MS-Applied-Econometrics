@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Dealing with Endogeneity: Instrumental Variable</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 396/896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Dealing with Endogeneity: Instrumental Variable
+### AECN 396/896-002
+
+---
+
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+
+# Before we start 
+
+## Learning objectives
+
+Understand how instrumental variable (IV) estimation works.
+
+## Table of contents
+
+1. [Selection Bias](#select)
+2. [Reverse Causality](#reverse)
+3. [Measurement Error](#ME)
+
+---
+class: middle
+
+# Endogeneity  
+
+.content-box-red[**Endogeneity**]
+  
+`\(E[u|x_k] \ne 0\)` (the error term is not correlated with any of the independent variables)
+
+--
+
+.content-box-red[**Endogenous independent variable**]
+
+If the error term is, .red[for whatever reason], correlated with the independent variable `\(x_k\)`, then we say that `\(x_k\)` is an endogenous independent variable.
+
++ Omitted variable 
++ Selection 
++ Reverse causality 
++ Measurement error
+
+---
+class: middle
+
+# Instrumental Variable (IV) Approach
+
+.content-box-green[**The Model**]
+
+`\(y=\beta_0 + \beta_1 x_1 + \beta_2 x_2 + u\)`
+
++ `\(x_1\)` is endogenous: `\(E[u|x_1] \ne 0\)` (or `\(Cov(u,x_1)\ne 0\)`)
++ `\(x_2\)` is exogenous: `\(E[u|x_1] = 0\)` (or `\(Cov(u,x_1) = 0\)`)
+
+---
+class: middle
+
+.content-box-green[**Idea (very loosely put)**]
+
+Bring in variable(s) (.blue[Instrumental variable(s)]) that does .red[NOT] belong to the model, but .red[IS] related with the endogenous variable,
+
++ using the instrumental variable(s) (which we denote by `\(Z\)`), make the endogenous variable exogenous, which we call .blue[instrumented variable(s)}
+
++ use the variation in the instrumented variable instead of the original endogenous variable to estimate the impact of the original variable
+
+---
+class: middle
+
+# IV estimation procedure
+
+.content-box-green[**Step 1**]
+  
+using the instrumental variables, make the endogenous variable exogenous, which we call \textcolor{blue}{instrumented variable}
+
+--
+
+.content-box-green[**Step 1: mathematically**]
+
++ Regress the endogenous variable `\((x_1)\)` on the instrumental variable(s) `\((Z=\{z_1,z_2\}\)`, two instruments here) and all the other exogenous variables that you do not intend to instrument,
+
+`\(x_1 = \alpha_0 + \sigma_2 x_2 + \alpha_1 z_1 +\alpha_2 z_2 + \mu\)`
+
+--
+
++ obtain the predicted value of `\(x\)` from the regression
+
+`\(\hat{x}_1 = \hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2\)`
+
+---
+class: middle
+
+# IV estimation procedure
+
+.content-box-green[**Step 2**]
+
+use the variation in the instrumented variable instead of the original endogenous variable to estimate the impact of the original variable
+
+
+.content-box-green[**Step 2: Mathematically**]
+
+Regress the dependent variable `\((y)\)` on the instrumented variable `\((\hat{x}-1)\)`,
+
+`\(y= \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon\)`
+
+to estimate the coefficient on `\(x\)` in the original model
+
+---
+class: middle
+
+# Does IV really work? 
+
+.content-box-green[**Estimation Procedure**]
+
++ Step 1: `\(\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2\)`  
+
++ Step 2: `\(y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon\)`
+
+--
+
+.content-box-green[**Important question**]
+
+What are the conditions under which IV estimation is consistent?
+
+--
+
+The instruments `\((Z)\)` need to satisfy two conditions, which we will discuss.
+
+---
+class: middle
+
+# Condition 1
+
+.content-box-green[**Question**]
+
+What happens if `\(Z\)` have no power to explain `\(x_1\)` ($E[\hat{\alpha}_1]=0$ and `\(E[\hat{\alpha}_2]=0\)`)?
+
+--
+
+.content-box-green[**Answer**]
+
++ `\(\hat{x}_1=\hat{\alpha}_0+\hat{\sigma}^2 x_2\)`
++ `\(\hat{\beta}_1?\)`
+
+--
+
+That is, `\(\hat{x_1}\)` has no information beyond the information `\(x_2\)` possesses.  
+
+---
+class: middle
+
+.content-box-red[**Condition 1**]
+
+The instrument(s) `\(Z\)` have jointly significant explanatory power on the endogenous variable `\(x_1\)` .red[after] you control for all the other exogenous variables (here `\(x_2)\)`}
+
+---
+class: middle center
+
+# Condition 2
+
+---
+class: middle
+
++ Instrumentation phase: `\(\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2\)`  
+
++ Main estimation phase: `\(y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon\)`
+
+--
+
+Plugging in `\(x_1 = \hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2 + \hat{\mu}\)` into the original model,
+
+`\(y =  \beta_0 + \beta_1 (\hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2 + \hat{\mu}) + u\)` 
+`\(\;\;\;=  \beta_0 + \beta_1 \times \underline{(\hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2)} +\beta_2 x_2 + v \;\; (=\beta_1 \hat{\mu} + u)\)`
+
+--
+
+.content-box-green[**Question**]
+
+What is the condition under which the OLS estimation of `\(\beta_1\)` in the main model is unbiased?
+
+--
+
+.content-box-green[**Answer**]
+
+`\((\hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2)\)` is not correlated with `\(v = \beta_1\mu + u\)`
+
+--
+
+.content-box-red[**Condition 2**]
+
+`\(z_1\)` and `\(z_2\)` are note correlated with `\(\mu\)` and `\(u\)`.
+
+---
+class: middle
+
+.content-box-red[**Condition 2**]
+
+`\(z_1\)` and `\(z_2\)` are note correlated with `\(\mu\)` and `\(u\)`.
+
+--
+
+.content-box-green[**Question**]
+
+When is this satisfied?
+
+---
+class: middle
+
+.content-box-green[**Question**]
+
+Are `\(z_1\)` and `\(z_2\)` uncorrelated with `\(\mu\)`? 
+
+--
+
+.content-box-green[**Answer**]
+
+Always yes. Independent variables and the residuals are orthogonal (uncorrelated).
+
+--
+
+.content-box-green[**Question**]
+
+When are `\(z_1\)` and `\(z_2\)` uncorrelated with `\(u\)`? 
+
+--
+
+.content-box-green[**Answer**]
+
++ `\(z_1\)` and `\(z_2\)` do not belong in the main model, meaning they do not have any explanatory power beyond `\(x_2\)` (they should have been included in the model in the first place as independent variables)
+
++ `\(z_1\)` and `\(z_2\)` are not correlated with the error term (there are no unobserved factors in the error term that are correlated with `\(Z)\)`
+
+---
+class: middle
+
+.content-box-red[**Condition 1**]
+
++ The instrument(s) `\(Z\)` have jointly significant explanatory power on the endogenous variable `\(x_1\)` .red[after] you control for all the other exogenous variables (here `\(x_2)\)`}
+
+
+.content-box-red[**Condition 2**]
+
++ `\(z_1\)` and `\(z_2\)` do not belong in the main model, meaning they do not have any explanatory power beyond `\(x_2\)` (they should have been included in the model in the first place as independent variables)
+
++ `\(z_1\)` and `\(z_2\)` are not correlated with the error term (there are no unobserved factors in the error term that are correlated with `\(Z)\)`
+
+--
+
+.content-box-red[**Important**]
+
++ Condition 1 is always testable
+
++ Condition 2 is NOT testable (unless you have more instruments than endogenous variables)
+
+---
+
+IV estimator is also called two-stage least squares estimator (2SLS) because it involves two stages of OLS.
+
+`\(\mbox{Step 1:} \hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2\)`  
+
+`\(\mbox{Step 2:} y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon\)`     
+
+--
+
++ 2SLS framework is a good way to understand conceptually why and how instrumental variable estimation works
+
++ But, IV estimation is done in one-step
+
+---
+
+# Instrumental variable validity: example 1
+
+
+.content-box-green[**The model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)\)`
+
+`educ` is endogenous because of its correlation with `ability`.
+
+--
+
+.content-box-green[**Question**]
+
+What conditions would a good instrument `\((z)\)` satisfy?
+
+--
+
+.content-box-green[**Answer**]
+
++ `\(z\)` has explanatory power on `\(educ\)` \textcolor{blue}{after} you control for the impact of `\(epxer\)` on `\(educ\)`
+
++ `\(z\)` is uncorrelated with `\(v\)` ($ability$ and all the other important unobservables)
+
+---
+
+.content-box-green[**The model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)\)`
+
+.content-box-green[**An example of instruments**]
+
+The last digit of an individual's Social Security Number? (this has been actually used in some journal articles)
+
+.content-box-green[**Question**]
+
++ Is it uncorrelated with `\(v\)` ($ability$ and all the other important unobservables)?
+
+--
+
++ does it have explanatory power on `\(educ\)` .blue[after] you control for the impact of `\(epxer\)` on `\(educ\)`?
+
+---
+
+.content-box-green[**The model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)\)`
+
+.content-box-green[**An example of instruments**]
+
+IQ test score
+
+.content-box-green[**Question**]
+
++ Is it uncorrelated with `\(v\)` ($ability$ and all the other important unobservables)?
+
+--
+
++ does it have explanatory power on `\(educ\)` .blue[after] you control for the impact of `\(epxer\)` on `\(educ\)`?
+
+---
+
+.content-box-green[**The model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)\)`
+
+.content-box-green[**An example of instruments**]
+
+Mother's education
+
+.content-box-green[**Question**]
+
++ Is it uncorrelated with `\(v\)` ($ability$ and all the other important unobservables)?
+
+--
+
++ does it have explanatory power on `\(educ\)` .blue[after] you control for the impact of `\(epxer\)` on `\(educ\)`?
+
+---
+
+.content-box-green[**The model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)\)`
+
+.content-box-green[**An example of instruments**]
+
+Number of siblings
+
+.content-box-green[**Question**]
+
++ Is it uncorrelated with `\(v\)` ($ability$ and all the other important unobservables)?
+
+--
+
++ does it have explanatory power on `\(educ\)` .blue[after] you control for the impact of `\(epxer\)` on `\(educ\)`?
+
+
+---
+
+class: inverse, center, middle
+name: select
+
+# Implementation of Instrumental Variable (IV) Estimation in R
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+
+.content-box-green[**Model**]
+
+`\(log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; (=\beta_3 ability + u)\)`
+
+We believe
+
++ `\(educ\)` is endogenous `\((x_1)\)`
+
++ `\(exper\)` is exogenous `\((x_2)\)`
+
++ we use the number of siblings ($sibs$) and father's education ($feduc$) as the instruments ($Z$)
+
+--
+
+.content-box-green[**Terminology**]
+
++ exogenous variable included in the model (here, `\(exper\)`) is also called .blue[included instruments]
+
++ instruments that do not belong to the main model (here, `\(sibs\)` and `\(feduc\)`) are also called .blue[excluded instruments]
+
++ we refer to the collection of included and excluded instruments as .blue[instruments]
+
+---
+
+
+.content-box-green[**Dataset**]
+
+
+```r
+#--- read the data ---#   
+data &lt;- read.dta13('WAGE2.dta')
+
+#--- take a look at the data ---#
+select(data, wage, educ, sibs, feduc) %&gt;% head
+```
+
+```
+##   wage educ sibs feduc
+## 1  769   12    1     8
+## 2  808   18    1    14
+## 3  825   14    1    14
+## 4  650   12    4    12
+## 5  562   11   10    11
+## 6 1400   16    1    NA
+```
+
+---
+
+We can use the `lfe` package to run IV estimation method.
+
+
+```r
+library(lfe)  
+```
+
+--
+
+.content-box-green[**Syntax**]
+
+
+```r
+lfe(dep var ~ included instruments|0|first stage formula|0 , data = dataset)  
+```
+
++ `included instruments`: exogenous included variables (do not include endogenous variables here)
+
+.content-box-green[**first stage formula**]
+
+
+```r
+(endogenous vars ~ excluded instruments)
+```
+
+--
+
+.content-box-green[**Example**]
+
+
+```r
+iv_res &lt;- felm(log(wage) ~ exper| 0 | (educ ~ sibs + feduc) | 0, data = data)  
+```
+
++ `included variable`: 
+  * exogenous included variables: `exper`
+  * endogenous included variables: `educ` 
++ `instruments`: 
+  * included instruments: `exper` 
+  * excluded instruments: `sibs` and `feduc`
+
+---
+
+
+```r
+summary(iv_res)  
+```
+
+```
+## 
+## Call:
+##    felm(formula = log(wage) ~ exper | 0 | (educ ~ sibs + feduc) |      0, data = data) 
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.7445 -0.2553  0.0120  0.2778  1.3311 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 4.507316   0.315735  14.276  &lt; 2e-16 ***
+## exper       0.037029   0.005694   6.503 1.45e-10 ***
+## `educ(fit)` 0.137405   0.019215   7.151 2.08e-12 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.407 on 738 degrees of freedom
+##   (194 observations deleted due to missingness)
+## Multiple R-squared(full model): 0.05255   Adjusted R-squared: 0.04998 
+## Multiple R-squared(proj model): 0.05255   Adjusted R-squared: 0.04998 
+## F-statistic(full model):26.52 on 2 and 738 DF, p-value: 7.539e-12 
+## F-statistic(proj model): 26.52 on 2 and 738 DF, p-value: 7.539e-12 
+## F-statistic(endog. vars):51.14 on 1 and 738 DF, p-value: 2.077e-12
+```
+
+---
+
+
+.content-box-green[**Comparison of OLS and IV Estimation Results**]
+
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="2"&gt;log(wage)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;OLS&lt;/td&gt;&lt;td&gt;IV&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;educ&lt;/td&gt;&lt;td&gt;0.078&lt;sup&gt;***&lt;/sup&gt; (0.007)&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;exper&lt;/td&gt;&lt;td&gt;0.020&lt;sup&gt;***&lt;/sup&gt; (0.003)&lt;/td&gt;&lt;td&gt;0.037&lt;sup&gt;***&lt;/sup&gt; (0.006)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;`educ(fit)`&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;0.137&lt;sup&gt;***&lt;/sup&gt; (0.019)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;5.503&lt;sup&gt;***&lt;/sup&gt; (0.112)&lt;/td&gt;&lt;td&gt;4.507&lt;sup&gt;***&lt;/sup&gt; (0.316)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+--
+
+
+.content-box-green[**Question**]
+
+Do you think `\(sibs\)` and `\(feduc\)` are good instruments?
+
++ Condition 1: weak instruments?
++ Condition 2: uncorrelated with the error term?
+
+---
+
+.content-box-green[**Weak Instrument Test**]
+
+We can always test if the excluded instruments are weak or not.
+
+--
+
+.content-box-green[**How**]
+
++ Run the 1st stage regression
+
+`\(educ = \alpha_0 + \alpha_1 exper + \alpha_2 sibs + \alpha_3 feduc + v\)`  
+
+--
+
++ test the joint significance of `\(\alpha_2\)` and `\(\alpha_3\)` ($F$-test)
+
+If excluded instruments ($sibs$ and `\(feduc\)`) are jointly significant, then it would mean that `\(sibs\)` and `\(feduc\)` are not weak instruments, satisfying condition 1.
+
+--
+
+When we ran the IV estimation using `iv_reg()` earlier, it automatically calculated the F-statistic for the weak instrument test.
+
+To see it, access the `stage1` element of `iv_res`, and further access the `rob.iv1fstat` component of `stage1`.
+
+---
+
+
+```r
+iv_res$stage1$rob.iv1fstat
+```
+
+```
+## $educ
+##            p         chi2          df1          p.F            F 
+## 2.041942e-34 1.551480e+02 2.000000e+00 2.665461e-31 7.757399e+01 
+##          df2 
+## 7.370000e+02 
+## attr(,"formula")
+## ~sibs | feduc
+## &lt;environment: 0x7fc754a851c0&gt;
+```
+
++ `F`: F-statistic for the weak instrument test
++ `P`: p-value for the weak instrument test
+
+---
+
+.content-box-green[**Notes**]
+
++ It is generally recommended that you have `\(F\)`-stat of over `\(10\)` (this is not a clear-cut criteria that applied to all the empirical cases)
+
++ Even if you reject the null if `\(F\)`-stat is small, you may have a problem
+
++ You know nothing about if your excluded instruments satisfy Condition II. 
+
++ If you cannot reject the null, it is a strong indication that your instruments are weak. Look for other instruments.
+
++ Always, always report this test. There is no reason not to. 
+
+---
+class: middle
+
+# Consequences of weak instruments 
+
+.content-box-green[**Data generation**]
+
+
+```r
+set.seed(73289)
+N &lt;- 500 # number of observations  
+
+u_common &lt;- runif(N)# the term shared by the endogenous variable and the error term 
+z_common &lt;- runif(N) # the term shared by the endogenous variable and instruments
+x_end &lt;- u_common + z_common + runif(N) # the endogenous variable 
+z_strong &lt;- z_common + runif(N) # strong instrument
+z_weak &lt;- 0.01*z_common + 0.99995*runif(N) # weak instrument
+u &lt;- u_common + runif(N) # error term
+y &lt;- x_end + u # dependent variable
+
+data &lt;- data.frame(y,x_end,z_strong,z_weak)
+```
+
+--
+
+.content-box-green[**Correlation**]
+
+
+```r
+cor(data)
+```
+
+```
+##                   y       x_end    z_strong       z_weak
+## y         1.0000000  0.86492868 0.298704509 -0.108007146
+## x_end     0.8649287  1.00000000 0.419011491 -0.074224622
+## z_strong  0.2987045  0.41901149 1.000000000  0.003839565
+## z_weak   -0.1080071 -0.07422462 0.003839565  1.000000000
+```
+
+---
+class: middle
+
+
+```r
+#--- IV estimation (strong) ---#
+iv_strong &lt;- felm(y ~ 1 | 0 | (x_end ~ z_strong) | 0, data = data)
+iv_strong_sum &lt;- summary(iv_strong)
+
+#--- IV estimation (weak) ---#
+iv_weak &lt;- felm(y ~ 1 | 0 | (x_end ~ z_weak) | 0, data = data)
+iv_weak_sum &lt;- summary(iv_weak)  
+```
+
+---
+class: middle
+
+
+```r
+#--- coefs (strong) ---#
+iv_strong_sum$coef
+```
+
+```
+##               Estimate Std. Error   t value     Pr(&gt;|t|)
+## (Intercept)  0.8834323  0.1330391  6.640398 8.203386e-11
+## `x_end(fit)` 1.0878484  0.0855839 12.710900 2.955027e-32
+```
+
+```r
+#--- coefs (weak) ---#
+iv_weak_sum$coef  
+```
+
+```
+##                Estimate Std. Error    t value    Pr(&gt;|t|)
+## (Intercept)  -0.8621255  1.1002703 -0.7835579 0.433672086
+## `x_end(fit)`  2.2205318  0.7137641  3.1110163 0.001971405
+```
+
+
+.content-box-green[**Question**]
+
+Any notable differences?
+
+--
+
+The coefficient estimate on `\(x\_end\)` is far away from the true value in the weak instrument case.
+
+---
+class: middle
+
+
+.content-box-green[**Comparison of the weak instrument tests**]
+
+.scroll-box-10[
+
+```r
+#--- diagnostics (strong) ---#
+iv_strong$stage1$rob.iv1fstat
+```
+
+```
+## $x_end
+##            p         chi2          df1          p.F            F 
+## 2.500472e-26 1.127077e+02 1.000000e+00 7.142957e-24 1.127077e+02 
+##          df2 
+## 4.980000e+02 
+## attr(,"formula")
+## ~z_strong
+## &lt;environment: 0x7fc776c0b088&gt;
+```
+]
+
+.scroll-box-10[
+
+```r
+#--- diagnostics (weak) ---#
+iv_weak$stage1$rob.iv1fstat 
+```
+
+```
+## $x_end
+##            p         chi2          df1          p.F            F 
+##   0.08804759   2.90971210   1.00000000   0.08867112   2.90971210 
+##          df2 
+## 498.00000000 
+## attr(,"formula")
+## ~z_weak
+## &lt;environment: 0x7fc7768c1fb0&gt;
+```
+]
+
+.content-box-green[**Question**]
+
+Any notable differences?
+
+--
+
+You cannot reject the null hypothesis of weak instrument in the weak instrument case.
+
+---
+class: middle
+
+
+.content-box-green[**MC simulation**]
+
+
+```r
+B &lt;- 1000 # the number of experiments
+beta_hat_store &lt;- matrix(0,B,2) # storage of beta hat
+
+for (i in 1:B){
+
+  #--- data generation ---#
+  u_common &lt;- runif(N) 
+  z_common &lt;- runif(N) 
+  x_end &lt;- u_common + z_common + runif(N) 
+  z_strong &lt;- z_common + runif(N)
+  z_weak &lt;- 0.01*z_common + 0.99995*runif(N)
+  u &lt;- u_common + runif(N)
+  y &lt;- x_end + u
+  data &lt;- data.table(y,x_end,z_strong,z_weak)
+
+  #--- IV estimation with a strong instrument ---#
+  iv_strong &lt;- felm(y ~ 1 | 0 | (x_end ~ z_strong) | 0, data=data)
+  beta_hat_store[i,1] &lt;- iv_strong$coef[2, 1]
+
+  #--- IV estimation with a weak instrument ---#
+  iv_weak &lt;- felm(y ~ 1 | 0 | (x_end ~ z_weak) | 0, data=data)
+  beta_hat_store[i,2] &lt;- iv_weak$coef[2, 1]
+}  
+```
+
+---
+class: middle
+
+.content-box-green[**Visualization of the MC Results**]
+
+&lt;img src="iv_x_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**Visualization of the MC Results**]
+
+&lt;img src="iv_x_files/figure-html/unnamed-chunk-19-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**Flow of IV Estimation in Practice**]
+
++ Identify endogenous variable(s) and included instrument(s) 
+
++ Identify potential excluded instrument(s) 
+
++ .red[Argue] why the excluded instrument(s) you pick is uncorrelated with the error term (.content-box-red[**condition 2**])
+
++ Once you decide what variable(s) to use as excluded instruments, .red[test] whether the excluded instrument(s) is weak or not (
+.content-box-red[**condition 1**])
+
++ Implement IV estimation and report the results
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "4:3",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

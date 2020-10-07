@@ -36,4 +36,9 @@ render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Asymptotics/as
 #--------------------------
 render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/endogeneity_x.Rmd")
 
+#--------------------------
+# Instrumental Variable
+#--------------------------
+render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/InstrumentalVariable/iv_x.Rmd")
+
 
