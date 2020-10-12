@@ -41,4 +41,9 @@ render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/en
 #--------------------------
 render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/InstrumentalVariable/iv_x.Rmd")
 
+#--------------------------
+# Panel Data
+#--------------------------
+render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Panel/panel_x.Rmd")
+
 

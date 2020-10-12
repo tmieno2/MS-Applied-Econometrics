@@ -1,0 +1,893 @@
+---
+title: "Panel Data"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 4:3
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: middle
+
+```{r, child = './../setup.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/")
+```
+
+```{r additional-libraries, include = F, cache = F}
+#--- load packages ---#
+suppressMessages(library(broom))
+suppressMessages(library(lfe))
+suppressMessages(library(gt))
+suppressMessages(library(stargazer))
+suppressMessages(library(lmtest))
+suppressMessages(library(modelsummary))
+```
+
+# Before we start 
+
+## Learning objectives
+
+Understand the new econometric methods that can be used with panel datasets to address endogeneity problems.
+
+## Table of contents
+
+1. [Selection Bias](#select)
+2. [Reverse Causality](#reverse)
+3. [Measurement Error](#ME)
+
+---
+class: middle
+
+# Panel (longitudinal) Data  
+
+.content-box-green[**Definition**]
+
+Data follow the .blue[same] individuals, families, firms, cities, states or whatever, across time
+
+--
+
+.content-box-green[**Example**]
+
++ Randomly select people from a population at a given point in time
+
++ Then the same people are reinterviewed at several subsequent points in time, which would results in data on wages, hours, education, and so on, for the same group of people in different years.
+
+---
+class: middle
+
+.content-box-green[**Panel Data in data.frame**]
+
+```{r echo = F}
+data_tr <- readRDS('jtrain.rds') # load the data
+  dplyr::select(data_tr,year,fcode,employ,sales) %>%
+    head(9) 
+```
+
++ `year`: year
++ `fcode`: factory id
++ `employ`: the number of employees
++ `sales`: sales in USD
+
+---
+class: middle
+
+.content-box-red[**Central Question**]
+
+Can we do anything to deal with endogeneity problem taking advantage of the panel data structure? 
+
+---
+class: inverse, center, middle
+name: select
+
+# Panel Data Estimation Methods
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+.content-box-green[**Demand for massage (cross-sectional)**]
+
+```{r echo = F}
+massage_data <- data.frame(
+  Location = c("Chicago", "Peoria", "Milwaukee", "Madison"),
+  Year = rep(2003, 4),
+  P = c(75, 50, 60, 55),
+  Q = c(2, 1.0, 1.5, 0.8)
+)  
+```
+
+```{r echo = F}
+massage_data %>% 
+  gt() 
+```
+
++ `P`: the price of one massage
++ `Q`: the number of massages received per capita
+
+---
+class: middle
+
+
+.content-box-green[**Demand for massage (cross-sectional)**]
+
+```{r echo = F}
+massage_data %>% 
+  gt() 
+```
+
+--
+
+.content-box-green[**Question**]
+
+Across the four cities, how are price and quantity are associated? Positive or negative? 
+
+--
+
+.content-box-green[**Answer**]
+
+They are positively correlated.
+
+--
+
+.content-box-green[**Question**]
+
+So, does that mean people want more massages as their price increases?     
+
+--
+
+.content-box-green[**Answer**]
+
+Probably not.
+
+---
+class: middle
+
+.content-box-green[**Demand for massage (cross-sectional)**]
+
+```{r echo = F}
+massage_data %>% 
+  gt() 
+```
+
+.content-box-green[**Question**]
+  
+What could be causing the positive correlation?
+
+--
+
+.content-box-green[**Answer**]
+
++ Income (can be observed)
++ Quality of massages (hard to observe)
++ How physically taxing jobs are (?)
+
+---
+class: middle
+
+.content-box-green[**Demand for massage (cross-sectional)**]
+
+```{r echo = F}
+massage_data <- massage_data %>% 
+  mutate(Ql = c(10, 5, 7, 6))  
+
+gt(massage_data)
+```
+
+.content-box-green[**Key**]
+
+Massage quality was hidden (omitted) affecting .red[both] price and massages per capita. 
+
+.content-box-green[**Problem**]
+
+Massage quality is not observable, and thus cannot be controlled for.
+
+---
+class: middle
+
+
+.content-box-red[**Mathematically**]
+
+$P  = \beta_0 + \beta_1 Q + v \;\;( = \beta_2 + Ql + u)$ 
+
++ `P`: the price of one massage
++ `Q`: the number of massages received per capita  
++ `Ql`: the quality of massages
++ `u`: everything else that affect `P`
+
+.content-box-red[**Endogeneity Problem**]
+
+`Q` is correlated with `Ql`.
+
+
+---
+class: middle
+
+.content-box-green[**Demand for massage (two-period panel)**]
+
+```{r echo = F}
+massage_data_2p <- data.frame(
+  Location = rep(c("Chicago", "Peoria", "Milwaukee", "Madison"), each = 2),
+  Year = rep(c(2003, 2004), 4),
+  P = c(75, 85, 50, 48, 60, 65, 55, 60),
+  Q = c(2, 1.8, 1.0, 1.1, 1.5, 1.4, 0.8, 0.7),
+  Ql = rep(c(10, 5, 7, 6), each = 2)
+)  
+```
+
+```{r echo = F}
+massage_data_2p %>% 
+  gt()  
+```
+
+.content-box-green[**Key**]
+
+There are two kinds of variations:
+
++ intercity (across city) variation 
++ intracity (within city) variation
+
+The cross-sectional data offers only the intercity (across city) variations.
+
+---
+class: middle
+
+.content-box-green[**Demand for massage (two-period panel)**]
+
+```{r echo = F}
+massage_data_2p %>% 
+  gt()  
+```
+
+
+Now, compare the massage price and massages per capita .red[within] each city (over time). What do you see?
+
+--
+
+.content-box-green[**Answer**]
+
+Price and quantity are .red[negatively] correlated!
+
+---
+class: middle
+
+.content-box-green[**Demand for massage (two-period panel)**]
+
+```{r echo = F}
+massage_data_2p %>% 
+  gt() 
+```
+
+.content-box-green[**Question**]
+
+Why looking at the .blue[intracity (within city)] variation seemed to help us estimate the impact of massage price on demand more credibly?
+
+--
+
+.content-box-green[**Answer**]
+
+The omitted variable, massage quality, did not change over time within city, which means it is controlled for as long as you look only at the intracity variations (you do not compare .red[across] cities). 
+
+---
+class: middle
+
+.content-box-green[**Demand for massage (two-period panel)**]
+
+```{r echo = F}
+massage_data_2p %>% 
+  gt() 
+```
+
+.content-box-green[**Question**]
+
+But, what if massage quality changed from 2003 to 2004?  
+
+.content-box-green[**Answer**]
+
+Looking at the intra-city variations is problematic just like looking at the inter-city variations.
+
+---
+class: middle
+
+.content-box-green[**Question**]
+
+So, how do we use only the intra-city variations in a regression framework?
+
+--
+
+.content-box-green[**One way**]
+
+One way to do this is to compute the changes in prices and th changes in quantities in each city $(\Delta P$ and $\Delta Q)$ and then regress $\Delta Q$ and $\Delta P$.
+
+--
+
+.content-box-green[**First-differenced Data**]
+
+```{r echo = F}
+massage_data_fd <- massage_data_2p %>% 
+  group_by(Location) %>% 
+  mutate(
+    P_dif = P - lag(P),
+    Q_dif = Q - lag(Q),
+    Ql_dif = Ql - lag(Ql)
+  ) %>% 
+  ungroup()
+
+massage_data_fd %>% 
+  gt() %>% 
+  tab_style(
+    style = list(
+      cell_fill(color = "orange")
+      ),
+    locations = cells_body(
+      columns = vars(P_dif, Q_dif, Ql_dif),
+      rows = c(2, 4, 6, 8)
+    )
+  )
+
+```
+
+--
+
+.content-box-green[**Key**]
+
+Variations in quality is eliminated after first differentiation!! (quality is controlled for) 
+
+---
+class: middle
+
+.content-box-red[**A new way of writing a model**]
+
+$P_{i,t}  = \beta_0 + \beta_1 Q_{i,t} + v_{i,t} \;\; ( = \beta_2 Ql_{i,t} + u_{i,t})$ 
+
++ `i`: indicates city
++ `t`: indicates time
+
+--
+
+.content-box-red[**First differencing**]
+
+$P_{i,1}  = \beta_0 + \beta_1 Q_{i,1} + v_{i,1} \;\; ( = \beta_2 Ql_{i,1} + u_{i,1})$ 
+
+$P_{i,2}  = \beta_0 + \beta_1 Q_{i,2} + v_{i,2} \;\; ( = \beta_2 Ql_{i,2} + u_{i,2})$
+
+--
+
+$\Rightarrow$
+
+$\Delta P  = \beta_1 \Delta Q + \Delta v ( = \beta_2 \Delta Ql + \Delta u)$
+
+.content-box-red[**Endogeneity Problem?**]
+
+Since $Ql_{i,1} = Ql_{i,2}$, $\Delta Ql = 0$.  
+
+--
+
+$\Rightarrow$
+
+$\Delta P  = \beta_0 + \beta_1 \Delta Q + \Delta u$
+
+No endogeneity problem after first differentiation!
+
+---
+class: middle
+
+.content-box-green[**Data**]
+
+```{r }
+massage_data_fd %>% head(5)
+```
+
+--
+
+.left5[
+
+
+.content-box-green[**OLS on the original data:**]
+
+```{r highlight.output = 7}
+lm(Q ~ P, data = massage_data_fd) 
+```
+
+]
+
+.right5[
+
+.content-box-green[**OLS on the first-differenced data:**]
+
+```{r highlight.output = 7}
+lm(Q_dif ~ P_dif, data = massage_data_fd)
+```
+
+]
+
+---
+class: middle
+
+
+.content-box-red[**Summary**]
+ 
++ As long as the omitted variable that affect both the dependent and independent variables are constant over time (time-invariant), then using only the variations over time (ignoring variations across cross-sectional units) can eliminate the omitted variable bias
+
++ First-differencing the data and then regressing changes on changes does the trick of ignoring variations across cross-sectional units
+
++ Of course, first-differencing is possible only because the same cross-sectional units are observed multiple times over time.
+
+---
+class: middle
+
+# Multi-year panel datasets
+
++ If we have lots of years of data, we could, in principle, compute all of the differences (i.e., 2004 versus 2003, 2005 versus 2004, etc.) and then run a single regression. But there is an easier way.  
+
+--
+
++ Instead of thinking of each year’s observation in terms of how much it differs from the prior year for the same city, let's think about how much each observation differs from the average for that city.  
+
+---
+class: middle
+
+How much each observation differs from the average for that city?
+
+```{r echo = F}
+massage_data_wth <- massage_data %>% 
+  select(Location, Year, P, Q, Ql) %>% 
+  group_by(Location) %>% 
+  mutate(
+    P_mean = mean(P),
+    P_dev = P - P_mean,
+    Q_mean = mean(Q),
+    Q_dev = Q - Q_mean,
+    Ql_mean = mean(Ql),
+    Ql_dev = Ql - Ql_mean
+  ) %>% 
+  ungroup() %>% 
+  select(Location, Year, P, P_mean, P_dev, Q, Q_mean, Q_dev, Ql, Ql_mean, Ql_dev) 
+
+massage_data_wth %>% 
+  gt() %>% 
+  tab_style(
+    style = list(
+      cell_fill(color = "orange")
+      ),
+    locations = cells_body(
+      columns = vars(P_dev, Q_dev, Ql_dev)
+    )
+  ) 
+```
+<br>
+
+--
+
+.content-box-green[**Note**]
+
+We call this data transformation .red[within-transformation] or .red[demeaning].
+
+--
+
+.content-box-green[**Fixed Effects Regression**]
+
++ Dependent variable: `Q_dev`
++ Independent variable: `P_dev`
+
+--
+
+.content-box-green[**Key**]
+
+In calculating `P_dev` (deviation from the mean by city), `Ql_dev` is eliminated.
+
+---
+class: middle
+
+.content-box-red[**Within-transformation**]
+
+$P_{i,1}  = \beta_0 + \beta_1 Q_{i,1} + v_{i,1} \;\; ( = \beta_2 Ql_{i,1} + u_{i,1})$ 
+
+$P_{i,2}  = \beta_0 + \beta_1 Q_{i,2} + v_{i,2} \;\; ( = \beta_2 Ql_{i,2} + u_{i,2})$
+
+$\vdots$
+
+$P_{i,T}  = \beta_0 + \beta_1 Q_{i,T} + v_{i,T} \;\; ( = \beta_2 Ql_{i,T} + u_{i,T})$
+
+--
+
+$\Rightarrow$
+
+$P_{i,T} - \bar{P_{i}}   = \beta_1 [Q_{i,T} - \bar{Q_{i}}] + [v_{i,T} - \bar{v_{i}}] ( = \beta_2 [Ql_{i,T} - \bar{Q_{i}}] + [u_{i,T} - \bar{u_{i}}])$
+
+.content-box-red[**Endogeneity Problem?**]
+
+Since $Ql_{i,1} = Ql_{i,2} = \dots = Ql_{i,T}$, $\bar{Q_i} = Q_{i,t}$ for all $t$.  
+
+--
+
+$\Rightarrow$
+
+$P_{i,T} - \bar{P_{i}}   = \beta_1 [Q_{i,T} - \bar{Q_{i}}] + [u_{i,T} - \bar{u_{i}}]$
+
+No endogeneity problem after the within-transformation!
+
+---
+class: middle
+
+# Fixed Effects (FE) Estimation (in general) 
+
+Consider the following general model
+
+$y_{i,t}=\beta_1 x_{i,t} + \alpha_i + u_{i,t}$
+
++ $\alpha_i$: the impact of time-invariant factor that is specific to $i$ (also termed .blue[individual fixed effect]) 
++ $\alpha_i$ is thought to be correlated with $x_{i,t}$ 
+
+--
+
+For each $i$, average this equation over time, we get
+
+$\frac{\sum_{t=1}^T y_{i,t}}{T} = \frac{\sum_{t=1}^T x_{i,t}}{T} + \alpha_i  + \frac{\sum_{t=1}^T u_{i,t}}{T}$
+
+Note, $\frac{\sum_{t=1}^T \alpha_{i}}{T} = \alpha_i$
+
+--
+
+Subtracting the second equation from the first one,
+
+$(y_{i,t}-\frac{\sum_{t=1}^T y_{i,t}}{T})=\beta_1 (x_{i,t} -\frac{\sum_{t=1}^T x_{i,t}}{T}) + (u_{i,t} -\frac{\sum_{t=1}^T u_{i,t}}{T})$
+
+--
+
+.content-box-red[**Important**]
+
+$\alpha_i$ is gone!
+
+--
+
+We then regress $(y_{i,t}-\frac{\sum_{t=1}^T y_{i,t}}{T})$ on $(x_{i,t}-\frac{\sum_{t=1}^T x_{i,t}}{T})$ to estimate $\beta_1$.
+
+---
+class: middle
+
+# When is FE estimation unbiased?
+
+Here is the data after within-transformation:
+
+$(y_{i,t}-\frac{\sum_{t=1}^T y_{i,t}}{T})=\beta_1 (x_{i,t} -\frac{\sum_{t=1}^T x_{i,t}}{T}) + (u_{i,t} -\frac{\sum_{t=1}^T u_{i,t}}{T})$
+
+--
+
+So,
+
+$(x_{i,t} -\frac{\sum_{t=1}^T x_{i,t}}{T})$ needs to be uncorrelated with $(u_{i,t} -\frac{\sum_{t=1}^T u_{i,t}}{T})$.
+
+--
+
+The above condition is satisfied if
+
+$E[u_{i,s}|x_{i,t}] = 0 \;\; ^\forall s, \;\; t, \;\;\mbox{and} \;\;j$
+
+--
+
+e.g., $E[u_{i,1}|x_{i,4}]=0$
+
+---
+class: middle
+
+.content-box-green[**Fixed effects estimation**]
+
+Regress within-transformed `Q` on within-transformed `P`:
+
+```{r }
+lm(Q_dev ~ P_dev, data = massage_data_wth)
+```
+
+---
+class: middle
+
+.content-box-green[**Alternatively**]
+
+You can use the original data (no within-transformation) and include dummy variables for all the cities except one.
+
+```{r }
+(
+massage_data_d <- massage_data_2p %>% 
+  mutate(
+    Peoria_D = ifelse(Location == "Peoria", 1, 0),
+    Milwaukee_D = ifelse(Location == "Milwaukee", 1, 0),
+    Madison_D = ifelse(Location == "Madison", 1, 0)
+  )
+)
+```
+
+---
+class: middle
+
+.content-box-green[**Fixed effects estimation (alternative way)**]
+
+```{r }
+lm(Q ~ P + Peoria_D + Milwaukee_D + Madison_D, data = massage_data_d)  
+```
+
+Note that the coefficient estimate on `P` is exactly the same as the one we saw earlier when we regressed `Q_dev` on `P_dev`.
+
+
+.content-box-green[**Note**]
+
+This way of estimating the model is also called .red[Least Square Dummy Variable (LSDV)] estimation.
+
+---
+class: middle
+
+# Fixed Effects Estimation in Practice 
+
+
+.content-box-green[**Advice**]
+
++ Do not within-transform the data yourself and run a regression
++ Do not create dummy variables yourself and run a regression with the dummies
+
+--
+
+.content-box-red[**In practice**]
+
+We will use the `lfe` package (we used this package for instrumental variable estimation).
+
+
+.content-box-green[**Syntax**]
+
+```{r eval = F}
+felm(dep var ~ indep vars| FE | 0 | 0, data)
+```
+
++ `FE`: the name of the variable that identifies the cross-sectional units that are observed over time (`Location` in our example) 
++ `dep_var`: original (non-transformed)
++ `indep_var`: original (non-transformed) 
+
+---
+class: middle
+
+.content-box-green[**Data**]
+
+```{r }
+massage_data_2p
+```
+
+.content-box-green[**Example**]
+
+```{r }
+felm(Q ~ P| Location | 0 | 0, data = massage_data_2p)
+```
+
+---
+class: middle
+
+# Random Effects (RE) Model
+
++ Can be more efficient than FE
+
++ If $\alpha_i$ and independent variables are correlated, then RE estimators are biased
+
++ Unless $\alpha_i$ and independent variables are not correlated (which does not hold most of the time unless you got data from controlled experiments), $RE$ is not an attractive option
+
++ You almost never see this estimation method used in papers that use non-experimental data 
+
+--
+
+.content-box-green[**Note**]
+
+We do not cover this estimation method as you almost certainly would not use this estimation method.
+
+---
+class: inverse, center, middle
+name: select
+
+# Year Fixed Effects
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# Year Fixed Effects 
+
+.content-box-green[**Definition**]
+
+Just a collection of year dummies, which takes 1 if in a specific year, 0 otherwise.
+
+```{r echo = F}
+year_fe <- data.table(
+  id = rep(1:3,each=4),
+  year = rep(2015:2017,4),
+  income = c(77,82,84,110,120,131,56,60,61,70,71),
+  educ = c(12:14,18:20,10:12,13:15),
+  FE_2015 = rep(c(1,0,0),4),
+  FE_2016 = rep(c(0,1,0),4),
+  FE_2017 = rep(c(0,0,1),4)
+)
+year_fe 
+```
+  
+---
+class: middle
+
+.content-box-green[**What do year FEs do?**]
+
+They capture anything that happened to .red[all] the individuals for a specific year relative to the base year
+
+
+.content-box-green[**Example**]
+
+Education and wage data from $2012$ to $2014$,
+
+$log(income) = \beta_0 + \beta_1 educ + \beta_2 exper  + \sigma_1 FE_{2012} + \sigma_2 FE_{2013}$
+
++ $\sigma_1$: captures the difference in $log(income)$ between $2012$ and $2014$ (base year) 
+
++ $\sigma_2$: captures the difference in $log(income)$ between $2013$ and $2014$ (base year)
+
+--
+ 
+.content-box-green[**Interpretation**]
+ 
+$\sigma_1=0.05$ would mean that $log(income)$ is greater in $2012$ than $2014$ by $5\%$ on average for whatever reasons with everything else fixed.
+
+---
+class: middle
+
+
+.content-box-green[**Recommendation**]
+
+It is almost always a good practice to include year FEs if you are using a panel dataset with annual observations.
+
+--
+
+.content-box-green[**Why?**]
+
++ Remember year FEs capture .blue[anything] that happened to all the individuals for a specific year relative to the base year
+
++ In other words, .blue[all the unobserved factors] that are common to all the individuals in a specific year is .blue[controlled for (taken out of the error term)]
+
+--
+
+.content-box-green[**Example**]
+
+Economic trend in:
+
+$log(income) =  \beta_0 + \beta_1 educ + \sigma_1 FE_{2012} + \sigma_2 FE_{2013}$
+
++ Education is non-decreasing through time
+
++ Economy might have either been going down or up during the observed period
+
+--
+
++ Without year FE, $\beta_1$ may capture the impact of overall economic trend. 
+
+---
+class: middle
+
+
+.content-box-green[**R implementation**]
+
+In order to include year FEs to individual FEs, you can simply add the variable that indicates year like below:  
+  
+```{r }
+felm(I(log(income)) ~ educ | id + year | 0 | 0, data = year_fe) %>% 
+  tidy()
+```  
+
+---
+class: middle
+
+
+.content-box-red[**Caveats**]
+
++ Year FEs would be perfectly collinear with variables that change only across time, but not across individuals.
+
++ If your variable of interest is such a variable, you cannot include year FEs, which would then make your estimation subject to omitted variable bias due to .red[other] unobserved yearly-changing factors.
+
+
+---
+class: inverse, center, middle
+name: select
+
+# Standard Error Estimation for Panel Data Methods
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+.content-box-green[**Heteroskedasticity**]
+
+Just like we saw for OLS using cross-sectional data, heteroskedasticity leads to biased estimation of the standard error of the coefficient estimators if not taken into account
+
+---
+class: middle
+
+.content-box-green[**Serial Correlation**]
+
+Correlation of errors over time, which we call .blue[serial correlation]
+
+--
+
+.content-box-green[**Consequences of serial correlation**]
+
++ just like heteroskedasticity, serial correlation could lead to biased estimation of the standard error of the coefficient estimators if not taken into account
+
++ do not affect the unbiasedness and consistency property of your estimators
+
+--
+
+.content-box-red[**Important**]
+
++ Taking into account the potential of serial correlation when estimating the standard error of the coefficient estimators can dramatically change your conclusions about the statistical significance of some independent variables!!
+
++ When serial correlation is ignored, you tend to underestimate the standard error (why?), inflating $t$-statistic, which in turn leads to over-rejection that you should.
+
+---
+class: middle
+
+.content-box-green[**Bertrand, Duflo, and Mullainathan (2004)**]
+
++ Examined how problematic serial correlation is in terms of inference via Monte Carlo simulation
+
+  * generate a fake treatment dummy variable in a way that it has no impact on the outcome (dependent variable) in the dataset of women's wages from the Current Population Survey (CPS)
+
+  * run regression of the oucome on the treatment variable
+
+  * test if the treatment variable has statistically significant effect via $t$-test
+
++ They rejected the null $67.5\%$ at the $5\%$ significance level!!
+
+---
+class: middle
+
+
+.content-box-green[**SE robust to heteroskedasticity and serial correlation**]
+
++ You can take into account .blue[both] heteroskedasticity and serial correlation by clustering by individual (whatever the unit of individual is: state, county, farmer)
+
++ Cluster by individual allows correlation within individuals (over time)
+
+--
+
+.content-box-green[**R implementation**]
+
+The last partition is used for clustering standard error estimation by variable like below.
+  
+```{r }
+felm(I(log(income)) ~ educ | id + year | 0 | id, data = year_fe) %>% tidy()
+```  
+
+---
+class: middle
+
+# Recap on `felm` 
+
+```{r eval = F}
+felm(dep_var ~ indep_var(s) | FE | IV formula | SE clsuter, data = data) 
+```
+
++ `FE` partition: 
+ 
+Include variables that hold values. Then, the dummy variable for each of the values in the variable is created.
+
++ `IV formula` partition: 
+
+Specify what variables to be instrumented (endogenous variable) and what variables are instrumenting from outside the model (excluded instruments).
+
++ `SE cluster` partition:
+
+Include variables by which you want to cluster SE estimation.
+
+
+
+
+

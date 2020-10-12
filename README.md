@@ -18,6 +18,7 @@ This is the repository for AECN896-003 at the University of Nebraska Lincoln, wh
 + Lecture 9: OLS Asymptotics ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Asymptotics/asymptotics_x.html))
 + Lecture 10: Endogeneity ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Endogeneity/endogeneity_x.html))
 + Lecture 11: Instrumental Variable (IV) Estimation([slide](https://tmieno2.github.io/MS-Applied-Econometrics/InstrumentalVariable/iv_x.html))
++ Lecture 12: Panel Data Estimation Methods ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Panel/panel_x.html))
 
 ## Assignments
 
