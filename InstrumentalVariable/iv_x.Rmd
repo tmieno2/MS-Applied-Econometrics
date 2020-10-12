@@ -37,9 +37,9 @@ Understand how instrumental variable (IV) estimation works.
 
 ## Table of contents
 
-1. [Selection Bias](#select)
-2. [Reverse Causality](#reverse)
-3. [Measurement Error](#ME)
+1. [Instrumental Variable (IV) Approach](#inst)
+2. [IV in R](#iv-r)
+
 
 ---
 class: middle
@@ -62,9 +62,15 @@ If the error term is, .red[for whatever reason], correlated with the independent
 + Measurement error
 
 ---
-class: middle
+class: inverse, center, middle
+name: inst
 
 # Instrumental Variable (IV) Approach
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
 
 .content-box-green[**The Model**]
 
@@ -80,7 +86,7 @@ class: middle
 
 Bring in variable(s) (.blue[Instrumental variable(s)]) that does .red[NOT] belong to the model, but .red[IS] related with the endogenous variable,
 
-+ using the instrumental variable(s) (which we denote by $Z$), make the endogenous variable exogenous, which we call .blue[instrumented variable(s)}
++ using the instrumental variable(s) (which we denote by $Z$), make the endogenous variable exogenous, which we call .blue[instrumented variable(s)]
 
 + use the variation in the instrumented variable instead of the original endogenous variable to estimate the impact of the original variable
 
@@ -91,7 +97,7 @@ class: middle
 
 .content-box-green[**Step 1**]
   
-using the instrumental variables, make the endogenous variable exogenous, which we call \textcolor{blue}{instrumented variable}
+using the instrumental variables, make the endogenous variable exogenous, which we call .blue[instrumented variable]
 
 --
 
@@ -151,9 +157,12 @@ class: middle
 
 # Condition 1
 
+---
+class: middle
+
 .content-box-green[**Question**]
 
-What happens if $Z$ have no power to explain $x_1$ ($E[\hat{\alpha}_1]=0$ and $E[\hat{\alpha}_2]=0$)?
+What happens if $Z$ have no power to explain $x_1$ $(E[\hat{\alpha}_1]=0$ and $E[\hat{\alpha}_2]=0)$?
 
 --
 
@@ -208,14 +217,14 @@ $(\hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2)$
 
 .content-box-red[**Condition 2**]
 
-$z_1$ and $z_2$ are note correlated with $\mu$ and $u$.
+$z_1$ and $z_2$ are not correlated with $\mu$ and $u$.
 
 ---
 class: middle
 
 .content-box-red[**Condition 2**]
 
-$z_1$ and $z_2$ are note correlated with $\mu$ and $u$.
+$z_1$ and $z_2$ are not correlated with $\mu$ and $u$.
 
 --
 
@@ -253,6 +262,30 @@ When are $z_1$ and $z_2$ uncorrelated with $u$?
 ---
 class: middle
 
+.content-box-green[**Question**]
+
+Do you think we can test condition 2?
+
+--
+
+.content-box-green[**Answer**]
+
+No, because we never observe the error term.
+
+--
+
+.content-box-red[**Important**]
+
++ All we can do is to .red[argue] that the instruments are not correlated with the error term.
+
+--
+
++ In journal articles that use IV method, they make careful arguments as to why their choice of instruments are not correlated with the error term.
+
+
+---
+class: middle
+
 .content-box-red[**Condition 1**]
 
 + The instrument(s) $Z$ have jointly significant explanatory power on the endogenous variable $x_1$ .red[after] you control for all the other exogenous variables (here $x_2)$}
@@ -273,12 +306,16 @@ class: middle
 + Condition 2 is NOT testable (unless you have more instruments than endogenous variables)
 
 ---
+class: middle
+
+
+.content-box-green[**Two-stage Least Square (2SLS)**]
 
 IV estimator is also called two-stage least squares estimator (2SLS) because it involves two stages of OLS.
 
-$\mbox{Step 1:} \hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2$  
++ Step 1: $\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2$  
 
-$\mbox{Step 2:} y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$     
++ Step 2: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$     
 
 --
 
@@ -287,9 +324,12 @@ $\mbox{Step 2:} y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
 + But, IV estimation is done in one-step
 
 ---
+class: middle
 
-# Instrumental variable validity: example 1
+# Instrumental variable validity
 
+---
+class: middle
 
 .content-box-green[**The model**]
 
@@ -312,6 +352,7 @@ What conditions would a good instrument $(z)$ satisfy?
 + $z$ is uncorrelated with $v$ ($ability$ and all the other important unobservables)
 
 ---
+class: middle
 
 .content-box-green[**The model**]
 
@@ -330,6 +371,7 @@ The last digit of an individual's Social Security Number? (this has been actuall
 + does it have explanatory power on $educ$ .blue[after] you control for the impact of $epxer$ on $educ$?
 
 ---
+class: middle
 
 .content-box-green[**The model**]
 
@@ -348,6 +390,7 @@ IQ test score
 + does it have explanatory power on $educ$ .blue[after] you control for the impact of $epxer$ on $educ$?
 
 ---
+class: middle
 
 .content-box-green[**The model**]
 
@@ -366,6 +409,7 @@ Mother's education
 + does it have explanatory power on $educ$ .blue[after] you control for the impact of $epxer$ on $educ$?
 
 ---
+class: middle
 
 .content-box-green[**The model**]
 
@@ -385,15 +429,17 @@ Number of siblings
 
 
 ---
+class: middle
 
 class: inverse, center, middle
-name: select
+name: iv-r
 
 # Implementation of Instrumental Variable (IV) Estimation in R
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
 ---
+class: middle
 
 .content-box-green[**Model**]
 
@@ -418,6 +464,7 @@ We believe
 + we refer to the collection of included and excluded instruments as .blue[instruments]
 
 ---
+class: middle
 
 
 .content-box-green[**Dataset**]
@@ -431,6 +478,7 @@ select(data, wage, educ, sibs, feduc) %>% head
 ```
 
 ---
+class: middle
 
 We can use the `lfe` package to run IV estimation method.
 
@@ -438,7 +486,8 @@ We can use the `lfe` package to run IV estimation method.
 library(lfe)  
 ```
 
---
+---
+class: middle 
 
 .content-box-green[**Syntax**]
 
@@ -447,6 +496,8 @@ lfe(dep var ~ included instruments|0|first stage formula|0 , data = dataset)
 ```
 
 + `included instruments`: exogenous included variables (do not include endogenous variables here)
+
+--
 
 .content-box-green[**first stage formula**]
 
@@ -470,12 +521,14 @@ iv_res <- felm(log(wage) ~ exper| 0 | (educ ~ sibs + feduc) | 0, data = data)
   * excluded instruments: `sibs` and `feduc`
 
 ---
+class: middle
 
 ```{r }
-summary(iv_res)  
+tidy(iv_res)  
 ```
 
 ---
+class: middle
 
 
 .content-box-green[**Comparison of OLS and IV Estimation Results**]
@@ -499,10 +552,11 @@ Do you think $sibs$ and $feduc$ are good instruments?
 + Condition 2: uncorrelated with the error term?
 
 ---
+class: middle
 
 .content-box-green[**Weak Instrument Test**]
 
-We can always test if the excluded instruments are weak or not.
+We can always test if the excluded instruments are weak or not (test of condition 1).
 
 --
 
@@ -516,15 +570,16 @@ $educ = \alpha_0 + \alpha_1 exper + \alpha_2 sibs + \alpha_3 feduc + v$
 
 + test the joint significance of $\alpha_2$ and $\alpha_3$ ($F$-test)
 
-If excluded instruments ($sibs$ and $feduc$) are jointly significant, then it would mean that $sibs$ and $feduc$ are not weak instruments, satisfying condition 1.
+If excluded instruments $(sibs$ and $feduc$) are jointly significant, then it would mean that $sibs$ and $feduc$ are not weak instruments, satisfying condition 1.
 
---
+---
+class: middle
 
 When we ran the IV estimation using `iv_reg()` earlier, it automatically calculated the F-statistic for the weak instrument test.
 
 To see it, access the `stage1` element of `iv_res`, and further access the `rob.iv1fstat` component of `stage1`.
 
----
+--
 
 ```{r }
 iv_res$stage1$rob.iv1fstat
@@ -534,6 +589,7 @@ iv_res$stage1$rob.iv1fstat
 + `P`: p-value for the weak instrument test
 
 ---
+class: middle
 
 .content-box-green[**Notes**]
 
@@ -569,7 +625,8 @@ y <- x_end + u # dependent variable
 data <- data.frame(y,x_end,z_strong,z_weak)
 ```
 
---
+---
+class: middle
 
 .content-box-green[**Correlation**]
 
@@ -580,14 +637,19 @@ cor(data)
 ---
 class: middle
 
+
+.content-box-green[**Estimation with the strong instrumental variable**]
+
 ```{r }
 #--- IV estimation (strong) ---#
 iv_strong <- felm(y ~ 1 | 0 | (x_end ~ z_strong) | 0, data = data)
-iv_strong_sum <- summary(iv_strong)
+```
 
+.content-box-green[**Estimation with the weak instrumental variable**]
+
+```{r }
 #--- IV estimation (weak) ---#
 iv_weak <- felm(y ~ 1 | 0 | (x_end ~ z_weak) | 0, data = data)
-iv_weak_sum <- summary(iv_weak)  
 ```
 
 ---
@@ -595,10 +657,10 @@ class: middle
 
 ```{r }
 #--- coefs (strong) ---#
-iv_strong_sum$coef
+tidy(iv_strong)
 
 #--- coefs (weak) ---#
-iv_weak_sum$coef  
+tidy(iv_weak)  
 ```
 
 

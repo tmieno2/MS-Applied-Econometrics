@@ -681,7 +681,7 @@ class: middle
 
 `\(y^*=  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + u\)`
 
-with MLR.1 through MLR.6 satisfied ($u$ is not correlated with any of the independent variables).
+with MLR.1 through MLR.6 satisfied `\((u\)` is not correlated with any of the independent variables).
 
 --
 
@@ -780,17 +780,15 @@ class: middle
 
 .content-box-green[**Classical errors-in-variables (CEV)**]
   
-The correctly observed variable ($x_1^*$) is uncorrelated with the measurement error ($e_1$):
+The correctly observed variable `\((x_1^*)\)` is uncorrelated with the measurement error `\((e_1)\)`:
 
 `\(Cov(x_1^*, e_1) = 0\)`
+
+--
 
 .content-box-green[**Under CEV**]
 
 The incorrectly observed variable `\((x_1)\)` must be correlated with the measurement error `\((e_1)\)`:
-
---
-
-So, the mis-measured variable `\((x_1)\)` is 
 
 --
 
@@ -814,9 +812,13 @@ class: middle
 
 So, what is the direction of the bias?
 
+--
+
 .content-box-green[**Note**]
 
 The sign of the bias on `\(x_1\)` is the sign of the correlation between `\(x_1\)` and `\(v = (u - \beta e_1)\)`.
+
+--
 
 .content-box-green[**Bias?**]
 
