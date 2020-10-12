@@ -25,3 +25,5 @@ This is the repository for AECN896-003 at the University of Nebraska Lincoln, wh
 + [Assignment 1](https://www.dropbox.com/sh/8q8twk1gph0qts0/AADYc4cWzYJCArWUtNZmPNsva?dl=0)
 
 + [Assignment 2](https://www.dropbox.com/sh/f8f9tdqla719qxw/AACZ8YjVFOC6H8Eck4-rRs1ta?dl=0)
+
++ [Assignment 3](https://www.dropbox.com/sh/ms57jt2c0dqq2zu/AADzY7dTQeh6AhciFELgkL43a?dl=0)
