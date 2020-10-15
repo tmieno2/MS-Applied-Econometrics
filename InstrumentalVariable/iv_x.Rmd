@@ -103,9 +103,9 @@ using the instrumental variables, make the endogenous variable exogenous, which 
 
 .content-box-green[**Step 1: mathematically**]
 
-+ Regress the endogenous variable $(x_1)$ on the instrumental variable(s) $(Z=\{z_1,z_2\}$, two instruments here) and all the other exogenous variables that you do not intend to instrument,
++ Regress the endogenous variable $(x_1)$ on the instrumental variable(s) $(Z=\{z_1,z_2\}$, two instruments here) and all the other exogenous variables
 
-$x_1 = \alpha_0 + \sigma_2 x_2 + \alpha_1 z_1 +\alpha_2 z_2 + \mu$
+$x_1 = \alpha_0 + \sigma_2 x_2 + \alpha_1 z_1 +\alpha_2 z_2 + v$
 
 --
 
@@ -134,6 +134,59 @@ to estimate the coefficient on $x$ in the original model
 ---
 class: middle
 
+# Example 
+
+.content-box-green[**Model of interest**]
+
+$log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + (\beta_3 ability + v)$ 
+
++ Regress $log(wage)$ on $educ$ and $exper$ $(ability$ not included because you do not observe it)
++ $(\beta_3 ability + v)$ is the error term
++ $educ$ is considered endogenous (correlated with $ability$)
++ $exper$ is considered exogenous (not correlated with $ability$)
+
+--
+
+.content-box-green[**Instruments (Z)**]
+
++ IQ test score ($IQ$)
++ number of siblings ($sibs$)
+
+---
+
+.content-box-green[**Model of interest**]
+
+$log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + (\beta_3 ability + v)$ 
+
+.content-box-green[**Instruments (Z)**]
+
++ IQ test score ($IQ$)
++ number of siblings ($sibs$)
+
+--
+
+.content-box-green[**Step 1:**]
+
+Regress $educ$ on $exper$, $IQ$, and $sibs$:
+
+$educ = \alpha_0 + \alpha_1 exper + \alpha_2 IQ + \alpha_3 sibs + u$
+
+Use the coefficient estimates on $\alpha_0$, $\alpha_1$, $\alpha_2$, and $\alpha_3$ to predict $educ$ as a function of $exper$, $IQ$, and $sibs$.
+
+$\hat{educ} = \hat{\alpha_0} + \hat{\alpha_1} exper + \hat{\alpha_2} IQ + \hat{\alpha_3} sibs$
+
+--
+
+.content-box-green[**Step 2:**]
+
+Use $\hat{educ}$ in place of $educ$ to estimate the model of interest:
+
+$log(wage) = \beta_0 + \beta_1 \hat{educ} + \beta_2 exper + (\beta_3 ability + v)$ 
+
+
+---
+class: middle
+
 # Does IV really work? 
 
 .content-box-green[**Estimation Procedure**]
@@ -142,13 +195,9 @@ class: middle
 
 + Step 2: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
 
---
-
 .content-box-green[**Important question**]
 
 What are the conditions under which IV estimation is consistent?
-
---
 
 The instruments $(Z)$ need to satisfy two conditions, which we will discuss.
 
@@ -160,9 +209,15 @@ class: middle
 ---
 class: middle
 
+.content-box-green[**Estimation Procedure**]
+
++ Step 1: $\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2$  
+
++ Step 2: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
+
 .content-box-green[**Question**]
 
-What happens if $Z$ have no power to explain $x_1$ $(E[\hat{\alpha}_1]=0$ and $E[\hat{\alpha}_2]=0)$?
+What happens if $Z$ have no power to explain $x_1$ $(\alpha_1=0$ and $\alpha_2=0)$?
 
 --
 
@@ -190,16 +245,44 @@ class: middle center
 ---
 class: middle
 
-+ Instrumentation phase: $\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2$  
+.content-box-green[**Model of interest**]
 
-+ Main estimation phase: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
+$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u$ 
+
+.content-box-green[**Estimation Procedure**]
+
++ Step 1: $\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2$  
+
++ Step 2: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
 
 --
 
-Plugging in $x_1 = \hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2 + \hat{\mu}$ into the original model,
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>  
 
-$y =  \beta_0 + \beta_1 (\hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2 + \hat{\mu}) + u$ 
-$\;\;\;=  \beta_0 + \beta_1 \times \underline{(\hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2)} +\beta_2 x_2 + v \;\; (=\beta_1 \hat{\mu} + u)$
+Remember you can break $x_1$ into the predicted part and the residuals.
+
+$x_1 = \hat{x}_1 + \hat{\varepsilon}$
+
+where $\hat{\varepsilon}$ is the residual of the first stage estimation.
+
+--
+
+Plugging in $x_1 = \hat{x}_1 + \hat{\varepsilon}$ into the model of interest,
+
+$y =  \beta_0 + \beta_1 (\hat{x}_1 + \hat{\varepsilon}) + \beta_2 x_2+ u$ 
+
+$\;\;\; = \beta_0 + \beta_1 \hat{x}_1 + \beta_2 x_2+ (\beta_1\hat{\varepsilon} + u)$
+
+So, if you regress $y$ on $\hat{x}_1$ and $x_2$, then the error term is $(\beta_1\hat{\varepsilon} + u)$.
+
+---
+class: middle
+
+.content-box-green[**Second stage regression**]
+
+$y = \beta_0 + \beta_1 \hat{x}_1 + \beta_2 x_2+ (\beta_1\hat{\varepsilon} + u)$
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html> 
 
 --
 
@@ -211,49 +294,18 @@ What is the condition under which the OLS estimation of $\beta_1$ in the main mo
 
 .content-box-green[**Answer**]
 
-$(\hat{\alpha}_0 + \hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 +\hat{\alpha}_2 z_2)$ is not correlated with $v = \beta_1\mu + u$
+$\hat{x}_1$ is not correlated with $(\beta_1\hat{\varepsilon} + u)$
 
 --
 
-.content-box-red[**Condition 2**]
+This in turn means that $x_2$, $z_1$, and $z_2$ are not correlated with $u$ (the error term of the true model.
 
-$z_1$ and $z_2$ are not correlated with $\mu$ and $u$.
+$(\hat{x}_1$ is always not correlated (orthogonal) with $\varepsilon)$
 
 ---
 class: middle
 
 .content-box-red[**Condition 2**]
-
-$z_1$ and $z_2$ are not correlated with $\mu$ and $u$.
-
---
-
-.content-box-green[**Question**]
-
-When is this satisfied?
-
----
-class: middle
-
-.content-box-green[**Question**]
-
-Are $z_1$ and $z_2$ uncorrelated with $\mu$? 
-
---
-
-.content-box-green[**Answer**]
-
-Always yes. Independent variables and the residuals are orthogonal (uncorrelated).
-
---
-
-.content-box-green[**Question**]
-
-When are $z_1$ and $z_2$ uncorrelated with $u$? 
-
---
-
-.content-box-green[**Answer**]
 
 + $z_1$ and $z_2$ do not belong in the main model, meaning they do not have any explanatory power beyond $x_2$ (they should have been included in the model in the first place as independent variables)
 
@@ -347,9 +399,9 @@ What conditions would a good instrument $(z)$ satisfy?
 
 .content-box-green[**Answer**]
 
-+ $z$ has explanatory power on $educ$ \textcolor{blue}{after} you control for the impact of $epxer$ on $educ$
++ $z$ has explanatory power on $educ$ .blue[after] you control for the impact of $epxer$ on $educ$
 
-+ $z$ is uncorrelated with $v$ ($ability$ and all the other important unobservables)
++ $z$ is uncorrelated with $v$ $(ability$ and all the other important unobservables)
 
 ---
 class: middle
@@ -364,7 +416,7 @@ The last digit of an individual's Social Security Number? (this has been actuall
 
 .content-box-green[**Question**]
 
-+ Is it uncorrelated with $v$ ($ability$ and all the other important unobservables)?
++ Is it uncorrelated with $v$ $(ability$ and all the other important unobservables)?
 
 --
 
@@ -383,7 +435,7 @@ IQ test score
 
 .content-box-green[**Question**]
 
-+ Is it uncorrelated with $v$ ($ability$ and all the other important unobservables)?
++ Is it uncorrelated with $v$ $(ability$ and all the other important unobservables)?
 
 --
 
@@ -402,7 +454,7 @@ Mother's education
 
 .content-box-green[**Question**]
 
-+ Is it uncorrelated with $v$ ($ability$ and all the other important unobservables)?
++ Is it uncorrelated with $v$ $(ability$ and all the other important unobservables)?
 
 --
 
@@ -421,7 +473,7 @@ Number of siblings
 
 .content-box-green[**Question**]
 
-+ Is it uncorrelated with $v$ ($ability$ and all the other important unobservables)?
++ Is it uncorrelated with $v$ $(ability$ and all the other important unobservables)?
 
 --
 
@@ -492,7 +544,7 @@ class: middle
 .content-box-green[**Syntax**]
 
 ```{r eval = F}
-lfe(dep var ~ included instruments|0|first stage formula|0 , data = dataset)  
+felm(dep var ~ included instruments|0|first stage formula|0 , data = dataset)  
 ```
 
 + `included instruments`: exogenous included variables (do not include endogenous variables here)
@@ -526,6 +578,12 @@ class: middle
 ```{r }
 tidy(iv_res)  
 ```
+
+.content-box-green[**Note**]
+
++ When variable `x` is the endogenous variable, `felm` changes the name of `x` to `x(fit)`.
+
++ Here, `educ` has become `educ(fit)`.
 
 ---
 class: middle
@@ -568,14 +626,14 @@ $educ = \alpha_0 + \alpha_1 exper + \alpha_2 sibs + \alpha_3 feduc + v$
 
 --
 
-+ test the joint significance of $\alpha_2$ and $\alpha_3$ ($F$-test)
++ test the joint significance of $\alpha_2$ and $\alpha_3$ $(F$-test)
 
 If excluded instruments $(sibs$ and $feduc$) are jointly significant, then it would mean that $sibs$ and $feduc$ are not weak instruments, satisfying condition 1.
 
 ---
 class: middle
 
-When we ran the IV estimation using `iv_reg()` earlier, it automatically calculated the F-statistic for the weak instrument test.
+When we ran the IV estimation using `felm()` earlier, it automatically calculated the F-statistic for the weak instrument test.
 
 To see it, access the `stage1` element of `iv_res`, and further access the `rob.iv1fstat` component of `stage1`.
 
