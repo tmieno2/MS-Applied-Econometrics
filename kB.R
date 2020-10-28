@@ -46,4 +46,9 @@ render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/InstrumentalVa
 #--------------------------
 render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Panel/panel_x.Rmd")
 
+#--------------------------
+# Demonstration
+#--------------------------
+render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Demonstration/demonstration_x.Rmd")
+
 

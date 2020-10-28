@@ -1,0 +1,233 @@
+---
+title: "The Impacts of Irrigation Costs on Irrigation Demand"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 4:3
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: middle
+
+```{r, child = './../setup.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Demonstration/")
+```
+
+```{r additional-libraries, include = F, cache = F}
+#--- load packages ---#
+suppressMessages(library(broom))
+suppressMessages(library(fixest))
+suppressMessages(library(flextable))
+suppressMessages(library(officer))
+suppressMessages(library(gt))
+suppressMessages(library(lmtest))
+suppressMessages(library(lfe))
+suppressMessages(library(tidyverse))
+suppressMessages(library(data.table))
+```
+
+# Econometric Model (univariate)
+
+$W = \beta_0 + \beta_1 IC + v$
+
++ $W$: irrigation amount 
++ $IC$: irrigation cost 
++ $v$: error term.
+
+---
+class: middle
+
+# Endogeneity: Omitted Variable Bias
+
+$W = \beta_0 + \beta_1 IC + v$
+
+.content-box-green[**Question**]
+
+What is in $v$? Are they going to cause bias on $\beta_1$ estimation? 
+
+--
+
++ soil type
++ well yield
++ precipitation 
+
+---
+class: middle
+
+# Econometric Model (multi-variate) 
+
+$W = \beta_0 + \beta_1 IC+ \beta_2 WY + \sigma_5 P^5 + \sigma_6 P^6 + \sigma_7 P^7 + \sigma_8 P^8 + \sigma_9 P^9 + \varepsilon$
+
++ $W$: irrigation amount 
++ $IC$: irrigation cost 
++ $WY$: well yield
++ $P^x$: total precipitation in month $x$
++ $\varepsilon$: error term
+
+---
+class: middle
+
+# Panel Data Method
+
+$W_{i,t} = \beta_0 + \beta_1 IC_{i,t}+ \beta_2 WY_{i,t} + \sigma_5 P^5_{i,t} + \sigma_6 P^6_{i,t} + \sigma_7 P^7_{i,t} + \sigma_8 P^8_{i,t} + \sigma_9 P^9_{i,t} + \varepsilon_{i,t}$
+
++ $W$: irrigation amount 
++ $IC$: irrigation cost 
++ $WY$: well yield
++ $P^x$: total precipitation in month $x$
++ $\varepsilon$: error term
+
+---
+class: middle
+
+# Endogeneity
+
+.content-box-red[**Declining block rate pricing**]
+
+```{r echo = F}
+fread("REA_price_schedule.csv") %>%
+  .[REA == "Highline" & year >= 2013, t2 := NA] %>%
+  .[REA == "Highline" & year >= 2013, p3 := NA] %>%
+  .[year <= 2016,] %>%
+  .[, REAnum := NULL] %>%
+  .[, REA := NULL] %>%
+  setnames(names(.), c("Year", "Price 1", "Price 2", "Price 3", "Threshold 1", "Threshold 2")) %>% 
+  .[, Supplier := "Highline"] %>% 
+  .[7:12, Supplier := "Y-W"] %>% 
+  relocate(Supplier) %>% 
+  flextable() %>% 
+  merge_v(j = 1) %>% 
+  hline(
+    i = 6,
+    border = fp_border(width = 1)
+  ) %>% 
+  fix_border_issues() %>% 
+  autofit()
+
+```
+
+--
+
+.content-box-green[**Example**]
+
+A well in Highline’s service area with 100 HP will be on the second price tier after using 40,000 kWh.
+
+---
+class: middle
+
+# Endogeneity
+
+.content-box-red[**Declining block rate pricing**]
+
+```{r echo = F}
+fread("REA_price_schedule.csv") %>%
+  .[REA == "Highline" & year >= 2013, t2 := NA] %>%
+  .[REA == "Highline" & year >= 2013, p3 := NA] %>%
+  .[year <= 2016,] %>%
+  .[, REAnum := NULL] %>%
+  .[, REA := NULL] %>%
+  setnames(names(.), c("Year", "Price 1", "Price 2", "Price 3", "Threshold 1", "Threshold 2")) %>% 
+  .[, Supplier := "Highline"] %>% 
+  .[7:12, Supplier := "Y-W"] %>% 
+  relocate(Supplier) %>% 
+  flextable() %>% 
+  merge_v(j = 1) %>% 
+  hline(
+    i = 6,
+    border = fp_border(width = 1)
+  ) %>% 
+  fix_border_issues() %>% 
+  autofit()
+
+```
+
+--
+
+.content-box-green[**Endogeneity?**]
+
+Would this cause bias in estimating $\beta_1$?
+
+---
+class: middle
+
+# Fixed-Effects estimation 
+
+```{r echo = F}
+massage_data_2p <- data.frame(
+  Location = rep(c("Chicago", "Peoria", "Milwaukee", "Madison"), each = 2),
+  Year = rep(c(2003, 2004), 4),
+  P = c(75, 85, 50, 48, 60, 65, 55, 60),
+  Q = c(2, 1.8, 1.0, 1.1, 1.5, 1.4, 0.8, 0.7),
+  Ql = rep(c(10, 5, 7, 6), each = 2)
+)  
+```
+
+```{r echo = F}
+massage_data_2p %>% 
+  flextable()  
+```
+
+---
+class: middle
+
+# (individual) Fixed Effects Estimation
+
++ Including individual (cross-sectional units) dummies (here, it is well represented by `wdid`) in the model
+
++ This is equivalent to do within-transformation of the data (deviation from the individual means) and then regress deviation on deviation
+
++ What the within-transformation does is to effectively  divide the observations into groups (wells) and you look at variations .red[within] each of the groups (wells observed over time).
+
++ Since including individual dummies are equivalent to the within-transformation approach, that means including individual (well) dummies also effectively divides the observations into groups (wells) and you look at variations .red[within] each of the groups (wells observed over time).
+
+---
+class: middle
+
+# Fixed Effect Estimation (in general)
+
+.content-box-green[**key**]
+
+Including dummies variables effectively divide the observations into groups and you look at variations .red[within] each of the groups
+
+---
+class: middle
+
+# Beyond individual (well) FEs  
+
+```{r echo = F}
+final_data <- readRDS("final_data_CO.rds")  
+
+final_data[wdid %in% c(4905049, 4905044), .(wdid, year, pumpingAF, pc, tier, pump_hp)] %>% 
+  arrange(wdid, year) %>% 
+  flextable() %>% 
+  merge_v(j = 1) %>% 
+  hline(
+    i = 5,
+    border = fp_border(width = 1)
+  ) %>% 
+  fix_border_issues() %>% 
+  autofit()
+
+```
+
+--
+
+.content-box-green[**Question**]
+
++ Does including individual dummies (well fixed effects) help?
+
+--
+
++ Does including well-tier dummies (well-tier fixed effects) help? 
+
+--
+
++ Does including well-tier-hp dummies (well-tier-hp fixed effects) help? 
