@@ -1,0 +1,661 @@
+---
+title: "Impact Evaluation"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 4:3
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: middle
+
+```{r, child = './../setup.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/ImpactEvaluation/")
+```
+
+```{r additional-libraries, include = F, cache = F}
+#--- load packages ---#
+suppressMessages(library(broom))
+suppressMessages(library(lfe))
+suppressMessages(library(gt))
+suppressMessages(library(stargazer))
+suppressMessages(library(flextable))
+suppressMessages(library(readstata13))
+suppressMessages(library(lmtest))
+suppressMessages(library(modelsummary))
+```
+
+# Before we start 
+
+## Learning objectives
+
+Understand the new econometric methods that can be used with panel datasets to address endogeneity problems.
+
+## Table of contents
+
+1. [Selection Bias](#select)
+2. [Reverse Causality](#reverse)
+3. [Measurement Error](#ME)
+
+---
+class: inverse, center, middle
+name: select
+
+# Impact (Program) Evaluation
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+
+.content-box-green[**Definition**]
+
+Impact (program) evaluation is a field of econometrics that focuses on estimating the impact of a program.
+
+.content-box-green[**Examples**]
+
++ Groundwater use limit in Nebraska 
++ Technology adoption (soil moisture sensor)
++ Crop insurance
++ Job training program
++ Food Stamp 
+
+---
+class: middle
+
+.content-box-red[**Key challenge**]
+
+Most of the programs you are interested in are not randomized.
+
+$\Rightarrow$ 
+
+Selection Bias (endogeneity problem arising from self-selection into the program)
+
+---
+class: middle
+
+.content-box-green[**Gold Standard**]
+
++ The best (if feasible) way to tackle the problem of selection bias in impact evaluation is randomized experiment, where who gets treated or not is determined randomly (you design a program or experiment and randomize treatment-control assignment)
+
++ This ensures that the dummy variable of treated or not is not correlated with the error term 
+
+.content-box-green[**Example**]
+
+$y \;\;(\mbox{income}) = \beta_0 + \beta_1 program \;\;(\mbox{financial aid}) + u$
+
+, where $E[u|program]=0$ (the program is correlated with the error term). OLS is just fine.
+
+--
+
+.content-box-red[**Problem**]
+
+Many of the programs are simply not possible to randomize because of financial and ethical reasons 
+
+$\Rightarrow$
+
+We need to use data from an event that happened outside our control.
+
+
+---
+class: middle
+
+# Natural (Quasi) Experiment 
+
+.content-box-green[**Definition**]
+
+An event or policy change (often a change in government policy) that happens .blue[outside of the control of investigators], which changes the environment in which agents (individuals, families, firms, or cities) operate.
+
+--
+
+.content-box-green[**Challenges**]
+
+The program is most likely correlated with the error term.
+
+--
+
+.content-box-green[**Lecture Objectives**]
+
++ Discuss different ways of estimating the impact of a program
+
++ Understand the strength and weakness of these methods  
+
+---
+class: middle
+
+# Example program
+
+.content-box-green[**Incinerator Construction**]
+
++ rumored about the incinerator being built in North Andover, Massachusetts, began in 1978
+
++ construction started in 1981
+
+.content-box-green[**Data collected**]
+
+Housing prices in 1978 and 1981, and other variables (we observations before and after the incinerator construction)
+
+---
+class: middle
+ 
+# Various Approaches 
+
++ Approach 1: cross-sectional comparison of houses that are close to (treated) and far away from (control) to the incinerator .red[after] the incinerator was built (data in 1981)
+  
++ Approach 2: comparison of the houses that are close to the incinerator before (control) and after (treated) the incinerator was built (data in 1978 and 1981)
+
++ Approach 3: comparison of differences (close by v.s. far away) in differences (before-after) of house prices (this method will become clearer later)
+
+---
+class: middle
+
+# Approach 1
+
+Run regression on the following model using the 1981 data (cross-sectional data)
+
+$rpice = \gamma_0 + \gamma_1 nearinc + u$
+
++ $rprice$: house price in real terms (inflation-corrected)
+
++ $nearinc$: 1 if the house is near the incinerator, and 0 otherwise
+
++ $\gamma_1$: .blue[the difference between the mean house price of houses nearby the incinerator and the rest (not nearby) in 1981]
+
+.content-box-green[**Question**]
+
+Is `nearinc` endogenous?
+
+---
+class: middle
+
+```{r }
+#--- import the data ---#
+data <- read.dta13('KIELMC.dta') %>%
+    mutate(rprice=rprice/1000)
+
+#--- run regression ---#
+reg_81 <- felm(
+  rprice ~ nearinc, 
+  data = filter(data, year == 1981)
+)  
+```
+
+```{r echo = F}
+msummary(
+  reg_81,
+  gof_omit = "IC|Log|Adj|F",
+  output = "flextable",
+  star = TRUE
+) %>% 
+fontsize(size = 16, part = "all") %>% 
+padding(
+  padding.top = 5,
+  padding.bottom = 5, 
+  part = "all"
+) %>% 
+autofit()
+```
+
+.content-box-green[**Question**]
+Is this reliable? 
+
+---
+class: middle
+
+# Take a look at 1978 
+
+Run regression on the following model using the .red[1978] data (cross-sectional data)
+
+$rpice = \gamma_0 + \gamma_1 nearinc + u$
+
+$\gamma_1$ represents the difference between the mean house price of houses nearby the incinerator and the rest (not nearby) .red[before] the incinerator was built.
+
+---
+class: middle
+
+```{r 78_reg}
+#--- run regression ---#
+reg_78 <- felm(
+  rprice ~ nearinc, 
+  data = filter(data, year == 1978)
+)  
+```
+
+```{r echo = F}
+msummary(
+  reg_78,
+  gof_omit = "IC|Log|Adj|F",
+  output = "flextable",
+  star = TRUE
+) %>% 
+fontsize(size = 16, part = "all") %>% 
+padding(
+  padding.top = 5,
+  padding.bottom = 5, 
+  part = "all"
+) %>% 
+autofit()
+```
+
+--
+
+.content-box-red[**Critical**]
+
+Houses nearby the incinerator were already lower than those houses that are not nearby...
+
+---
+class: middle
+
+```{r echo = F, out.width = "70%"}
+data_mean <- data %>%
+  group_by(year, nearinc) %>%
+  summarize(m_rprice = mean(rprice))
+
+ggplot() +
+  geom_bar(
+    data = data_mean,
+    aes(
+      y = m_rprice, 
+      x = factor(year),
+      fill = factor(nearinc)
+    ),
+    stat = "identity",
+    position = "dodge"
+  ) +
+  ylab("Mean House Price ($1000$)") +
+  xlab("Year") +
+  scale_fill_discrete(name = "") +
+  theme(legend.position = "bottom") +
+  theme_bw()
+```
+
+---
+class: middle
+
+```{r echo = F}
+ex_results_tab <- data.frame(
+  `treated` = c("nearinc = 0", "nearinc = 1"),
+  `before` = c("\\(\\gamma_0\\)", "\\(\\gamma_1\\)"), 
+  after = c("\\(\\gamma_0 + \\alpha_0 + 0\\)", "\\(\\gamma_1 + \\alpha_1 + \\beta \\)")
+) %>%
+knitr::kable(
+  format = "html", 
+  escape = FALSE
+)
+
+ex_results_tab
+```
+
++ $\gamma_j$ is the average house price of those that are $nearinc=j$ in 1978 (before)
+
++ $\alpha_j$ is .blue[any] macro shocks .blue[other than the incinerator event] that happened between the before and after period to the houses that are $nearinc=j$
+
++ $\beta$ is the true causal impact of the incinerator placement
+
+---
+class: middle
+
+```{r echo = F}
+ex_results_tab
+```
+
++ $\gamma_j$ is the average house price of those that are $nearinc=j$ in 1978 (before)
+
++ $\alpha_j$ is .blue[any] macro shocks .blue[other than the incinerator event] that happened between the before and after period to the houses that are $nearinc=j$
+
++ $\beta$ is the true causal impact of the incinerator placement
+
+.content-box-green[**Question**]
+
+So, what did we estimate with Approach 1?
+
+--
+
+.content-box-green[**Answer**]
+
+$E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 0, year = 1981]$
+
+$= (\gamma_1 + \alpha_1 + \beta) - (\gamma_0 + \alpha_0 + 0)$
+
+$= (\gamma_1 - \gamma_0)+ (\alpha_1 - \alpha_0) + \beta$
+
+--
+
++ $\gamma_1 - \gamma_0$: pre-existing differences in house price .red[before] the incinerator was built
+
++ $\alpha_1 - \alpha_0$: differences in the trends in housing price between the two groups  
+
+---
+class: middle
+
+
++ $\gamma_1 - \gamma_0$: pre-existing differences in house price .red[before] the incinerator was built
+
++ $\alpha_1 - \alpha_0$: differences in the trends in housing price between the two groups  
+
+.content-box-green[**Question**]
+
+So, when Approach 1 gives us unbiased estimation of the impact of the incinerator? 
+
+.content-box-green[**Answer**]
+
++ $\gamma_1 = \gamma_0$: the average house price between the two groups are the same before the incinerator was built
+
++ $\alpha_1 - \alpha_0$: the two groups experienced the same house price trend from 1978 to 1981
+
+---
+class: middle
+
+# Approach 2 
+
+
+Compare of the houses that are close to the incinerator before (control) and after (treated) the incinerator was built (data in 1978 and 1981)
+
+
+.content-box-green[**Data**]
+
+Restrict the data to the houses that are near the incinerator 
+
+.content-box-green[**Model**]
+
+$rpice = \beta_0 + \beta_1 y81 + u$
+
++ $rprice$: house price in real terms (inflation-corrected)
+
++ $y81$: 1 if the house is near the incinerator, and 0 otherwise
+
++ $\beta_1$: .blue[the difference in the mean house price of houses nearby the incinerator before and after the incinerator was built]
+
+
+---
+class: middle
+
+```{r reg_ba}
+reg_treated <- felm(
+  rprice ~ y81, 
+  data = filter(data, nearinc == 1) #<<
+)  
+```
+
+```{r echo = F}
+msummary(
+  reg_treated,
+  gof_omit = "IC|Log|Adj|F",
+  output = "flextable",
+  star = TRUE
+) %>% 
+fontsize(size = 16, part = "all") %>% 
+padding(
+  padding.top = 5,
+  padding.bottom = 5, 
+  part = "all"
+) %>% 
+autofit()
+```
+
+--
+
+The incinerator increased the average house price (not statistically significant).  
+
+---
+class: middle
+
+```{r echo = F}
+ex_results_tab
+```
+
++ $\gamma_j$ is the average house price of those that are $nearinc=j$ in 1978 (before)
+
++ $\alpha_j$ is .blue[any] macro shocks .blue[other than the incinerator event] that happened between the before and after period to the houses that are $nearinc=j$
+
++ $\beta$ is the true causal impact of the incinerator placement
+
+.content-box-green[**Question**]
+
+So, what did we estimate with Approach 2?
+
+--
+
+.content-box-green[**Answer**]
+
+$E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 1, year = 1978]$
+
+$= (\gamma_1 + \alpha_1 + \beta) - \gamma_1$
+
+$= \alpha_1 + \beta$
+
+---
+class: middle
+
+$E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 1, year = 1978]$
+
+$= (\gamma_1 + \alpha_1 + \beta) - \gamma_1$
+
+$= \alpha_1 + \beta$
+
+--
+
+.content-box-green[**Question**]
+
+So, when Approach 2 gives us unbiased estimation of the impact of the incinerator? 
+
+--
+
+.content-box-green[**Answer**]
+
+$\alpha_1 = 0$: no trend in house price for the houses near the incinerator 
+
+Nothing else significant other than the incinerator happened 
+between 1978 and 1981. 
+
+---
+class: middle
+
+# Approach 3
+
+Compare of differences (close by v.s. far away) in differences (before-after) of house prices (this method will become clearer later)
+
++ Find the difference in the price of the houses .red[close to] the incinerator before and after the incinerator was built 
+
++ Find the difference in house price (close to the incinerator) before and after the incinerator was built  
+
++ Find the difference in the differences
+
+.content-box-green[**Note**]
+
+This method is called DID estimation method (Difference-in- differences). 
+
+---
+class: middle
+
+.content-box-green[**Data**]
+
+All the observations 
+
+.content-box-green[**Model**]
+
+$rpice = \beta_0 + \beta_1 y81 + \beta_2 nearinc + \beta_3 nearinc \times y81 + u$
+
++ $\beta_3$: the difference in differences
+
+--
+
+Let's confirm $\beta_3$ indeed represents the difference in the differences.
+
+---
+class: middle
+
+.content-box-green[**Model**]
+
+$rpice = \beta_0 + \beta_1 y81 + \beta_2 nearinc + \beta_3 nearinc \times y81 + u$
+
+--
+
+.content-box-green[**Expected house price**]
+
++ $E[rprice|year=1981, nearinc = 0] = \beta_0 + \beta_1$ 
+
++ $E[rprice|year=1981, nearinc = 1] = \beta_0 + \beta_1 + \beta_2 + \beta_3$
+
++ $E[rprice|year=1978, nearinc = 0] = \beta_0$
+
++ $E[rprice|year=1978, nearinc = 1] = \beta_0 + \beta_2$
+
+--
+
+.content-box-green[**Differences**]
+
+$E[rprice|year=1981, nearinc = 1] - E[rprice|year=1978, nearinc = 1]$
+
+$= (\beta_0 + \beta_1 + \beta_2 + \beta_3) - (\beta_0 + \beta_2)$
+$= \beta_1 + \beta_3$
+
+$E[rprice|year=1981, nearinc = 1] - E[rprice|year=1978, nearinc = 0]$
+
+$= (\beta_0 + \beta_1) - \beta_0$
+$= \beta_1$
+
+--
+
+.content-box-green[**Difference in the differences**]
+
+$(\beta_1 + \beta_3) - \beta_1 = \beta_3$
+
+---
+class: middle
+
+```{r reg_ba}
+reg_did <- felm(
+  rprice ~ nearinc + y81 + nearinc*y81,
+  data = data
+)  
+```
+
+```{r echo = F}
+msummary(
+  reg_did,
+  gof_omit = "IC|Log|Adj|F",
+  output = "flextable",
+  star = TRUE
+) %>% 
+fontsize(size = 16, part = "all") %>% 
+bg(i = c(5, 6), bg = "#FF7F7F") %>% 
+padding(
+  padding.top = 5,
+  padding.bottom = 5, 
+  part = "all"
+) %>% 
+autofit()
+```
+--
+
+<br>
+
+The incinerator decreased the average house price (not statistically significant).  
+
+---
+class: middle
+
+```{r echo = F}
+ex_results_tab
+```
+
+.content-box-green[**Question**]
+
+So, what did we estimate with Approach 3?
+
+--
+
+.content-box-green[**Answer**]
+
+$E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 1, year = 1978]$
+
+$= (\gamma_1 + \alpha_1 + \beta) - \gamma_1 = \alpha_1 + \beta$
+
+$E[rprice|nearinc = 0, year = 1981] - E[rprice|nearinc = 0, year = 1978]$
+
+$= (\gamma_0 + \alpha_0) - \gamma_0 = \alpha_0$
+
+--
+
+Differences $= \alpha_1 - \alpha_0 + \beta$
+
+---
+class: middle
+
+.content-box-green[**Difference**]
+
+Difference $= \alpha_1 - \alpha_0 + \beta$
+
+.content-box-green[**Question**]
+
+So, when Approach 3 gives us unbiased estimation of the impact of the incinerator? 
+
+--
+
+.content-box-green[**Answer**]
+
++ $\alpha_1 = \alpha_0$: the two groups experienced the same trend in house price from 1978 to 1981
+
++ Unlike Approach 1, the pre-existing difference between the two group is not a problem as it is canceled out 
+
+---
+class: middle
+
+
+.content-box-green[**Key condition**]
+
+$\alpha_1 = \alpha_0$: the two groups experienced the same trend in house price from 1978 to 1981
+
+.content-box-red[**Important**]
+
++ This condition is untestable
+􏰂 
++ If there were any significant changes in policy that happen to only one of them other than the treatment of interest, DID confound the impact of the other policy and the treatment of interest
+
++ It is a common practice to present the trend of the dependent variable prior to the year before the treatment happened
+
+---
+class: middle
+
+.content-box-green[**Approaches**]
+    
+Approach 1: $(\gamma_1 - \gamma_0)+ (\alpha_1 - \alpha_0) + \beta$
+
+Approach 2: $\alpha_1 + \beta$
+
+Approach 3: $\alpha_1 - \alpha_0 + \beta$
+
+--
+
+.content-box-red[**Important**]
+
+--
+
++ None of these approached are perfect. 
+
+--
+
++ It is hard to sell Approaches 1 and 2
+
+--
+
++ Approach 3 (DID) is preferred over Approaches 1 and 2  
+
+--
+
++ But, Approach 3 is not certainly perfect and could definitely have a larger bias than Approaches 1 and 2
+
+e.g., $\alpha_1 = 5$ and $\alpha_0 = - 5$
+
+
+

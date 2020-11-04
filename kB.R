@@ -51,4 +51,12 @@ render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Panel/panel_x.
 #--------------------------
 render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Demonstration/demonstration_x.Rmd")
 
+#--------------------------
+# Impact Evaluation
+#--------------------------
+render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/ImpactEvaluation/impact_evaluation_x.Rmd")
+
+
+
+
 

@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Impact Evaluation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 396/896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tabwid/tabwid.css" rel="stylesheet" />
+    <script src="libs/tabwid/tabwid.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Impact Evaluation
+### AECN 396/896-002
+
+---
+
+class: middle
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+
+# Before we start 
+
+## Learning objectives
+
+Understand the new econometric methods that can be used with panel datasets to address endogeneity problems.
+
+## Table of contents
+
+1. [Selection Bias](#select)
+2. [Reverse Causality](#reverse)
+3. [Measurement Error](#ME)
+
+---
+class: inverse, center, middle
+name: select
+
+# Impact (Program) Evaluation
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+
+.content-box-green[**Definition**]
+
+Impact (program) evaluation is a field of econometrics that focuses on estimating the impact of a program.
+
+.content-box-green[**Examples**]
+
++ Groundwater use limit in Nebraska 
++ Technology adoption (soil moisture sensor)
++ Crop insurance
++ Job training program
++ Food Stamp 
+
+---
+class: middle
+
+.content-box-red[**Key challenge**]
+
+Most of the programs you are interested in are not randomized.
+
+`\(\Rightarrow\)` 
+
+Selection Bias (endogeneity problem arising from self-selection into the program)
+
+---
+class: middle
+
+.content-box-green[**Gold Standard**]
+
++ The best (if feasible) way to tackle the problem of selection bias in impact evaluation is randomized experiment, where who gets treated or not is determined randomly (you design a program or experiment and randomize treatment-control assignment)
+
++ This ensures that the dummy variable of treated or not is not correlated with the error term 
+
+.content-box-green[**Example**]
+
+`\(y \;\;(\mbox{income}) = \beta_0 + \beta_1 program \;\;(\mbox{financial aid}) + u\)`
+
+, where `\(E[u|program]=0\)` (the program is correlated with the error term). OLS is just fine.
+
+--
+
+.content-box-red[**Problem**]
+
+Many of the programs are simply not possible to randomize because of financial and ethical reasons 
+
+`\(\Rightarrow\)`
+
+We need to use data from an event that happened outside our control.
+
+
+---
+class: middle
+
+# Natural (Quasi) Experiment 
+
+.content-box-green[**Definition**]
+
+An event or policy change (often a change in government policy) that happens .blue[outside of the control of investigators], which changes the environment in which agents (individuals, families, firms, or cities) operate.
+
+--
+
+.content-box-green[**Challenges**]
+
+The program is most likely correlated with the error term.
+
+--
+
+.content-box-green[**Lecture Objectives**]
+
++ Discuss different ways of estimating the impact of a program
+
++ Understand the strength and weakness of these methods  
+
+---
+class: middle
+
+# Example program
+
+.content-box-green[**Incinerator Construction**]
+
++ rumored about the incinerator being built in North Andover, Massachusetts, began in 1978
+
++ construction started in 1981
+
+.content-box-green[**Data collected**]
+
+Housing prices in 1978 and 1981, and other variables (we observations before and after the incinerator construction)
+
+---
+class: middle
+ 
+# Various Approaches 
+
++ Approach 1: cross-sectional comparison of houses that are close to (treated) and far away from (control) to the incinerator .red[after] the incinerator was built (data in 1981)
+  
++ Approach 2: comparison of the houses that are close to the incinerator before (control) and after (treated) the incinerator was built (data in 1978 and 1981)
+
++ Approach 3: comparison of differences (close by v.s. far away) in differences (before-after) of house prices (this method will become clearer later)
+
+---
+class: middle
+
+# Approach 1
+
+Run regression on the following model using the 1981 data (cross-sectional data)
+
+`\(rpice = \gamma_0 + \gamma_1 nearinc + u\)`
+
++ `\(rprice\)`: house price in real terms (inflation-corrected)
+
++ `\(nearinc\)`: 1 if the house is near the incinerator, and 0 otherwise
+
++ `\(\gamma_1\)`: .blue[the difference between the mean house price of houses nearby the incinerator and the rest (not nearby) in 1981]
+
+.content-box-green[**Question**]
+
+Is `nearinc` endogenous?
+
+---
+class: middle
+
+
+```r
+#--- import the data ---#
+data &lt;- read.dta13('KIELMC.dta') %&gt;%
+    mutate(rprice=rprice/1000)
+
+#--- run regression ---#
+reg_81 &lt;- felm(
+  rprice ~ nearinc, 
+  data = filter(data, year == 1981)
+)  
+```
+
+<div class="tabwid"><style>.cl-942ccf4c{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-942ccf60{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-942cdc3a{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-942cdc4e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:0;padding-right:0;line-height: 1.00;background-color:transparent;}.cl-942cfb84{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfb98{width:97px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfba2{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbac{width:97px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbad{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbb6{width:97px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbc0{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbca{width:97px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbd4{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbd5{width:97px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbde{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-942cfbe8{width:97px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table style='border-collapse:collapse;'><thead><tr style="overflow-wrap:break-word;"><td class="cl-942cfbde"><p class="cl-942cdc3a"><span class="cl-942ccf4c"> </span></p></td><td class="cl-942cfbe8"><p class="cl-942cdc3a"><span class="cl-942ccf4c">Model 1</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-942cfb84"><p class="cl-942cdc3a"><span class="cl-942ccf4c">(Intercept)</span></p></td><td class="cl-942cfb98"><p class="cl-942cdc3a"><span class="cl-942ccf4c">101.308***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-942cfb84"><p class="cl-942cdc3a"><span class="cl-942ccf4c"></span></p></td><td class="cl-942cfb98"><p class="cl-942cdc3a"><span class="cl-942ccf4c">(3.093)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-942cfba2"><p class="cl-942cdc3a"><span class="cl-942ccf4c">nearinc</span></p></td><td class="cl-942cfbac"><p class="cl-942cdc3a"><span class="cl-942ccf4c">-30.688***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-942cfb84"><p class="cl-942cdc3a"><span class="cl-942ccf4c"></span></p></td><td class="cl-942cfb98"><p class="cl-942cdc3a"><span class="cl-942ccf4c">(5.828)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-942cfbad"><p class="cl-942cdc3a"><span class="cl-942ccf4c">Num.Obs.</span></p></td><td class="cl-942cfbb6"><p class="cl-942cdc3a"><span class="cl-942ccf4c">142</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-942cfbc0"><p class="cl-942cdc3a"><span class="cl-942ccf4c">R2</span></p></td><td class="cl-942cfbca"><p class="cl-942cdc3a"><span class="cl-942ccf4c">0.165</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="2"class="cl-942cfbd4"><p class="cl-942cdc4e"><span class="cl-942ccf60">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</span></p></td></tr></tbody></table></div>
+
+.content-box-green[**Question**]
+Is this reliable? 
+
+---
+class: middle
+
+# Take a look at 1978 
+
+Run regression on the following model using the .red[1978] data (cross-sectional data)
+
+`\(rpice = \gamma_0 + \gamma_1 nearinc + u\)`
+
+`\(\gamma_1\)` represents the difference between the mean house price of houses nearby the incinerator and the rest (not nearby) .red[before] the incinerator was built.
+
+---
+class: middle
+
+
+```r
+#--- run regression ---#
+reg_78 &lt;- felm(
+  rprice ~ nearinc, 
+  data = filter(data, year == 1978)
+)  
+```
+
+<div class="tabwid"><style>.cl-be72cbf0{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-be72cc40{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-be72d91a{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-be72d924{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:0;padding-right:0;line-height: 1.00;background-color:transparent;}.cl-be72fa76{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fa8a{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fa94{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fa9e{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72faa8{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fab2{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fab3{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fabc{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fac6{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fac7{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fad0{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-be72fada{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table style='border-collapse:collapse;'><thead><tr style="overflow-wrap:break-word;"><td class="cl-be72fad0"><p class="cl-be72d91a"><span class="cl-be72cbf0"> </span></p></td><td class="cl-be72fada"><p class="cl-be72d91a"><span class="cl-be72cbf0">Model 1</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-be72fa76"><p class="cl-be72d91a"><span class="cl-be72cbf0">(Intercept)</span></p></td><td class="cl-be72fa8a"><p class="cl-be72d91a"><span class="cl-be72cbf0">82.517***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-be72fa76"><p class="cl-be72d91a"><span class="cl-be72cbf0"></span></p></td><td class="cl-be72fa8a"><p class="cl-be72d91a"><span class="cl-be72cbf0">(2.654)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-be72fa94"><p class="cl-be72d91a"><span class="cl-be72cbf0">nearinc</span></p></td><td class="cl-be72fa9e"><p class="cl-be72d91a"><span class="cl-be72cbf0">-18.824***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-be72fa76"><p class="cl-be72d91a"><span class="cl-be72cbf0"></span></p></td><td class="cl-be72fa8a"><p class="cl-be72d91a"><span class="cl-be72cbf0">(4.745)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-be72faa8"><p class="cl-be72d91a"><span class="cl-be72cbf0">Num.Obs.</span></p></td><td class="cl-be72fab2"><p class="cl-be72d91a"><span class="cl-be72cbf0">179</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-be72fab3"><p class="cl-be72d91a"><span class="cl-be72cbf0">R2</span></p></td><td class="cl-be72fabc"><p class="cl-be72d91a"><span class="cl-be72cbf0">0.082</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="2"class="cl-be72fac6"><p class="cl-be72d924"><span class="cl-be72cc40">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</span></p></td></tr></tbody></table></div>
+
+--
+
+.content-box-red[**Critical**]
+
+Houses nearby the incinerator were already lower than those houses that are not nearby...
+
+---
+class: middle
+
+&lt;img src="impact_evaluation_x_files/figure-html/unnamed-chunk-6-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; treated &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; before &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; after &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0 + \alpha_0 + 0\) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1 + \alpha_1 + \beta \) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
++ `\(\gamma_j\)` is the average house price of those that are `\(nearinc=j\)` in 1978 (before)
+
++ `\(\alpha_j\)` is .blue[any] macro shocks .blue[other than the incinerator event] that happened between the before and after period to the houses that are `\(nearinc=j\)`
+
++ `\(\beta\)` is the true causal impact of the incinerator placement
+
+---
+class: middle
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; treated &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; before &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; after &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0 + \alpha_0 + 0\) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1 + \alpha_1 + \beta \) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
++ `\(\gamma_j\)` is the average house price of those that are `\(nearinc=j\)` in 1978 (before)
+
++ `\(\alpha_j\)` is .blue[any] macro shocks .blue[other than the incinerator event] that happened between the before and after period to the houses that are `\(nearinc=j\)`
+
++ `\(\beta\)` is the true causal impact of the incinerator placement
+
+.content-box-green[**Question**]
+
+So, what did we estimate with Approach 1?
+
+--
+
+.content-box-green[**Answer**]
+
+`\(E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 0, year = 1981]\)`
+
+`\(= (\gamma_1 + \alpha_1 + \beta) - (\gamma_0 + \alpha_0 + 0)\)`
+
+`\(= (\gamma_1 - \gamma_0)+ (\alpha_1 - \alpha_0) + \beta\)`
+
+--
+
++ `\(\gamma_1 - \gamma_0\)`: pre-existing differences in house price .red[before] the incinerator was built
+
++ `\(\alpha_1 - \alpha_0\)`: differences in the trends in housing price between the two groups  
+
+---
+class: middle
+
+
++ `\(\gamma_1 - \gamma_0\)`: pre-existing differences in house price .red[before] the incinerator was built
+
++ `\(\alpha_1 - \alpha_0\)`: differences in the trends in housing price between the two groups  
+
+.content-box-green[**Question**]
+
+So, when Approach 1 gives us unbiased estimation of the impact of the incinerator? 
+
+.content-box-green[**Answer**]
+
++ `\(\gamma_1 = \gamma_0\)`: the average house price between the two groups are the same before the incinerator was built
+
++ `\(\alpha_1 - \alpha_0\)`: the two groups experienced the same house price trend from 1978 to 1981
+
+---
+class: middle
+
+# Approach 2 
+
+
+Compare of the houses that are close to the incinerator before (control) and after (treated) the incinerator was built (data in 1978 and 1981)
+
+
+.content-box-green[**Data**]
+
+Restrict the data to the houses that are near the incinerator 
+
+.content-box-green[**Model**]
+
+`\(rpice = \beta_0 + \beta_1 y81 + u\)`
+
++ `\(rprice\)`: house price in real terms (inflation-corrected)
+
++ `\(y81\)`: 1 if the house is near the incinerator, and 0 otherwise
+
++ `\(\beta_1\)`: .blue[the difference in the mean house price of houses nearby the incinerator before and after the incinerator was built]
+
+
+---
+class: middle
+
+
+```r
+reg_treated &lt;- felm(
+  rprice ~ y81, 
+* data = filter(data, nearinc == 1)
+)  
+```
+
+<div class="tabwid"><style>.cl-5789fa8e{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-5789faac{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-578a0704{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-578a0718{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:0;padding-right:0;line-height: 1.00;background-color:transparent;}.cl-578a26e4{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a26f8{width:88px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a2702{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a270c{width:88px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a2716{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a2717{width:88px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a2720{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a272a{width:88px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a2734{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a273e{width:88px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a273f{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-578a2748{width:88px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table style='border-collapse:collapse;'><thead><tr style="overflow-wrap:break-word;"><td class="cl-578a273f"><p class="cl-578a0704"><span class="cl-5789fa8e"> </span></p></td><td class="cl-578a2748"><p class="cl-578a0704"><span class="cl-5789fa8e">Model 1</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-578a26e4"><p class="cl-578a0704"><span class="cl-5789fa8e">(Intercept)</span></p></td><td class="cl-578a26f8"><p class="cl-578a0704"><span class="cl-5789fa8e">63.693***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-578a26e4"><p class="cl-578a0704"><span class="cl-5789fa8e"></span></p></td><td class="cl-578a26f8"><p class="cl-578a0704"><span class="cl-5789fa8e">(5.296)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-578a2702"><p class="cl-578a0704"><span class="cl-5789fa8e">y81</span></p></td><td class="cl-578a270c"><p class="cl-578a0704"><span class="cl-5789fa8e">6.926</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-578a26e4"><p class="cl-578a0704"><span class="cl-5789fa8e"></span></p></td><td class="cl-578a26f8"><p class="cl-578a0704"><span class="cl-5789fa8e">(8.205)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-578a2716"><p class="cl-578a0704"><span class="cl-5789fa8e">Num.Obs.</span></p></td><td class="cl-578a2717"><p class="cl-578a0704"><span class="cl-5789fa8e">96</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-578a2720"><p class="cl-578a0704"><span class="cl-5789fa8e">R2</span></p></td><td class="cl-578a272a"><p class="cl-578a0704"><span class="cl-5789fa8e">0.008</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="2"class="cl-578a2734"><p class="cl-578a0718"><span class="cl-5789faac">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</span></p></td></tr></tbody></table></div>
+
+--
+
+The incinerator increased the average house price (not statistically significant).  
+
+---
+class: middle
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; treated &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; before &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; after &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0 + \alpha_0 + 0\) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1 + \alpha_1 + \beta \) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
++ `\(\gamma_j\)` is the average house price of those that are `\(nearinc=j\)` in 1978 (before)
+
++ `\(\alpha_j\)` is .blue[any] macro shocks .blue[other than the incinerator event] that happened between the before and after period to the houses that are `\(nearinc=j\)`
+
++ `\(\beta\)` is the true causal impact of the incinerator placement
+
+.content-box-green[**Question**]
+
+So, what did we estimate with Approach 2?
+
+--
+
+.content-box-green[**Answer**]
+
+`\(E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 1, year = 1978]\)`
+
+`\(= (\gamma_1 + \alpha_1 + \beta) - \gamma_1\)`
+
+`\(= \alpha_1 + \beta\)`
+
+---
+class: middle
+
+`\(E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 1, year = 1978]\)`
+
+`\(= (\gamma_1 + \alpha_1 + \beta) - \gamma_1\)`
+
+`\(= \alpha_1 + \beta\)`
+
+--
+
+.content-box-green[**Question**]
+
+So, when Approach 2 gives us unbiased estimation of the impact of the incinerator? 
+
+--
+
+.content-box-green[**Answer**]
+
+`\(\alpha_1 = 0\)`: no trend in house price for the houses near the incinerator 
+
+Nothing else significant other than the incinerator happened 
+between 1978 and 1981. 
+
+---
+class: middle
+
+# Approach 3
+
+Compare of differences (close by v.s. far away) in differences (before-after) of house prices (this method will become clearer later)
+
++ Find the difference in the price of the houses .red[close to] the incinerator before and after the incinerator was built 
+
++ Find the difference in house price (close to the incinerator) before and after the incinerator was built  
+
++ Find the difference in the differences
+
+.content-box-green[**Note**]
+
+This method is called DID estimation method (Difference-in- differences). 
+
+---
+class: middle
+
+.content-box-green[**Data**]
+
+All the observations 
+
+.content-box-green[**Model**]
+
+`\(rpice = \beta_0 + \beta_1 y81 + \beta_2 nearinc + \beta_3 nearinc \times y81 + u\)`
+
++ `\(\beta_3\)`: the difference in differences
+
+--
+
+Let's confirm `\(\beta_3\)` indeed represents the difference in the differences.
+
+---
+class: middle
+
+.content-box-green[**Model**]
+
+`\(rpice = \beta_0 + \beta_1 y81 + \beta_2 nearinc + \beta_3 nearinc \times y81 + u\)`
+
+--
+
+.content-box-green[**Expected house price**]
+
++ `\(E[rprice|year=1981, nearinc = 0] = \beta_0 + \beta_1\)` 
+
++ `\(E[rprice|year=1981, nearinc = 1] = \beta_0 + \beta_1 + \beta_2 + \beta_3\)`
+
++ `\(E[rprice|year=1978, nearinc = 0] = \beta_0\)`
+
++ `\(E[rprice|year=1978, nearinc = 1] = \beta_0 + \beta_2\)`
+
+--
+
+.content-box-green[**Differences**]
+
+`\(E[rprice|year=1981, nearinc = 1] - E[rprice|year=1978, nearinc = 1]\)`
+
+`\(= (\beta_0 + \beta_1 + \beta_2 + \beta_3) - (\beta_0 + \beta_2)\)`
+`\(= \beta_1 + \beta_3\)`
+
+`\(E[rprice|year=1981, nearinc = 1] - E[rprice|year=1978, nearinc = 0]\)`
+
+`\(= (\beta_0 + \beta_1) - \beta_0\)`
+`\(= \beta_1\)`
+
+--
+
+.content-box-green[**Difference in the differences**]
+
+`\((\beta_1 + \beta_3) - \beta_1 = \beta_3\)`
+
+---
+class: middle
+
+
+```r
+reg_did &lt;- felm(
+  rprice ~ nearinc + y81 + nearinc*y81,
+  data = data
+)  
+```
+
+<div class="tabwid"><style>.cl-19dd82de{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-19dd82fc{font-family:'Arial';font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-19dd8f68{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-19dd8f7c{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5px;padding-top:5px;padding-left:0;padding-right:0;line-height: 1.00;background-color:transparent;}.cl-19ddaef8{width:117px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf0c{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf16{width:117px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf2a{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf34{width:117px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf35{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf3e{width:117px;background-clip: padding-box;background-color:rgba(255, 127, 127, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf48{width:93px;background-clip: padding-box;background-color:rgba(255, 127, 127, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf52{width:117px;background-clip: padding-box;background-color:rgba(255, 127, 127, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf5c{width:93px;background-clip: padding-box;background-color:rgba(255, 127, 127, 1.00);vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf66{width:117px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf67{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf70{width:117px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf71{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf7a{width:117px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf84{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf8e{width:117px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-19ddaf98{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table style='border-collapse:collapse;'><thead><tr style="overflow-wrap:break-word;"><td class="cl-19ddaf8e"><p class="cl-19dd8f68"><span class="cl-19dd82de"> </span></p></td><td class="cl-19ddaf98"><p class="cl-19dd8f68"><span class="cl-19dd82de">Model 1</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-19ddaef8"><p class="cl-19dd8f68"><span class="cl-19dd82de">(Intercept)</span></p></td><td class="cl-19ddaf0c"><p class="cl-19dd8f68"><span class="cl-19dd82de">82.517***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaef8"><p class="cl-19dd8f68"><span class="cl-19dd82de"></span></p></td><td class="cl-19ddaf0c"><p class="cl-19dd8f68"><span class="cl-19dd82de">(2.727)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaf34"><p class="cl-19dd8f68"><span class="cl-19dd82de">nearinc</span></p></td><td class="cl-19ddaf35"><p class="cl-19dd8f68"><span class="cl-19dd82de">-18.824***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaef8"><p class="cl-19dd8f68"><span class="cl-19dd82de"></span></p></td><td class="cl-19ddaf0c"><p class="cl-19dd8f68"><span class="cl-19dd82de">(4.875)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaf3e"><p class="cl-19dd8f68"><span class="cl-19dd82de">nearinc × y81</span></p></td><td class="cl-19ddaf48"><p class="cl-19dd8f68"><span class="cl-19dd82de">-11.864</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaf52"><p class="cl-19dd8f68"><span class="cl-19dd82de"></span></p></td><td class="cl-19ddaf5c"><p class="cl-19dd8f68"><span class="cl-19dd82de">(7.457)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaf66"><p class="cl-19dd8f68"><span class="cl-19dd82de">y81</span></p></td><td class="cl-19ddaf67"><p class="cl-19dd8f68"><span class="cl-19dd82de">18.790***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaef8"><p class="cl-19dd8f68"><span class="cl-19dd82de"></span></p></td><td class="cl-19ddaf0c"><p class="cl-19dd8f68"><span class="cl-19dd82de">(4.050)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaf70"><p class="cl-19dd8f68"><span class="cl-19dd82de">Num.Obs.</span></p></td><td class="cl-19ddaf71"><p class="cl-19dd8f68"><span class="cl-19dd82de">321</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-19ddaf16"><p class="cl-19dd8f68"><span class="cl-19dd82de">R2</span></p></td><td class="cl-19ddaf2a"><p class="cl-19dd8f68"><span class="cl-19dd82de">0.174</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="2"class="cl-19ddaf7a"><p class="cl-19dd8f7c"><span class="cl-19dd82fc">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</span></p></td></tr></tbody></table></div>
+--
+
+&lt;br&gt;
+
+The incinerator decreased the average house price (not statistically significant).  
+
+---
+class: middle
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; treated &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; before &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; after &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_0 + \alpha_0 + 0\) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; nearinc = 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1\) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; \(\gamma_1 + \alpha_1 + \beta \) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.content-box-green[**Question**]
+
+So, what did we estimate with Approach 3?
+
+--
+
+.content-box-green[**Answer**]
+
+`\(E[rprice|nearinc = 1, year = 1981] - E[rprice|nearinc = 1, year = 1978]\)`
+
+`\(= (\gamma_1 + \alpha_1 + \beta) - \gamma_1 = \alpha_1 + \beta\)`
+
+`\(E[rprice|nearinc = 0, year = 1981] - E[rprice|nearinc = 0, year = 1978]\)`
+
+`\(= (\gamma_0 + \alpha_0) - \gamma_0 = \alpha_0\)`
+
+--
+
+Differences `\(= \alpha_1 - \alpha_0 + \beta\)`
+
+---
+class: middle
+
+.content-box-green[**Difference**]
+
+Difference `\(= \alpha_1 - \alpha_0 + \beta\)`
+
+.content-box-green[**Question**]
+
+So, when Approach 3 gives us unbiased estimation of the impact of the incinerator? 
+
+--
+
+.content-box-green[**Answer**]
+
++ `\(\alpha_1 = \alpha_0\)`: the two groups experienced the same trend in house price from 1978 to 1981
+
++ Unlike Approach 1, the pre-existing difference between the two group is not a problem as it is canceled out 
+
+---
+class: middle
+
+
+.content-box-green[**Key condition**]
+
+`\(\alpha_1 = \alpha_0\)`: the two groups experienced the same trend in house price from 1978 to 1981
+
+.content-box-red[**Important**]
+
++ This condition is untestable
+􏰂 
++ If there were any significant changes in policy that happen to only one of them other than the treatment of interest, DID confound the impact of the other policy and the treatment of interest
+
++ It is a common practice to present the trend of the dependent variable prior to the year before the treatment happened
+
+---
+class: middle
+
+.content-box-green[**Approaches**]
+    
+Approach 1: `\((\gamma_1 - \gamma_0)+ (\alpha_1 - \alpha_0) + \beta\)`
+
+Approach 2: `\(\alpha_1 + \beta\)`
+
+Approach 3: `\(\alpha_1 - \alpha_0 + \beta\)`
+
+--
+
+.content-box-red[**Important**]
+
+--
+
++ None of these approached are perfect. 
+
+--
+
++ It is hard to sell Approaches 1 and 2
+
+--
+
++ Approach 3 (DID) is preferred over Approaches 1 and 2  
+
+--
+
++ But, Approach 3 is not certainly perfect and could definitely have a larger bias than Approaches 1 and 2
+
+e.g., `\(\alpha_1 = 5\)` and `\(\alpha_0 = - 5\)`
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "4:3",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
