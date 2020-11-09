@@ -1,0 +1,757 @@
+---
+title: "Discrete Choice"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 4:3
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, child = './../setup.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/")
+```
+
+```{r additional-libraries, include = F, cache = F}
+#--- load packages ---#
+suppressMessages(library(broom))
+suppressMessages(library(fixest))
+suppressMessages(library(lmtest))
+```
+
+# Before we start 
+
+## Learning objectives
+
+Understand how endogeneity problems arise
+
+## Table of contents
+
+1. [Selection Bias](#select)
+2. [Reverse Causality](#reverse)
+3. [Measurement Error](#ME)
+
+---
+class: middle
+
+# Discrete Choice Analysis
++ Focus on understanding choices that are discrete (not continuous)
+  * Whether you own a car or not (binary choice)
+  * Whether you use an iPhone, Android, or other types of cell phones (Multinomial choice)
+  * Which recreation sites you visit this winter (multinomial)
++ Linear models we have seen are often not appropriate
+l
+
+---
+class: middle
+
+# Binary Response Model  
+
+---
+class: middle
+
+.content-box-green[**Binary response**]
+
+$y = 0 \;\; \mbox{(if you do not own a car)}$ 
+
+$y = 1 \;\; \mbox{(if you own at least one car)}$
+
+.content-box-green[**Question**]
+
+How do variables $x_1,\dots,x_k$ affect the status of $y$ (the choice of whether to own at least one car or not)?
+
+---
+class: middle
+
+.content-box-green[**Binary response**]
+
+We try to model the .red[probability] of $y = 1$ (own at least one car)
+
+$Pr(y=1|x_1,\dots,x_k) = f(x_1,\dots,x_k)$
+
+as a function of independent variables.
+
+---
+class: middle
+
+.content-box-green[**Linear Probability Model**]
+
+$Pr(y=1|x_1,\dots,x_k) = \beta_0+\beta_1 x_1+\dots+\beta_k x_k$
+
+--
+
+.content-box-green[**Drawback**]
+
+There is no guarantee that the predicted probability is bounded within [0, 1].
+
+---
+class: middle
+
+
+.content-box-green[**How about this?**]
+
+$Pr(y=1|x_1,\dots,x_k) = G(\beta_0+\beta_1 x_1+\dots+\beta_k x_k)$
+
+where $0<G(z)<1$ for all real numbers $z$
+
+---
+class: middle
+
+Different choices of $G()$ lead to different models.
+
+
+.content-box-green[**Logit model**]
+
+$G(z) = exp(z)/[1+exp(z)] = \frac{e^z}{1+e^z}$
+
+where $z = \beta_0+\beta_1 x_1+\dots+\beta_k x_k$
+
+.content-box-green[**Probit model**]
+
+$G(z) = \Phi(z)$
+
+where $\Phi(z)$ is the standard normal cumulative distribution function
+
+---
+class: middle
+
+```{r echo = F, out.width = "70%"}
+plot_data <- data.table(z = seq(-3, 3, length = 1000)) %>%
+  mutate(logit = exp(z) / (1 + exp(z)), normal = pnorm(z)) %>%
+  melt(id.vars = "z") %>%
+  data.table()
+
+g_G <- ggplot(data = plot_data) +
+  geom_line(aes(x = z, y = value, color = variable), size = 1) +
+  ylab("y") +
+  scale_color_discrete(name = "") +
+  theme(
+    legend.position = "bottom"
+  )
+g_G
+```
+
+---
+class: middle
+
+
+$Pr(y=1|x_1,\dots,x_k) = G(\beta_0+\beta_1 x_1+\dots+\beta_k x_k)$
+
++ What do $\beta$s measure?
++ How do we interpret them?
+
+---
+class: middle
+
+$\mbox{Before:} x_1=0,\dots,x_k=0 \Rightarrow z=\beta_0$ 
+
+$\mbox{After:}\;\; x_1=1 \;\;\mbox{and}\;\; x_2=0,\dots,x_k=0 \Rightarrow z=\beta_0+\beta_1$
+
+
+```{r echo = F}
+g_gz <- ggplot(data = plot_data[variable == "normal", ]) +
+  geom_line(aes(x = z, y = value), size = 1) +
+  geom_hline(yintercept = 0, size = 0.2) +
+
+  #--- before ---#
+  geom_point(aes(y = 0, x = -1), color = "red") +
+  geom_text(aes(y = -0.06, x = -1, label = "before"), color = "blue", size = 4) +
+  annotate("text", y = -0.14, x = -1, label = expression(beta[0]), color = "blue", size = 4) +
+  geom_point(aes(y = pnorm(-1), x = -1), color = "red") +
+  geom_segment(aes(y = pnorm(-1), x = -1, yend = 0, xend = -1), color = "red", linetype = 2) +
+
+  #--- after ---#
+  geom_point(aes(y = 0, x = 1), color = "red") +
+  geom_text(aes(y = -0.06, x = 1, label = "after"), color = "blue", size = 4) +
+  annotate("text", y = -0.14, x = 1, label = expression(beta[0] + beta[1]), color = "blue", size = 4) +
+  geom_point(aes(y = pnorm(1), x = 1), color = "red") +
+  geom_segment(aes(y = pnorm(1), x = 1, yend = 0, xend = 1), color = "red", linetype = 2) +
+
+  #--- change in z ---#
+  geom_segment(
+    aes(x = -1, y = 0, xend = 1, yend = 0),
+    arrow = arrow(length = unit(0.05, "npc")),
+    color = "red", size = 0.5
+  ) +
+  ylab("G(z)") +
+  scale_color_discrete(name = "") +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+```{r echo = F, out.width = "70%"}
+g_gz 
+```
+
+---
+class: middle
+
+```{r echo = F, out.width = "60%"}
+g_gz 
+```
+
++ $\beta$s measure how far you move along the x-axis
+
++ $\beta$s does not directly measure how independent variables influence the probability of $y=1$
+
+---
+class: middle
+
+To understand the marginal impact of $x_k$ on $Prob(y=1)$ (how a change in $x_k$ affects the likelihood of owning a car), you need to do a bit of math.
+
+
+.content-box-green[**Model**]
+
+$Pr(y=1|x_1,\dots,x_k) = G(z)$ 
+
+$z = \beta_0+\beta_1 x_1+\dots+\beta_k x_k$
+
+.content-box-green[**marginal impact**]
+
+Differentiating both sides with respect to $x_k$,
+
+$\frac{\partial Pr(y=1|x_1,\dots,x_k)}{\partial x_k} = G'(z)\times \frac{\partial z}{\partial x_k}$ 
+
+$\qquad\qquad\qquad\:\: = G'(z)\times \beta_k$
+
+---
+class: middle
+
+.content-box-green[**marginal impact**]
+
+Differentiating both sides with respect to $x_k$,
+
+$\frac{\partial Pr(y=1|x_1,\dots,x_k)}{\partial x_k} = G'(z)\times \frac{\partial z}{\partial x_k}$ 
+
+$\qquad\qquad\qquad\:\: = G'(z)\times \beta_k$
+
+.content-box-green[**Notes**]
+
++ The marginal impact of an independent variable depends on the values of all the independent variables: $G(\beta_0+\beta_1 x_1+\dots+\beta_k x_k)$
+
++ Since $G'()$ is always positive, the sign of the marginal impact of an independent variable on $Prob(y=1)$ is always the same as the sign of its coefficient
+
+---
+class: middle
+
+.content-box-green[**Estimation of Binary Choice Models**]
+
++ Linear models: OLS
+
++ Binary choice models: .blue[Maximum Likelihood Estimation (MLE)]
+
+---
+class: middle
+
+
+.content-box-green[**OLS**]
+
+Find parameters that makes the sum of residuals squared the smallest
+
+.content-box-green[**MLE (very loosely put)**]
+
+Find parameters $(\beta$s) that makes what we observed (collection of binary decisions made by different individuals) most likely (.blue[Maximum Likelihood])
+
+---
+class: middle
+
+
+.content-box-green[**Observed decisions made by two individuals**]
+
++ Individual 1: $y=1$ (own at least one car)
+
++ Individual 2: $y=0$ (does not own a car)
+
+--
+
+.content-box-green[**Probability of individual decisions**]
+
++ $\mbox{Individual 1}: Prob(y_1=1|\mathbf{x_1})= G(z_1)$
+
++ $\mbox{Individual 2}: Prob(y_2=0|\mathbf{x_2})= 1-G(z_2)$
+
+where 
+
++ $\mathbf{x_i}$ is a collection of independent variables for individual $i$ $(x_{1,i}, \dots, x_{k,i})$.
+
++ $z_i = \beta_0+\beta_1 x_{1,i}+\dots+\beta_k x_{k,i}$ 
+
+--
+
+.content-box-green[**Probability of a collection of decisions**]
+
+The probability that we observe a \textcolor{blue}{collection of choices} made by them (if their decisions are independent)
+
+$Prob(y_1=1|\mathbf{x_1})\times Prob(y_2=0|\mathbf{x_2}) = G(z_1)\times [1-G(z_2)]$
+  
+which we call .blue[likelihood function].
+
+---
+class: middle
+
+.content-box-green[**Probability of a collection of decisions**]
+
+The probability that we observe a \textcolor{blue}{collection of choices} made by them (if their decisions are independent)
+
+$Prob(y_1=1|\mathbf{x_1})\times Prob(y_2=0|\mathbf{x_2}) = G(z_1)\times [1-G(z_2)]$
+  
+which we call .blue[likelihood function].
+
+--
+
+.content-box-green[**MLE**]
+
+$Max_{\beta_1,\dots,\beta_k}\;\; G(z_1)\times [1-G(z_2)]$
+
+---
+class: middle
+
+.content-box-green[**MLE of Binary Choice Model in General**]
+
+Maximize the likelihood function:
+
+$Max_{\beta_1,\dots,\beta_k}\;\; L$
+
+where $L=\Pi_{i=1}^n \Big[y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big]$ is the likelihood function.
+
+.content-box-green[**Log-likelihood function**]
+    
+$LL = log\Big(\Pi_{i=1}^n \Big[y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big]\Big)$ 
+$\qquad = \sum_{i=1}^n log\Big(y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big)$
+
+.content-box-green[**MLE with $LL$**]
+
+$argmax_{\beta_1,\dots,\beta_k}\;\; L \equiv argmax_{\beta_1,\dots,\beta_k}\;\; LL$
+
+---
+class: middle
+
+# Implementation in R with an example
+
+Participation of females in labor force:
+
+$Pr(inlf=1|\mathbf{x})= G(z)$
+
+where
+
+$z = \beta_0+\beta_1 nwifeinc+ \beta_2 educ+ \beta_3 exper$ 
+
+$\quad\;\; + \beta_4 exper^2 + \beta_5 age + \beta_6 kidslt6 + \beta_7 kidsge6$
+
++ $inlf$: 1 if in labor force in 1975, 0 otherwise
++ $nwifeinc$: earning as a family if she does not work
++ $kidslt6$: \# of kids less than 6 years old
++ $kidsge6$: \# of kids who are 6-18 year old
+
+---
+class: middle
+
+```{r }
+#--- import the data ---#
+data <- read.dta13('MROZ.dta') %>%
+  mutate(exper2 = exper^2)
+
+#--- take a look ---#
+dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %>%
+  head()  
+```
+
+---
+class: middle
+
+```{r echo = F}
+dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %>%
+  head() 
+```
+
+For individual 1 (row 1 of the data),
+
+$z_1 = \beta_0+\beta_1 `r round(data[1, ]$nwifeinc, digits = 2)`+ \beta_2 `r round(data[1, ]$educ)`+ \beta_3 `r round(data[1, ]$exper)` + \beta_4 `r round(data[1, ]$exper2)` + \beta_5 `r round(data[1, ]$age)` + \beta_6 `r round(data[1, ]$kidslt6)` + \beta_7 `r round(data[1, ]$kidsge6)`$
+
+The probability that individual 1 would make the decision he/she made is:
+
+$G(z_1)$ (a function of $\beta$s)
+
+---
+class: middle
+
+```{r echo = F}
+dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %>%
+  tail() 
+``` 
+
+For individual 753 (row 753 of the data),
+
+$z_{753} = \beta_0+\beta_{753} `r round(data[753, ]$nwifeinc, digits = 2)`+ \beta_2 `r round(data[753, ]$educ)`+ \beta_3 `r round(data[753, ]$exper)` + \beta_4 `r round(data[753, ]$exper2)` + \beta_5 `r round(data[753, ]$age)` + \beta_6 `r round(data[753, ]$kidslt6)` + \beta_7 `r round(data[753, ]$kidsge6)`$
+
+The probability that individual 753 would make the decision he/she made is:
+
+$1 - G(z_{753})$ (a function of $\beta$s)
+
+---
+class: middle
+
+Multiply all the probabilities of observed choices given $\beta$s,
+
+$L = G(z_1) \times G(z_2) \times \dots [1-G(z_753)]$
+
+--
+
+$LL = log\Big(G(z_1) \times G(z_2) \times \dots [1-G(z_753)]\Big)$
+
+--
+
+Solve the following problems to estimate $\beta$s:
+
+$Max_{\beta_1, \dots, \beta_7} \quad LL$
+
+---
+class: middle
+
+
+.content-box-green[**Estimating binary choice model using $R$**]
+
+You can use the `glm()` function (no new packages installation necessary) when using cross-sectional data
+
++ `glm` refers to Generalized Linear Model, which encompass linear models we have been using
+
++ you specify the `family` option to tell what kind of model you are estimating
+
+---
+class: middle
+
+
+.content-box-green[**Probit model estimation**]
+
+```{r }
+probit_lf <- glm(
+  #--- formula ---#
+  inlf ~ nwifeinc+ educ+ exper+ exper2+ age+ kidslt6+ kidsge6,
+  #--- data ---#
+  data = data,
+  #--- models ---#
+  family = binomial(link = "probit")
+)  
+```
+
+.content-box-green[**family option**]
+
++ `binomial()`: tells R that your dependent variable is binary
+
++ `link = "probit"`: tells R that you want to use the cumulative distribution function of the standard normal distribution as $G()$ in $Prob(y=1|\mathbf{x})=G(z)$
+
+---
+class: middle
+
+.left5[
+```{r model-sum-glm, eval = F}  
+msummary(
+  probit_lf,
+  stars = TRUE,
+  gof_omit = "IC",
+  output = "flextable"
+) %>% 
+fontsize(
+  size = 18, 
+  part = "all"
+) %>% 
+autofit()
+```
+]
+
+.right5[
+```{r model-sum-glm-f, ref.label = "model-sum-glm", echo = F}  
+
+```
+]
+
+---
+class: middle
+
+
+.content-box-green[**Logit model estimation**]
+
+```{r }
+logit_lf <- glm(
+  #--- formula ---#
+  inlf ~ nwifeinc+ educ+ exper+ exper2+ age+ kidslt6+ kidsge6,
+  #--- data ---#
+  data = data,
+  #--- models ---#
+  family = binomial(link = "logit")
+)  
+```
+
+.content-box-green[**family option**]
+
++ `binomial()`: tells R that your dependent variable is binary
+
++ `link = "logit"`: tells $R$ that you want to use $G(z) = \frac{e^z}{1+e^z}$ in $Prob(y=1|\mathbf{x})=G(z)$
+
+---
+class: middle
+
+.left5[
+```{r model-sum-glm, eval = F}  
+msummary(
+  probit_lf,
+  stars = TRUE,
+  gof_omit = "IC",
+  output = "flextable"
+) %>% 
+fontsize(
+  size = 18, 
+  part = "all"
+) %>% 
+autofit()
+```
+]
+
+.right5[
+```{r model-sum-glm-f, ref.label = "model-sum-glm", echo = F}  
+
+```
+]
+
+---
+class: middle
+
+# Post-estimation operations and diagnostics
+
+---
+class: middle
+
+.content-box-green[**Log-likelihood (fitted)**]
+
+$LL =\sum_{i=1}^n log\Big(y_i\times G(\hat{z}_i)+(1-y_i)\times(1-G(\hat{z}_i))\Big)$
+
++ $\hat{z}_i=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k$
+
++ $G(\hat{z}_i)$ is the fitted value of $Prob(y=1|\mathbf{x})$
+
+.content-box-green[**Example**]
+
++ $G(\hat{z}_i) = 0.9$: predicted that individual $i$ is very likely to own a car 
++ $y_i = 0$: in reality, individual $i$ does not own a car
+
+$\Rightarrow$
+
+$log\Big(0\times 0.9 +(1-0)\times(1-0.9)\Big) = log(0.1) = `r round(log(0.1), digits = 2)`$
+
+---
+class: middle
+
+.content-box-green[**Log-likelihood (fitted)**]
+
+$LL =\sum_{i=1}^n log\Big(y_i\times G(\hat{z}_i)+(1-y_i)\times(1-G(\hat{z}_i))\Big)$
+
++ $\hat{z}_i=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k$
+
++ $G(\hat{z}_i)$ is the fitted value of $Prob(y=1|\mathbf{x})$
+
+.content-box-green[**Example**]
+
++ $G(\hat{z}_i) = 0.9$: predicted that individual $i$ is very likely to own a car 
++ $y_i = 1$: in reality, individual $i$ indeed owns a car
+
+$\Rightarrow$
+
+$log\Big(1\times 0.9 +(1-1)\times(1-0.9)\Big) = log(0.9) = `r round(log(0.9), digits = 2)`$
+
+---
+class: middle
+
+.content-box-green[**Log-likelihood (fitted)**]
+
+So, the better your prediction (model fit) is the .blue[(The greater (less negative) the LL is.]
+
+---
+class: middle
+
+.content-box-green[**McFadden's**] pseudo- $R^2$
+
+A measure of how much better your model is compared to the model with only the intercept.
+
+$pseudo-R^2=1-LL/LL_0$
+
+where $LL_0$ is the log-likelihood when you include only the intercept.
+
+---
+class: middle
+
+
+.content-box-green[**R code**]
+
+```{r }
+logit_lf_0 <- glm(
+  inlf ~ 1,
+  data = data,
+  family = binomial(link = "logit")
+)
+
+#--- extract LL using the logLik() function ---#
+(LL0 <- logLik(logit_lf_0))
+
+#--- extract LL using the logLik() function from your preferred model ---#
+(LL <- logLik(logit_lf))
+
+#--- pseudo R2 ---#
+1-LL/LL0
+```
+---
+class: middle
+
+
+.content-box-green[**Alternatively**]
+
+```{r }
+#--- or more easily ---#
+1-logit_lf$deviance/logit_lf$null.deviance
+
+#--- what are deviances? ---#
+logit_lf$null.deviance # = -2*LL0
+logit_lf$deviance # = -2*LL  
+```
+
++ `null.deviance` $= -2\times LL_0$
++ `deviance` $= -2\times LL$
+
+---
+class: middle
+
+.content-box-green[**Testing joint significance**]
+
+You can do Likelihood Ratio (LR) test:
+
+$LR = 2(LL_{unrestricted}-LL_{restricted}) \sim \chi^2_{df\_restrictions}$
+
+where $df\_restrictions$ is the number of restrictions.
+
+.content-box-green[**Note**]
+
+LR test is very similar conceptually to F-test.
+
+.content-box-green[**Example**]
+
++ $H_0:$ the coefficients on $exper$, $exper2$, and $age$ are $0$
+
++ $H_1:$ $H_0$ is false
+
+---
+class: middle
+
+```{r }
+#--- unrestricted ---#
+logit_ur <- glm(
+  inlf~nwifeinc+educ+exper+exper2+age+kidslt6+kidsge6,
+  data = data,family=binomial(link='logit')
+  )
+
+#--- restricted ---#
+logit_r <- glm(
+  inlf~nwifeinc+educ+kidslt6+kidsge6,
+  data = data,family=binomial(link='logit')
+  )
+
+#--- LR test using lrtest() from the lmtest package ---#
+library(lmtest)
+lrtest(logit_r,logit_ur)  
+```
+---
+class: middle
+
+# Prediction
+
+After estimating a binary choice model, you can easily predict the following two
+
++ $\hat{z}=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k$
+
++ $\widehat{Prob(y=1|\mathbf{x})}=G(\hat{z})=G(\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k)$
+
+---
+class: middle
+
+.content-box-green[**R code**]
+
+```{r }
+#--- z hat ---#
+z <- predict(probit_lf, type = "link")
+head(z)
+
+#--- G(z) hat ---#
+Gz <- predict(probit_lf, type = "response")
+head(Gz) 
+```
+
+---
+class: middle
+
+# Marginal effect of an independent variable
+
++ Coefficient estimates across different models (probit and logit) are not meaningful because the same value of a coefficient estimate means different things
+
++ They are the estimates of $\beta$s, not the direct impact of the independent variables on the $Prob(y=1)$
+
+---
+class: middle
+
+Marginal effect of an independent variable
+
+$\frac{\partial Pr(y=1|x_1,\dots,x_k)}{\partial x_k} = G'(z)\times \beta_k$
+
++ the marginal impact depends on the current levels of all the independent variables
++ we typically report one of the two types of marginal impacts
+  * (becoming obsolete) the marginal impact .blue[at the mean] (average person): when all the independent variables take on their respective means
+  * the average of the marginal impacts calculated for each of all the individuals observed
+
+---
+class: middle
+
+.content-box-green[**Marginal impact at the mean**]
+
+$\frac{\partial Pr(y=1|\bar{x_1},\dots,\bar{x_k})}{\partial x_k} = G'(\beta_0+\beta_1 \bar{x_1}+\dots+\beta_k\bar{x_k})\times \beta_k$
+
+.content-box-green[**Mean marginal impact (MME)**]
+
+$\sum_{i=1}^n \frac{\partial Pr(y_i=1|\bar{x_{i,1}},\dots,\bar{x_{i,k}})}{\partial x_k} = \sum_{i=1}^n G'(z_i)\times \beta_k$
+
+---
+class: middle
+
+
+.content-box-green[**R codes to get MME**]
+
+```{r }
+#--- get z for all the individuals ---#
+z <- predict(probit_lf, type = "link")
+
+#--- get G'(z) ---#
+Gz_indiv <- dnorm(z)
+
+#--- mean marignal impact of eduction ---#
+mean(Gz_indiv) * probit_lf$coef['educ']
+```
+
+---
+class: middle
+
+Fortunately, the `margins` package provides you with a more convenient way of calculating MMEs.
+
+```{r }
+library(margins)  
+
+#--- calculate MME based on the probit estimation ---#
+mme_lf <- margins(probit_lf, type = "response")
+
+#--- get the summary ---#
+summary(mme_lf)
+```

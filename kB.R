@@ -56,6 +56,11 @@ render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Demonstration/
 #--------------------------
 render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/ImpactEvaluation/impact_evaluation_x.Rmd")
 
+#--------------------------
+# Discrete Choice
+#--------------------------
+render("~/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/DiscreteChoice/discrete_choice_x.Rmd")
+
 
 
 

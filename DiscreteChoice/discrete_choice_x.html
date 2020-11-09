@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Discrete Choice</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 396/896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tabwid/tabwid.css" rel="stylesheet" />
+    <script src="libs/tabwid/tabwid.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Discrete Choice
+### AECN 396/896-002
+
+---
+
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+
+# Before we start 
+
+## Learning objectives
+
+Understand how endogeneity problems arise
+
+## Table of contents
+
+1. [Selection Bias](#select)
+2. [Reverse Causality](#reverse)
+3. [Measurement Error](#ME)
+
+---
+class: middle
+
+# Discrete Choice Analysis
++ Focus on understanding choices that are discrete (not continuous)
+  * Whether you own a car or not (binary choice)
+  * Whether you use an iPhone, Android, or other types of cell phones (Multinomial choice)
+  * Which recreation sites you visit this winter (multinomial)
++ Linear models we have seen are often not appropriate
+l
+
+---
+class: middle
+
+# Binary Response Model  
+
+---
+class: middle
+
+.content-box-green[**Binary response**]
+
+`\(y = 0 \;\; \mbox{(if you do not own a car)}\)` 
+
+`\(y = 1 \;\; \mbox{(if you own at least one car)}\)`
+
+.content-box-green[**Question**]
+
+How do variables `\(x_1,\dots,x_k\)` affect the status of `\(y\)` (the choice of whether to own at least one car or not)?
+
+---
+class: middle
+
+.content-box-green[**Binary response**]
+
+We try to model the .red[probability] of `\(y = 1\)` (own at least one car)
+
+`\(Pr(y=1|x_1,\dots,x_k) = f(x_1,\dots,x_k)\)`
+
+as a function of independent variables.
+
+---
+class: middle
+
+.content-box-green[**Linear Probability Model**]
+
+`\(Pr(y=1|x_1,\dots,x_k) = \beta_0+\beta_1 x_1+\dots+\beta_k x_k\)`
+
+--
+
+.content-box-green[**Drawback**]
+
+There is no guarantee that the predicted probability is bounded within [0, 1].
+
+---
+class: middle
+
+
+.content-box-green[**How about this?**]
+
+`\(Pr(y=1|x_1,\dots,x_k) = G(\beta_0+\beta_1 x_1+\dots+\beta_k x_k)\)`
+
+where `\(0&lt;G(z)&lt;1\)` for all real numbers `\(z\)`
+
+---
+class: middle
+
+Different choices of `\(G()\)` lead to different models.
+
+
+.content-box-green[**Logit model**]
+
+`\(G(z) = exp(z)/[1+exp(z)] = \frac{e^z}{1+e^z}\)`
+
+where `\(z = \beta_0+\beta_1 x_1+\dots+\beta_k x_k\)`
+
+.content-box-green[**Probit model**]
+
+`\(G(z) = \Phi(z)\)`
+
+where `\(\Phi(z)\)` is the standard normal cumulative distribution function
+
+---
+class: middle
+
+&lt;img src="discrete_choice_x_files/figure-html/unnamed-chunk-3-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+
+`\(Pr(y=1|x_1,\dots,x_k) = G(\beta_0+\beta_1 x_1+\dots+\beta_k x_k)\)`
+
++ What do `\(\beta\)`s measure?
++ How do we interpret them?
+
+---
+class: middle
+
+`\(\mbox{Before:} x_1=0,\dots,x_k=0 \Rightarrow z=\beta_0\)` 
+
+`\(\mbox{After:}\;\; x_1=1 \;\;\mbox{and}\;\; x_2=0,\dots,x_k=0 \Rightarrow z=\beta_0+\beta_1\)`
+
+
+
+
+&lt;img src="discrete_choice_x_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+&lt;img src="discrete_choice_x_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
++ `\(\beta\)`s measure how far you move along the x-axis
+
++ `\(\beta\)`s does not directly measure how independent variables influence the probability of `\(y=1\)`
+
+---
+class: middle
+
+To understand the marginal impact of `\(x_k\)` on `\(Prob(y=1)\)` (how a change in `\(x_k\)` affects the likelihood of owning a car), you need to do a bit of math.
+
+
+.content-box-green[**Model**]
+
+`\(Pr(y=1|x_1,\dots,x_k) = G(z)\)` 
+
+`\(z = \beta_0+\beta_1 x_1+\dots+\beta_k x_k\)`
+
+.content-box-green[**marginal impact**]
+
+Differentiating both sides with respect to `\(x_k\)`,
+
+`\(\frac{\partial Pr(y=1|x_1,\dots,x_k)}{\partial x_k} = G'(z)\times \frac{\partial z}{\partial x_k}\)` 
+
+`\(\qquad\qquad\qquad\:\: = G'(z)\times \beta_k\)`
+
+---
+class: middle
+
+.content-box-green[**marginal impact**]
+
+Differentiating both sides with respect to `\(x_k\)`,
+
+`\(\frac{\partial Pr(y=1|x_1,\dots,x_k)}{\partial x_k} = G'(z)\times \frac{\partial z}{\partial x_k}\)` 
+
+`\(\qquad\qquad\qquad\:\: = G'(z)\times \beta_k\)`
+
+.content-box-green[**Notes**]
+
++ The marginal impact of an independent variable depends on the values of all the independent variables: `\(G(\beta_0+\beta_1 x_1+\dots+\beta_k x_k)\)`
+
++ Since `\(G'()\)` is always positive, the sign of the marginal impact of an independent variable on `\(Prob(y=1)\)` is always the same as the sign of its coefficient
+
+---
+class: middle
+
+.content-box-green[**Estimation of Binary Choice Models**]
+
++ Linear models: OLS
+
++ Binary choice models: .blue[Maximum Likelihood Estimation (MLE)]
+
+---
+class: middle
+
+
+.content-box-green[**OLS**]
+
+Find parameters that makes the sum of residuals squared the smallest
+
+.content-box-green[**MLE (very loosely put)**]
+
+Find parameters `\((\beta\)`s) that makes what we observed (collection of binary decisions made by different individuals) most likely (.blue[Maximum Likelihood])
+
+---
+class: middle
+
+
+.content-box-green[**Observed decisions made by two individuals**]
+
++ Individual 1: `\(y=1\)` (own at least one car)
+
++ Individual 2: `\(y=0\)` (does not own a car)
+
+--
+
+.content-box-green[**Probability of individual decisions**]
+
++ `\(\mbox{Individual 1}: Prob(y_1=1|\mathbf{x_1})= G(z_1)\)`
+
++ `\(\mbox{Individual 2}: Prob(y_2=0|\mathbf{x_2})= 1-G(z_2)\)`
+
+where 
+
++ `\(\mathbf{x_i}\)` is a collection of independent variables for individual `\(i\)` `\((x_{1,i}, \dots, x_{k,i})\)`.
+
++ `\(z_i = \beta_0+\beta_1 x_{1,i}+\dots+\beta_k x_{k,i}\)` 
+
+--
+
+.content-box-green[**Probability of a collection of decisions**]
+
+The probability that we observe a \textcolor{blue}{collection of choices} made by them (if their decisions are independent)
+
+`\(Prob(y_1=1|\mathbf{x_1})\times Prob(y_2=0|\mathbf{x_2}) = G(z_1)\times [1-G(z_2)]\)`
+  
+which we call .blue[likelihood function].
+
+---
+class: middle
+
+.content-box-green[**Probability of a collection of decisions**]
+
+The probability that we observe a \textcolor{blue}{collection of choices} made by them (if their decisions are independent)
+
+`\(Prob(y_1=1|\mathbf{x_1})\times Prob(y_2=0|\mathbf{x_2}) = G(z_1)\times [1-G(z_2)]\)`
+  
+which we call .blue[likelihood function].
+
+--
+
+.content-box-green[**MLE**]
+
+`\(Max_{\beta_1,\dots,\beta_k}\;\; G(z_1)\times [1-G(z_2)]\)`
+
+---
+class: middle
+
+.content-box-green[**MLE of Binary Choice Model in General**]
+
+Maximize the likelihood function:
+
+`\(Max_{\beta_1,\dots,\beta_k}\;\; L\)`
+
+where `\(L=\Pi_{i=1}^n \Big[y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big]\)` is the likelihood function.
+
+.content-box-green[**Log-likelihood function**]
+    
+`\(LL = log\Big(\Pi_{i=1}^n \Big[y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big]\Big)\)` 
+`\(\qquad = \sum_{i=1}^n log\Big(y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big)\)`
+
+.content-box-green[**MLE with `\(LL\)`**]
+
+`\(argmax_{\beta_1,\dots,\beta_k}\;\; L \equiv argmax_{\beta_1,\dots,\beta_k}\;\; LL\)`
+
+---
+class: middle
+
+# Implementation in R with an example
+
+Participation of females in labor force:
+
+`\(Pr(inlf=1|\mathbf{x})= G(z)\)`
+
+where
+
+`\(z = \beta_0+\beta_1 nwifeinc+ \beta_2 educ+ \beta_3 exper\)` 
+
+`\(\quad\;\; + \beta_4 exper^2 + \beta_5 age + \beta_6 kidslt6 + \beta_7 kidsge6\)`
+
++ `\(inlf\)`: 1 if in labor force in 1975, 0 otherwise
++ `\(nwifeinc\)`: earning as a family if she does not work
++ `\(kidslt6\)`: \# of kids less than 6 years old
++ `\(kidsge6\)`: \# of kids who are 6-18 year old
+
+---
+class: middle
+
+
+```r
+#--- import the data ---#
+data &lt;- read.dta13('MROZ.dta') %&gt;%
+  mutate(exper2 = exper^2)
+
+#--- take a look ---#
+dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %&gt;%
+  head()  
+```
+
+```
+##   inlf  nwifeinc kidslt6 kidsge6 educ
+## 1    1 10.910060       1       0   12
+## 2    1 19.499981       0       2   12
+## 3    1 12.039910       1       3   12
+## 4    1  6.799996       0       3   12
+## 5    1 20.100058       1       2   14
+## 6    1  9.859054       0       0   12
+```
+
+---
+class: middle
+
+
+```
+##   inlf  nwifeinc kidslt6 kidsge6 educ
+## 1    1 10.910060       1       0   12
+## 2    1 19.499981       0       2   12
+## 3    1 12.039910       1       3   12
+## 4    1  6.799996       0       3   12
+## 5    1 20.100058       1       2   14
+## 6    1  9.859054       0       0   12
+```
+
+For individual 1 (row 1 of the data),
+
+`\(z_1 = \beta_0+\beta_1 10.91+ \beta_2 12+ \beta_3 14 + \beta_4 196 + \beta_5 32 + \beta_6 1 + \beta_7 0\)`
+
+The probability that individual 1 would make the decision he/she made is:
+
+`\(G(z_1)\)` (a function of `\(\beta\)`s)
+
+---
+class: middle
+
+
+```
+##     inlf nwifeinc kidslt6 kidsge6 educ
+## 748    0    5.330       0       2   12
+## 749    0   28.200       0       2   13
+## 750    0   10.000       2       3   12
+## 751    0    9.952       0       0   12
+## 752    0   24.984       0       0   12
+## 753    0   28.363       0       3    9
+```
+
+For individual 753 (row 753 of the data),
+
+`\(z_{753} = \beta_0+\beta_{753} 28.36+ \beta_2 9+ \beta_3 12 + \beta_4 144 + \beta_5 39 + \beta_6 0 + \beta_7 3\)`
+
+The probability that individual 753 would make the decision he/she made is:
+
+`\(1 - G(z_{753})\)` (a function of `\(\beta\)`s)
+
+---
+class: middle
+
+Multiply all the probabilities of observed choices given `\(\beta\)`s,
+
+`\(L = G(z_1) \times G(z_2) \times \dots [1-G(z_753)]\)`
+
+--
+
+`\(LL = log\Big(G(z_1) \times G(z_2) \times \dots [1-G(z_753)]\Big)\)`
+
+--
+
+Solve the following problems to estimate `\(\beta\)`s:
+
+`\(Max_{\beta_1, \dots, \beta_7} \quad LL\)`
+
+---
+class: middle
+
+
+.content-box-green[**Estimating binary choice model using `\(R\)`**]
+
+You can use the `glm()` function (no new packages installation necessary) when using cross-sectional data
+
++ `glm` refers to Generalized Linear Model, which encompass linear models we have been using
+
++ you specify the `family` option to tell what kind of model you are estimating
+
+---
+class: middle
+
+
+.content-box-green[**Probit model estimation**]
+
+
+```r
+probit_lf &lt;- glm(
+  #--- formula ---#
+  inlf ~ nwifeinc+ educ+ exper+ exper2+ age+ kidslt6+ kidsge6,
+  #--- data ---#
+  data = data,
+  #--- models ---#
+  family = binomial(link = "probit")
+)  
+```
+
+.content-box-green[**family option**]
+
++ `binomial()`: tells R that your dependent variable is binary
+
++ `link = "probit"`: tells R that you want to use the cumulative distribution function of the standard normal distribution as `\(G()\)` in `\(Prob(y=1|\mathbf{x})=G(z)\)`
+
+---
+class: middle
+
+.left5[
+
+```r
+msummary(
+  probit_lf,
+  stars = TRUE,
+  gof_omit = "IC",
+  output = "flextable"
+) %&gt;% 
+fontsize(
+  size = 18, 
+  part = "all"
+) %&gt;% 
+autofit()
+```
+]
+
+.right5[
+<div class="tabwid"><style>.cl-a6af4068{font-family:'Arial';font-size:18px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-a6af4086{font-family:'Arial';font-size:18px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-a6af4d7e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:2px;padding-top:2px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-a6af4d92{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:0;padding-top:0;padding-left:0;padding-right:0;line-height: 1.00;background-color:transparent;}.cl-a6af6e9e{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6eb2{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6ebc{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6ec6{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6ed0{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6ed1{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6eda{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6ee4{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6eee{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6eef{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6ef8{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6f02{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6f03{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6f0c{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6f16{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6f17{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6f20{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6af6f2a{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table style='border-collapse:collapse;'><thead><tr style="overflow-wrap:break-word;"><td class="cl-a6af6f20"><p class="cl-a6af4d7e"><span class="cl-a6af4068"> </span></p></td><td class="cl-a6af6f2a"><p class="cl-a6af4d7e"><span class="cl-a6af4068">Model 1</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(Intercept)</span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">0.270</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.508)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6f02"><p class="cl-a6af4d7e"><span class="cl-a6af4068">age</span></p></td><td class="cl-a6af6ef8"><p class="cl-a6af4d7e"><span class="cl-a6af4068">-0.053***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.008)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6f02"><p class="cl-a6af4d7e"><span class="cl-a6af4068">educ</span></p></td><td class="cl-a6af6ef8"><p class="cl-a6af4d7e"><span class="cl-a6af4068">0.131***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.025)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6f02"><p class="cl-a6af4d7e"><span class="cl-a6af4068">exper</span></p></td><td class="cl-a6af6ef8"><p class="cl-a6af4d7e"><span class="cl-a6af4068">0.123***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.019)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6f0c"><p class="cl-a6af4d7e"><span class="cl-a6af4068">exper2</span></p></td><td class="cl-a6af6f03"><p class="cl-a6af4d7e"><span class="cl-a6af4068">-0.002***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.001)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6ebc"><p class="cl-a6af4d7e"><span class="cl-a6af4068">kidsge6</span></p></td><td class="cl-a6af6ec6"><p class="cl-a6af4d7e"><span class="cl-a6af4068">0.036</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.044)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6ed1"><p class="cl-a6af4d7e"><span class="cl-a6af4068">kidslt6</span></p></td><td class="cl-a6af6ed0"><p class="cl-a6af4d7e"><span class="cl-a6af4068">-0.868***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.118)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6ed1"><p class="cl-a6af4d7e"><span class="cl-a6af4068">nwifeinc</span></p></td><td class="cl-a6af6ed0"><p class="cl-a6af4d7e"><span class="cl-a6af4068">-0.012**</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eb2"><p class="cl-a6af4d7e"><span class="cl-a6af4068"></span></p></td><td class="cl-a6af6e9e"><p class="cl-a6af4d7e"><span class="cl-a6af4068">(0.005)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6ee4"><p class="cl-a6af4d7e"><span class="cl-a6af4068">Num.Obs.</span></p></td><td class="cl-a6af6eda"><p class="cl-a6af4d7e"><span class="cl-a6af4068">753</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6af6eee"><p class="cl-a6af4d7e"><span class="cl-a6af4068">Log.Lik.</span></p></td><td class="cl-a6af6eef"><p class="cl-a6af4d7e"><span class="cl-a6af4068">-401.302</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="2"class="cl-a6af6f16"><p class="cl-a6af4d92"><span class="cl-a6af4086">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</span></p></td></tr></tbody></table></div>
+]
+
+---
+class: middle
+
+
+.content-box-green[**Logit model estimation**]
+
+
+```r
+logit_lf &lt;- glm(
+  #--- formula ---#
+  inlf ~ nwifeinc+ educ+ exper+ exper2+ age+ kidslt6+ kidsge6,
+  #--- data ---#
+  data = data,
+  #--- models ---#
+  family = binomial(link = "logit")
+)  
+```
+
+.content-box-green[**family option**]
+
++ `binomial()`: tells R that your dependent variable is binary
+
++ `link = "logit"`: tells `\(R\)` that you want to use `\(G(z) = \frac{e^z}{1+e^z}\)` in `\(Prob(y=1|\mathbf{x})=G(z)\)`
+
+---
+class: middle
+
+.left5[
+
+```r
+msummary(
+  probit_lf,
+  stars = TRUE,
+  gof_omit = "IC",
+  output = "flextable"
+) %&gt;% 
+fontsize(
+  size = 18, 
+  part = "all"
+) %&gt;% 
+autofit()
+```
+]
+
+.right5[
+<div class="tabwid"><style>.cl-a6d1bbca{font-family:'Arial';font-size:18px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-a6d1bbe8{font-family:'Arial';font-size:18px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-a6d1c8cc{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:2px;padding-top:2px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-a6d1c8e0{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:0;padding-top:0;padding-left:0;padding-right:0;line-height: 1.00;background-color:transparent;}.cl-a6d1eaaa{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eac8{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eac9{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1ead2{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eadc{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eae6{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eae7{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eaf0{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eafa{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb04{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb05{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb0e{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb18{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb19{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb22{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb2c{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 1.00px solid rgba(255, 255, 255, 0.00);border-top: 1.00px solid rgba(255, 255, 255, 0.00);border-left: 1.00px solid rgba(255, 255, 255, 0.00);border-right: 1.00px solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb2d{width:103px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-a6d1eb36{width:93px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table style='border-collapse:collapse;'><thead><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eb2d"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"> </span></p></td><td class="cl-a6d1eb36"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">Model 1</span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(Intercept)</span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">0.270</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.508)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eb0e"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">age</span></p></td><td class="cl-a6d1eb05"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">-0.053***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.008)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eb0e"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">educ</span></p></td><td class="cl-a6d1eb05"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">0.131***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.025)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eb0e"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">exper</span></p></td><td class="cl-a6d1eb05"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">0.123***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.019)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eb19"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">exper2</span></p></td><td class="cl-a6d1eb18"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">-0.002***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.001)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac9"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">kidsge6</span></p></td><td class="cl-a6d1ead2"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">0.036</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.044)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eae6"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">kidslt6</span></p></td><td class="cl-a6d1eadc"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">-0.868***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.118)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eae6"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">nwifeinc</span></p></td><td class="cl-a6d1eadc"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">-0.012**</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eac8"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca"></span></p></td><td class="cl-a6d1eaaa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">(0.005)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eaf0"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">Num.Obs.</span></p></td><td class="cl-a6d1eae7"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">753</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-a6d1eafa"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">Log.Lik.</span></p></td><td class="cl-a6d1eb04"><p class="cl-a6d1c8cc"><span class="cl-a6d1bbca">-401.302</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="2"class="cl-a6d1eb22"><p class="cl-a6d1c8e0"><span class="cl-a6d1bbe8">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</span></p></td></tr></tbody></table></div>
+]
+
+---
+class: middle
+
+# Post-estimation operations and diagnostics
+
+---
+class: middle
+
+.content-box-green[**Log-likelihood (fitted)**]
+
+`\(LL =\sum_{i=1}^n log\Big(y_i\times G(\hat{z}_i)+(1-y_i)\times(1-G(\hat{z}_i))\Big)\)`
+
++ `\(\hat{z}_i=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k\)`
+
++ `\(G(\hat{z}_i)\)` is the fitted value of `\(Prob(y=1|\mathbf{x})\)`
+
+.content-box-green[**Example**]
+
++ `\(G(\hat{z}_i) = 0.9\)`: predicted that individual `\(i\)` is very likely to own a car 
++ `\(y_i = 0\)`: in reality, individual `\(i\)` does not own a car
+
+`\(\Rightarrow\)`
+
+`\(log\Big(0\times 0.9 +(1-0)\times(1-0.9)\Big) = log(0.1) = -2.3\)`
+
+---
+class: middle
+
+.content-box-green[**Log-likelihood (fitted)**]
+
+`\(LL =\sum_{i=1}^n log\Big(y_i\times G(\hat{z}_i)+(1-y_i)\times(1-G(\hat{z}_i))\Big)\)`
+
++ `\(\hat{z}_i=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k\)`
+
++ `\(G(\hat{z}_i)\)` is the fitted value of `\(Prob(y=1|\mathbf{x})\)`
+
+.content-box-green[**Example**]
+
++ `\(G(\hat{z}_i) = 0.9\)`: predicted that individual `\(i\)` is very likely to own a car 
++ `\(y_i = 1\)`: in reality, individual `\(i\)` indeed owns a car
+
+`\(\Rightarrow\)`
+
+`\(log\Big(1\times 0.9 +(1-1)\times(1-0.9)\Big) = log(0.9) = -0.11\)`
+
+---
+class: middle
+
+.content-box-green[**Log-likelihood (fitted)**]
+
+So, the better your prediction (model fit) is the .blue[(The greater (less negative) the LL is.]
+
+---
+class: middle
+
+.content-box-green[**McFadden's**] pseudo- `\(R^2\)`
+
+A measure of how much better your model is compared to the model with only the intercept.
+
+`\(pseudo-R^2=1-LL/LL_0\)`
+
+where `\(LL_0\)` is the log-likelihood when you include only the intercept.
+
+---
+class: middle
+
+
+.content-box-green[**R code**]
+
+
+```r
+logit_lf_0 &lt;- glm(
+  inlf ~ 1,
+  data = data,
+  family = binomial(link = "logit")
+)
+
+#--- extract LL using the logLik() function ---#
+(LL0 &lt;- logLik(logit_lf_0))
+```
+
+```
+## 'log Lik.' -514.8732 (df=1)
+```
+
+```r
+#--- extract LL using the logLik() function from your preferred model ---#
+(LL &lt;- logLik(logit_lf))
+```
+
+```
+## 'log Lik.' -401.7652 (df=8)
+```
+
+```r
+#--- pseudo R2 ---#
+1-LL/LL0
+```
+
+```
+## 'log Lik.' 0.2196814 (df=8)
+```
+---
+class: middle
+
+
+.content-box-green[**Alternatively**]
+
+
+```r
+#--- or more easily ---#
+1-logit_lf$deviance/logit_lf$null.deviance
+```
+
+```
+## [1] 0.2196814
+```
+
+```r
+#--- what are deviances? ---#
+logit_lf$null.deviance # = -2*LL0
+```
+
+```
+## [1] 1029.746
+```
+
+```r
+logit_lf$deviance # = -2*LL  
+```
+
+```
+## [1] 803.5303
+```
+
++ `null.deviance` `\(= -2\times LL_0\)`
++ `deviance` `\(= -2\times LL\)`
+
+---
+class: middle
+
+.content-box-green[**Testing joint significance**]
+
+You can do Likelihood Ratio (LR) test:
+
+`\(LR = 2(LL_{unrestricted}-LL_{restricted}) \sim \chi^2_{df\_restrictions}\)`
+
+where `\(df\_restrictions\)` is the number of restrictions.
+
+.content-box-green[**Note**]
+
+LR test is very similar conceptually to F-test.
+
+.content-box-green[**Example**]
+
++ `\(H_0:\)` the coefficients on `\(exper\)`, `\(exper2\)`, and `\(age\)` are `\(0\)`
+
++ `\(H_1:\)` `\(H_0\)` is false
+
+---
+class: middle
+
+
+```r
+#--- unrestricted ---#
+logit_ur &lt;- glm(
+  inlf~nwifeinc+educ+exper+exper2+age+kidslt6+kidsge6,
+  data = data,family=binomial(link='logit')
+  )
+
+#--- restricted ---#
+logit_r &lt;- glm(
+  inlf~nwifeinc+educ+kidslt6+kidsge6,
+  data = data,family=binomial(link='logit')
+  )
+
+#--- LR test using lrtest() from the lmtest package ---#
+library(lmtest)
+lrtest(logit_r,logit_ur)  
+```
+
+```
+## Likelihood ratio test
+## 
+## Model 1: inlf ~ nwifeinc + educ + kidslt6 + kidsge6
+## Model 2: inlf ~ nwifeinc + educ + exper + exper2 + age + kidslt6 + kidsge6
+##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)    
+## 1   5 -464.92                         
+## 2   8 -401.77  3 126.32  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  
+## 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+---
+class: middle
+
+# Prediction
+
+After estimating a binary choice model, you can easily predict the following two
+
++ `\(\hat{z}=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k\)`
+
++ `\(\widehat{Prob(y=1|\mathbf{x})}=G(\hat{z})=G(\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k)\)`
+
+---
+class: middle
+
+.content-box-green[**R code**]
+
+
+```r
+#--- z hat ---#
+z &lt;- predict(probit_lf, type = "link")
+head(z)
+```
+
+```
+##         1         2         3         4         5         6 
+## 0.5071349 0.6624576 0.5116317 0.7423429 0.1972781 0.8837878
+```
+
+```r
+#--- G(z) hat ---#
+Gz &lt;- predict(probit_lf, type = "response")
+head(Gz) 
+```
+
+```
+##         1         2         3         4         5         6 
+## 0.6939699 0.7461610 0.6955456 0.7710602 0.5781950 0.8115946
+```
+
+---
+class: middle
+
+# Marginal effect of an independent variable
+
++ Coefficient estimates across different models (probit and logit) are not meaningful because the same value of a coefficient estimate means different things
+
++ They are the estimates of `\(\beta\)`s, not the direct impact of the independent variables on the `\(Prob(y=1)\)`
+
+---
+class: middle
+
+Marginal effect of an independent variable
+
+`\(\frac{\partial Pr(y=1|x_1,\dots,x_k)}{\partial x_k} = G'(z)\times \beta_k\)`
+
++ the marginal impact depends on the current levels of all the independent variables
++ we typically report one of the two types of marginal impacts
+  * (becoming obsolete) the marginal impact .blue[at the mean] (average person): when all the independent variables take on their respective means
+  * the average of the marginal impacts calculated for each of all the individuals observed
+
+---
+class: middle
+
+.content-box-green[**Marginal impact at the mean**]
+
+`\(\frac{\partial Pr(y=1|\bar{x_1},\dots,\bar{x_k})}{\partial x_k} = G'(\beta_0+\beta_1 \bar{x_1}+\dots+\beta_k\bar{x_k})\times \beta_k\)`
+
+.content-box-green[**Mean marginal impact (MME)**]
+
+`\(\sum_{i=1}^n \frac{\partial Pr(y_i=1|\bar{x_{i,1}},\dots,\bar{x_{i,k}})}{\partial x_k} = \sum_{i=1}^n G'(z_i)\times \beta_k\)`
+
+---
+class: middle
+
+
+.content-box-green[**R codes to get MME**]
+
+
+```r
+#--- get z for all the individuals ---#
+z &lt;- predict(probit_lf, type = "link")
+
+#--- get G'(z) ---#
+Gz_indiv &lt;- dnorm(z)
+
+#--- mean marignal impact of eduction ---#
+mean(Gz_indiv) * probit_lf$coef['educ']
+```
+
+```
+##       educ 
+## 0.03937009
+```
+
+---
+class: middle
+
+Fortunately, the `margins` package provides you with a more convenient way of calculating MMEs.
+
+
+```r
+library(margins)  
+
+#--- calculate MME based on the probit estimation ---#
+mme_lf &lt;- margins(probit_lf, type = "response")
+
+#--- get the summary ---#
+summary(mme_lf)
+```
+
+```
+##    factor     AME     SE       z      p   lower   upper
+##       age -0.0159 0.0024 -6.7392 0.0000 -0.0205 -0.0113
+##      educ  0.0394 0.0073  5.4186 0.0000  0.0251  0.0536
+##     exper  0.0371 0.0052  7.1779 0.0000  0.0270  0.0472
+##    exper2 -0.0006 0.0002 -3.2050 0.0014 -0.0009 -0.0002
+##   kidsge6  0.0108 0.0132  0.8189 0.4129 -0.0151  0.0367
+##   kidslt6 -0.2612 0.0319 -8.1860 0.0000 -0.3237 -0.1986
+##  nwifeinc -0.0036 0.0015 -2.4604 0.0139 -0.0065 -0.0007
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "4:3",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -21,6 +21,7 @@ This is the repository for AECN896-003 at the University of Nebraska Lincoln, wh
 + Lecture 12: Panel Data Estimation Methods ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Panel/panel_x.html))
 + Lecture 13: Research Demonstration ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Demonstration/demonstration_x.html))
 + Lecture 14: Impact Evaluation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/ImpactEvaluation/impact_evaluation_x.html))
++ Lecture 14: Discrete Choice ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/DiscreteChoice/discrete_choice_x.html))
 
 ## Assignments
 

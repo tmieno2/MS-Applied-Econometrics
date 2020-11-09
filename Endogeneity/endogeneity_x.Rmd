@@ -31,7 +31,7 @@ suppressMessages(library(lmtest))
 
 ## Learning objectives
 
-Understand the how endogeneity problems arise
+Understand how endogeneity problems arise
 
 ## Table of contents
 
