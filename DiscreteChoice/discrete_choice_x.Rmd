@@ -289,7 +289,7 @@ where
 
 .content-box-green[**Probability of a collection of decisions**]
 
-The probability that we observe a \textcolor{blue}{collection of choices} made by them (if their decisions are independent)
+The probability that we observe a .blue[collection of choices] made by them (if their decisions are independent)
 
 $Prob(y_1=1|\mathbf{x_1})\times Prob(y_2=0|\mathbf{x_2}) = G(z_1)\times [1-G(z_2)]$
   
@@ -300,7 +300,7 @@ class: middle
 
 .content-box-green[**Probability of a collection of decisions**]
 
-The probability that we observe a \textcolor{blue}{collection of choices} made by them (if their decisions are independent)
+The probability that we observe a .blue[collection of choices] made by them (if their decisions are independent)
 
 $Prob(y_1=1|\mathbf{x_1})\times Prob(y_2=0|\mathbf{x_2}) = G(z_1)\times [1-G(z_2)]$
   
@@ -755,3 +755,233 @@ mme_lf <- margins(probit_lf, type = "response")
 #--- get the summary ---#
 summary(mme_lf)
 ```
+
+---
+
+class: inverse, center, middle
+
+# Multinomial Choice Model
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# Multinomial Choice 
+
+Instead of two options, you are picking one option out of more than two options
+
++ which carrier?
+  * Verizon
+  * Sprint
+  * AT\&T
+  * T-mobile
++ which transportation means to commute?
+  * drive
+  * Uber
+  * bus
+  * train
+  * bike
+
+---
+class: middle
+
+# Multinomial logit model
+
+The most popular model to analyze multinomial choice
+
++ environmental evaluation
+
++ tranposrtation
+
++ marketing
+
+---
+class: middle
+
+# Understanding multinomial logit model
+
+
+.content-box-green[**Choice of train route options**]
+
++ 10 euros, 30 minutes travel time, one change
+
++ 20 euros, 20 minutes travel time, one change
+
++ 22 euros, 22 minutes travel time, no change
+
+--
+
+.content-box-green[**Associated utility**]
+
++ $V_1=\alpha_1 + \beta 10 + \gamma 30 + \rho 1 + v_1$
+
++ $V_2=\alpha_2 + \beta 20 + \gamma 20 + \rho 1 + v_2$
+
++ $V_3=\alpha_3 + \beta 22 + \gamma 22 + \rho 0 + v_3$
+
+---
+class: middle
+
+.content-box-green[**Choice probability**]
+
+Logit model assumes that the probability of choosing an alternative is the following:
+
++ $P_1=\frac{e^{V_1}}{e^{V_1}+e^{V_2}+e^{V_3}}$
+
++ $P_2=\frac{e^{V_2}}{e^{V_1}+e^{V_2}+e^{V_3}}$
+
++ $P_3=\frac{e^{V_3}}{e^{V_1}+e^{V_2}+e^{V_3}}$
+
+--
+
+.content-box-green[**Notes**]
+
++ $0<P_j<1$, $^\forall j=1,2,3$
+
++ $\sum_{j=1}^3=1$
+
+---
+class: middle
+
+.content-box-green[**Modeled probability of choices**]
+
+Modeled probability of observing individual $i$ choosing the option $i$ chose
+
+$P_i = \Pi_{j=1}^3 y_{i,j}\times P_j$
+
+where $y_{i,j}=1$ if $i$ chose $j$, 0 otherwise.
+
+.content-box-green[**Example**]
+
+$y_{i,1} = 0, \;\;y_{i,2} = 1,\;\;y_{i,3} = 0$
+
+$P_i = \Pi_{j=1}^3 y_{i,j}\times P_j = 0\times P_1 + 1\times P_2 + 0\times P_3$
+
+---
+class: middle
+
+The probability of observing a series of chocies made by all the subjects is
+  
+$LL = \Pi_{i=1}^n P_i = \Pi_{i=1}^n \Pi_{j=1}^3 y_{i,j}\times P_j$
+
+if choices made by the subjects are independent with each other.
+
+--
+
+.content-box-green[**MLE**]
+
+$Max_{\beta,\gamma,\rho}\;\; log(LL)$
+
+---
+class: middle
+
+# Interpretation of the coefficients
+
+.content-box-green[**Model in general**]
+
+$V_{i,j} = \alpha_j + \beta_1 x_{1,i,j} + \dots + \beta_k x_{k,i,j}$ 
+
+$P_{i,j} = \frac{e^{V_{i,j}}}{\sum_{k=1}^J e^{V_{i,k}}}$
+
+--
+
+.content-box-green[**Interpretation of the coefficients**]
+  
+$\frac{\partial P_{i,j}}{\partial x_{k,i,j}} & = \beta_k P_{i,j}(1-P_{i,j})$
+    
++ .blue[A marginal change in $k$th variable for alternative $j$ would change the probability of choosing alternative $j$ by $\beta_k P_{i,j}(1-P_{i,j})$]
+    
++ the sign of the impact is the same as the sign of the coefficient
+
+---
+class: middle
+
+.content-box-green[**Implementation in $R$**]
+
+You can use $mlogit$ package to estimate multinomial logit models:
+
++ format your data in a specific manner
+
++ convert your data using $mlogit.data()$
+
++ estimate the model using $mlogit()$
+
+---
+class: middle
+
+```{r }
+#--- library ---#
+library(mlogit)
+
+#--- get the travel mode data from the mlogit package ---#
+data("TravelMode", package = "AER")
+
+#--- take a look at the data ---#
+# first 10 rows
+head(TravelMode, 10)  
+```
+
+
+---
+class: middle
+
+.content-box-green[**R code: data preparation**]
+
+```{r mlogit_convert}
+#--- convert the data ---#
+TM <- mlogit.data(TravelMode,
+  shape = "long", # what format is the data in?
+  choice = "choice", # name of the variable that indicates choice made
+  chid.var = "individual", # name of the variable that indicates who made choices
+  alt.var = "mode" # the name of the variable that indicates options
+  )
+```
+
+---
+class: middle
+
+```{r eval = F}
+#--- take a look at the data ---#
+# first 10 rows
+head(TM, 10) 
+```
+
+.scroll-box-16[
+```{r echo = F}
+head(TM, 10) 
+```
+]
+
+---
+class: middle
+
+
+```{r }
+#--- estimate ---#
+ml_reg <- mlogit(choice ~ wait + vcost + travel, data = TM)  
+``` 
+
+---
+class: middle
+
+.scroll-box-24[
+```{r }
+summary(ml_reg) 
+```
+]
+
+---
+class: middle
+  
+# Understanding the results
+
+```{r }
+summary(ml_reg)$coef
+```
+
++ intercept for $air$ is dropped $(air$ is the base)
+  * train:(intercept) is $-0.786$ means that train is less likely to be chosen if all the other .blue[included] variables are the same
+
++ the greater the travel time, the less likely the option is chosen
+
