@@ -35,7 +35,8 @@ opts_chunk$set(
 
 1. [Ligistics](#logistics)
 2. [What is econometrics about?](#econometrics)
-3. [](#)
+3. [Causality and Association](#causality)
+4. [Endogeneity](#endogeneity)
 
 ---
 
@@ -84,6 +85,16 @@ class: middle
 
 + Lectures (MW): 3:00-4:30pm
 + Lab sessions (F): 1:00-2:30pm
+
+---
+class: middle
+
+# Course Website
+
+[Course Website](https://github.com/tmieno2/MS-Applied-Econometrics)
++ Lecture Slides 
++ Assignments
++ Final paper
 
 ---
 class: middle
@@ -344,9 +355,8 @@ This is what you learn for the next few months!!
   + test hypothesis
 
 ---
-class: middle
 class: inverse, center, middle
-name: intro
+name: causality
 
 # Causality and Association
 
@@ -423,9 +433,8 @@ class: middle
 + Identifying causal effects is extremely hard (this is what we tackle) 
 
 ---
-class: middle
 class: inverse, center, middle
-name: intro
+name: endogeneity
 
 # Endogeneity: Your Nemesis
 
