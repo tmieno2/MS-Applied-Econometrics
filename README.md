@@ -9,7 +9,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 ## Lecture Notes
 
-+ Lecture 1: Introduction ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Introduction/Introduction.pdf))
++ Lecture 1: Introduction ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Introduction/Introduction_x.html))
 + Lecture 2: Univariate Regression 
     * Part 1 ([slide 1](https://tmieno2.github.io/MS-Applied-Econometrics/UnivariateRegression/univariate_reg_1.pdf))
     * Part 2 ([slide 2](https://tmieno2.github.io/MS-Applied-Econometrics/UnivariateRegression/univariate_reg_2.pdf))

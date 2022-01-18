@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to Econometrics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Introduction to Econometrics
+### AECN 896-002
+
+---
+
+class: middle
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+# Outline
+
+1. [Ligistics](#logistics)
+2. [What is econometrics about?](#econometrics)
+3. [](#)
+
+---
+
+class: inverse, center, middle
+name: logistics
+
+# Logistics
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Instructors
+
++ &lt;span style = "color: red;"&gt; Instructor &lt;/span&gt;: Taro Mieno (Office: 209, E-mail: tmieno2@unl.edu)
++ &lt;span style = "color: red;"&gt; Teaching Assistant &lt;/span&gt;: Shunkei Kakimoto (E-mail: skakimoto3@huskers.unl.edu)
+
+---
+class: middle
+
+# Goals of the course
++ Learn modern introductory econometric theory
++ Apply econometric theories to real economic problems
++ Learn how to use statistical software (R) so you can conduct research independently (without technical help from your advisor)
+  - manage data
+  - visualize data
+  - run regressions
+  - interpret results
+
+---
+class: middle
+
+# Text Books 
+
+## Required:
+Wooldridge, Jeffrey M. 2006. "Introductory Econometrics: A Modern Approach (&lt;span style = "color: red;"&gt;5&lt;/span&gt;th edition)." Mason, OH: Thomson/South-Western.
+
+## Recommended 
++ Florian, Heiss. 2016 "Using R for Introductory Econometrics." CreateSpace Independent Publishing Platform. (free version available online [here](http://www.urfie.net/))
+
+---
+class: middle
+
+# Course Schedule
+
++ Lectures (MW): 3:00-4:30pm
++ Lab sessions (F): 1:00-2:30pm
+
+---
+class: middle
+
+# Grading
+
++ Problem sets (4 assignments): 50% 
++ Paper: 50%
+  - Proposal: 5%
+  - Final paper: 45%
+
+---
+class: middle
+
+# Assignments
+  
+## Problem sets
++ Most questions are from the required text book
++ Some questions come from what we cover in lab sessions
+
+## Rmarkdown to do and submit your problem sets
++ You are required to present your R codes
++ You learn how to compile your assignment with your R code written in a document using &lt;span style = "color: red;"&gt; Rmarkdown &lt;/span&gt;, which will be covered in the second lab session
+
+
+---
+class: middle
+
+# Assignments
+
+.content-box-red[**Caution**]  
++ 2nd year students have answers to all the questions I will assign (I will use exactly the same problems because they are really good to learn econometrics)
++ You are free to copy and paste (or rephrase) the answers for your assignment. I won't bother to try to tell if you have copied and pasted answers.
++ However, you are simply doing dis-service to yourself by depriving yourself of learning opporunities
++ Moreover, your lack of understanding of the material will be clearly manifested on your final paper (I am not at all shy of giving bad grades on the final paper)
+
+---
+class: middle
+
+# Paper
+
+In this assignment,
+  + you write 
+    - a paper proposal with in-class presentation (5 points)
+    - a paper with a particular emphasis on econometric analysis using a real world data set (45 points)
+  + you are encouraged to use the data set you are using for your masters thesis (talk with your advisor)
+  + you need to ensure that you use a &lt;span style = "color: red;"&gt; panel &lt;/span&gt; dataset
+  + No presentation of your final paper
+
+---
+class: middle
+
+# Paper
+Here is the time line of the paper assignment:
+  + &lt;span style = "color: red;"&gt; March, 23 &lt;/span&gt;: identify a research topic and the data set you will be using, and get an approval from the instructor
+  + &lt;span style = "color: red;"&gt; April, 1 &lt;/span&gt;: paper proposal 
+  + &lt;span style = "color: red;"&gt; May, 11 &lt;/span&gt;: final paper 
+
+---
+class: middle
+
+# Paper Proposal 
+
+## Introduction
++ clear identification of what you are trying to find out (research question) 
++ why the research question is worthwhile answering 
+
+## Simple Model
++ dependent variable (the variable to be explained)
++ explanatory variable (variables to be explain)
+
+## Data Source
++ where you get data
+
+---
+class: middle
+
+# Final Paper 
+
+## Introduction
+  + clear identification of what you are trying to find out (research question) [1 point]
+  + why the research question is worthwhile answering [1 point]
+
+## Data description
+  + the nature of the data with summary statistics table [1 point]
+  + visualize a few key variables in a meaningful way [3 points]
+
+---
+class: middle
+
+# Final Paper
+
+## Econometric Methods:
+the &lt;span style = "color: red;"&gt; process &lt;/span&gt; of how you end up with the final econometric models and methods. [40 points (&lt;span style = "color: red;"&gt; or more &lt;/span&gt;)]
++ justification of your choice of independent variables
++ potential endogeneity problems
++ what did you do to address the endogeneity problems?
++ justification of econometric model(s) and method(s)
++ identify appropriate standard error estimation methods
+
+## Results, Discussions, and Conclusions:
++ interpret and describe the results [2 points]
++ implications of the results [1 point]
++ conclusions [1 point]
+
+---
+class: inverse, center, middle
+name: econometrics
+
+# What is econometrics about? 
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# What econometrics is about
+
+.content-box-red[**Econometrics**]:
+
+Estimate quantitative relationships between variables
+
+
+.content-box-red[**Examples**]:
+
++ the impact of fertilizer on crop yield
++ the impact of political campaign expenditure on voting outcomes
++ the impact of education on wage
+
+---
+class: middle
+
+# Steps in Econometric Analysis
+
++ formulation of the question of interest (what are you trying to find out?)
++ develop an economic model of the phenomenon you are interested in understanding (identify variables that matter)
++ turn the economic model into an econometric model
++ collect data
++ &lt;span style = "color: blue;"&gt; estimate the model using econometrics &lt;/span&gt;
++ &lt;span style = "color: blue;"&gt; test hypotheses &lt;/span&gt;
+
+
+---
+class: middle
+
+
+# Step 2: Develop an economic model
+
+.content-box-red[**Example: Job training and worker productivity**]
+
+`$$wage = f(educ,exper,training)$$`
+
++ `\(wage\)`: hourly wage
++ `\(educ\)`: years of formal education
++ `\(exper\)`: years of workforce experience
++ `\(training\)`: weeks spent in job training
+
+.content-box-green[**Note**]: Depending on questions you would like to answer, the economic model can (and should) be much more involved
+
+---
+class: middle
+
+# Step 3: Develop an econometric model
+
+`$$wage = f(educ,exper,training)$$`
+
+The form of the function `\(f(\cdot)\)` must be specified (almost always) before we can undertake an econometric analysis
+
+`$$wage = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 training + u$$`
+
+## `$$\beta_0,\beta_1,\beta_2,\beta_3$$`
++ are the &lt;span style = "color: red;"&gt; parameters &lt;/span&gt; of the econometric model.
++ describe the directions and strengths of the relationship between `\(wage\)` and the factors used to determine `\(wage\)` in the model
+
+## `\(u\)`
++ is called error term
++ includes &lt;span style = "color: red;"&gt; ALL &lt;/span&gt; the other factors that can affect wage other than the included variables (like innate ability)
+
+---
+class: middle
+
+# Step 4: Collect data
++ survey
++ websites
++ experiment
+
+---
+class: middle
+
+# Data types
+
+.content-box-green[**Cross-sectional Data**]
+
++ a sample of individuals, households, firms, cities, states, countries, or a variety of other units, taken at a given point in time
++ the data on all units do not correspond to precisely the same time period
+  - some families surveyed during different weeks within a year
+
+---
+class: middle
+
+# Cross-sectional Data
+
+
+```r
+here("Data/wage1.rds") %&gt;%
+  readRDS() %&gt;%
+  data.table() %&gt;%
+  .[, .(wage, educ, exper, female, married)]
+```
+
+```
+##       wage educ exper female married
+##   1:  3.10   11     2      1       0
+##   2:  3.24   12    22      1       1
+##   3:  3.00   11     2      0       0
+##   4:  6.00    8    44      0       1
+##   5:  5.30   12     7      0       1
+##  ---                                
+## 522: 15.00   16    14      1       1
+## 523:  2.27   10     2      1       0
+## 524:  4.67   15    13      0       1
+## 525: 11.56   16     5      0       1
+## 526:  3.50   14     5      1       0
+```
+
+---
+class: middle
+
+# Data types: Time-series Data
+
+.content-box-green[**Time-series Data**]
+Observations on a variable or several variables over time
+  + corn price
+  + oil price
+
+.content-box-red[**Note**]:
+  + The econometric frameworks necessary to analyze time series data are quite different from those for cross-sectional data
+  + We do &lt;span style = "color: red;"&gt; NOT &lt;/span&gt; learn time-series econometric methods
+
+
+---
+class: middle
+
+# Data types: Panel (Longitudinal) Data
+
+.content-box-red[**Panel (Longitudinal) Data**]
+time series data for each cross-sectional member in the data set (&lt;span style = "color: red;"&gt; same &lt;/span&gt; cross-sectional units are tracked over a given period of time)
+
+.content-box-green[**Example**]
+  + wage data for individuals collected every five years over the past 30 years
+  + yearly GDP data for 60 countries over the past 10 years
+
+.content-box-red[**Notes**]
+  + Panel data are much more common than they used to be
+  + Panel data econometric methods take advantage of the panel data structure
+
+---
+class: middle
+
+# Data types: Panel (Longitudinal) Data
+
+
+```r
+here("Data/crime4.rds") %&gt;%
+  readRDS() %&gt;%
+  .[, .(county, year, crmrte, prbarr, prbpris)]
+```
+
+```
+##      county year    crmrte   prbarr  prbpris
+##   1:      1   81 0.0398849 0.289696 0.472222
+##   2:      1   82 0.0383449 0.338111 0.506993
+##   3:      1   83 0.0303048 0.330449 0.479705
+##   4:      1   84 0.0347259 0.362525 0.520104
+##   5:      1   85 0.0365730 0.325395 0.497059
+##  ---                                        
+## 626:    197   83 0.0155747 0.226667 0.428571
+## 627:    197   84 0.0136619 0.204188 0.372727
+## 628:    197   85 0.0130857 0.180556 0.333333
+## 629:    197   86 0.0128740 0.112676 0.244444
+## 630:    197   87 0.0141928 0.207595 0.360825
+```
+
+---
+class: middle
+
+# Steps 5 and 6
+This is what you learn for the next few months!!
+  + estiamte the model using econometrics
+  + test hypothesis
+
+---
+class: middle
+class: inverse, center, middle
+name: intro
+
+# Causality and Association
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Causality and Association
+
+.content-box-red[**Association**]
+
+An association of two variables arise because &lt;span style = "color: red;"&gt; either of or both &lt;/span&gt; variables affect the other variable
+
+`\begin{align}
+  A \longleftrightarrow B 
+\end{align}`
+
+Association does not concern which affects which. This is what &lt;span style = "color: blue;"&gt; correlation coefficient &lt;/span&gt; measures.
+
+.content-box-red[**Causality**]
+Causal effect is the impact of one variable on the other,
+
+`\begin{align}
+  A \rightarrow B 
+\end{align}`
+
+Here, changes in `\(A\)` cause changes in `\(B\)`, not the other way around
+
+---
+class: middle
+
+# Causality and Association
+
+Let's watch this [interesting CM](https://www.youtube.com/watch?v=KSHMgoUWBmY).
+
+---
+class: middle
+# Causality and Association
+
+.content-box-green[**Claims made in the video**]
+
+People who wear glasses are
+
++ much smarter than those who don't
++ more likely to pursue higher education
++ 200% more likely to graduate college
+
+--
+
+For you to be convinced to buy glasses, these claims needs to be causal, not association:
++ Does wearing glasses make you much smarter?
++ Does wearing glasses make it more likely for you to pursue higher education?
++ Does wearing glasses make it 200% more likely for you to graduate college?
+
+---
+class: middle
+# Causality and Association
+
+However, this seems to be a more likely explanation of the assocication:
+
++ One spends more time studying academic subjects
+  - smarter (or knowledgeable) `\(\rightarrow\)` pursue higher education and graduate college 
+  - worsened eyesights `\(\Rightarrow\)` wear glasses
+
+---
+class: middle
+
+# Causality and Association
+
+.content-box-green[**Important**]:
++ We care about isolating causal effects, but not association
++ Identifying association is super easy
++ Identifying causal effects is extremely hard (this is what we tackle) 
+
+---
+class: middle
+class: inverse, center, middle
+name: intro
+
+# Endogeneity: Your Nemesis
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Causality and Association
+
+It is super easy to find an association of multiple variables, but it is incredibly hard to find a causal effect (at least in Economics)!!
+
+---
+class: middle
+
+# Endogeneity
+
+You are interested in the causal impact of fire fighters on the number of death tolls in fire events
+
+
+&lt;template id="9e1ff5e7-c27f-4e93-99f2-091fd39c0077"&gt;&lt;style&gt;
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+&lt;/style&gt;&lt;div class="tabwid"&gt;&lt;style&gt;.cl-03a89930{}.cl-03a3bdca{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-03a3ca2c{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-03a3ca4a{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-03a3f40c{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f420{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f434{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f43e{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f448{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f452{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f453{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f45c{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f466{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f467{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f470{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-03a3f47a{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}&lt;/style&gt;&lt;table class='cl-03a89930'&gt;&lt;thead&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-03a3f47a"&gt;&lt;p class="cl-03a3ca2c"&gt;&lt;span class="cl-03a3bdca"&gt;fire event&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f470"&gt;&lt;p class="cl-03a3ca2c"&gt;&lt;span class="cl-03a3bdca"&gt;death toll&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f467"&gt;&lt;p class="cl-03a3ca2c"&gt;&lt;span class="cl-03a3bdca"&gt;# of firefighters deployed&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-03a3f420"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;1&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f434"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;10&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f40c"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;20&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-03a3f448"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;2&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f43e"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;0&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f452"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-03a3f448"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f43e"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;5&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f452"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;10&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-03a3f448"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;4&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f43e"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f452"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;5&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-03a3f466"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;5&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f45c"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;50&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-03a3f453"&gt;&lt;p class="cl-03a3ca4a"&gt;&lt;span class="cl-03a3bdca"&gt;50&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/template&gt;
+&lt;div class="flextable-shadow-host" id="51b57719-e14a-46c8-acbf-ddc34a68eef6"&gt;&lt;/div&gt;
+&lt;script&gt;
+var dest = document.getElementById("51b57719-e14a-46c8-acbf-ddc34a68eef6");
+var template = document.getElementById("9e1ff5e7-c27f-4e93-99f2-091fd39c0077");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+&lt;/script&gt;
+
+--
+
+.content-box-green[**Questions**]
++ How are they associated?
++ Can you say anything about the causal effect of fire fighters deployment on the number of death tolls?
+
+---
+class: middle
+
+# What happened?
+
+You ignored an important variable!!
+
+
+&lt;template id="10e2f1ce-0b27-4007-85f8-fba1b5be0090"&gt;&lt;style&gt;
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+&lt;/style&gt;&lt;div class="tabwid"&gt;&lt;style&gt;.cl-10c483cc{}.cl-10bf93ee{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-10bfa0d2{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-10bfa0e6{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-10bfcc74{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfcc88{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfcc92{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfcc9c{width:76.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfcca6{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccb0{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccb1{width:76.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccba{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccc4{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccce{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfcccf{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccd8{width:76.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfcce2{width:158.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccec{width:65.2pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccf6{width:65.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-10bfccf7{width:76.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}&lt;/style&gt;&lt;table class='cl-10c483cc'&gt;&lt;thead&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-10bfccf6"&gt;&lt;p class="cl-10bfa0d2"&gt;&lt;span class="cl-10bf93ee"&gt;fire event&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccec"&gt;&lt;p class="cl-10bfa0d2"&gt;&lt;span class="cl-10bf93ee"&gt;death toll&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcce2"&gt;&lt;p class="cl-10bfa0d2"&gt;&lt;span class="cl-10bf93ee"&gt;# of firefighters deployed&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccf7"&gt;&lt;p class="cl-10bfa0d2"&gt;&lt;span class="cl-10bf93ee"&gt;scale of fire&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-10bfcc92"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;1&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcc88"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;10&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcc74"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;20&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcc9c"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;20&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-10bfccba"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;2&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcca6"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;0&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccb0"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccb1"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;5&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-10bfcc92"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcc88"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;5&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcc74"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;10&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcc9c"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;20&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-10bfccba"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;4&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfcca6"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccb0"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;5&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccb1"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;10&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-10bfcccf"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;5&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccce"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;50&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccc4"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;50&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-10bfccd8"&gt;&lt;p class="cl-10bfa0e6"&gt;&lt;span class="cl-10bf93ee"&gt;100&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/template&gt;
+&lt;div class="flextable-shadow-host" id="aee9a2fc-5f1c-4c43-84cc-f112245d4670"&gt;&lt;/div&gt;
+&lt;script&gt;
+var dest = document.getElementById("aee9a2fc-5f1c-4c43-84cc-f112245d4670");
+var template = document.getElementById("10e2f1ce-0b27-4007-85f8-fba1b5be0090");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+&lt;/script&gt;
+
+---
+class: middle
+
+# Endogeneity Problem
+
+.content-box-green[**Endogeneity (Definition)**]:
+
+Variables of interest are correlated with some unobservables (variables that cannot be observed or are missing) that have non-zero impacts on the variable that you want to explain
+
+---
+class: middle
+
+# Endogeneity Problem
+
+In the above example,
+
++ &lt;span style = "color: red;"&gt; variable of interest &lt;/span&gt;: the number of firefighters
++ &lt;span style = "color: red;"&gt; unobservables &lt;/span&gt;: the scale of fire events (and other factors)
++ &lt;span style = "color: red;"&gt; variable to explain &lt;/span&gt;: death toll
+
+--
+
+.content-box-green[**The model**]:
+`\begin{align}
+  \mbox{death toll} = \alpha + \beta\; \mbox{# of fire fighters} + (\gamma\; \mbox{scale} + v)
+\end{align}`
+
+.content-box-green[**Endogeneity Problem**]:
+
+\# of fire fighters is correlated with scale, which we ignored
+
+---
+class: middle
+
+# Endogeneity Problem:
+
+.content-box-green[**Another example: education on wage**]
+`$$wage = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 training + u$$`
+    
+What are unobservables in `\(u\)` that are likely to be correlated with `\(educ\)`?
+
+.content-box-red[**An important unobservable**]      
++ innate ability `\(\rightarrow\)` wage
++ innate ability `\(\rightarrow\)` education
+
+---
+class: middle
+
+# Endogeneity Problem
+
+Most of the time, you will be faced with endogeneity problems caused by at least one of the followings,
+
++ omitted variables (the scale of fire events, innate ability)
++ self-selection
++ simultaneity
++ measurement error
+
+--
+
+.content-box-red[**Central Question**]
+
+How can we avoid or solve endogneity problems?
+
+---
+class: middle
+
+# How to deal with endogeneity?
++ You have two opportunities to deal with endogeneity problems
+  - at the design stage
+  - at the regression stage (what you will learn in this course)
++ Econometrics has evolved to address endogeneity problems at the regression stage because randomized experiments are infeasible most of the time
++ How about econometrics and other fields of statistics: Statistics, Psychometrics, and Biometrics?
+
+---
+class: middle
+
+# How to deal with endogeneity?
+
+&lt;template id="bcf7392f-eb3a-4350-881c-3c9b7d261715"&gt;&lt;style&gt;
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+&lt;/style&gt;&lt;div class="tabwid"&gt;&lt;style&gt;.cl-f7b20ebc{}.cl-f7ad61e6{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-f7ad6e8e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-f7ad901c{width:111.6pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad903a{width:111.6pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad9044{width:104.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad9045{width:111.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad904e{width:111.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad9058{width:104.3pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad9062{width:111.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad906c{width:104.3pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-f7ad906d{width:111.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}&lt;/style&gt;&lt;table class='cl-f7b20ebc'&gt;&lt;thead&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-f7ad906c"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;Field&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-f7ad9062"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;Design&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-f7ad906d"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;Estimation Method&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-f7ad9044"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;Econometrics&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-f7ad901c"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;not feasible (often)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-f7ad903a"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;intricate&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-f7ad9058"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;Many other fields&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-f7ad904e"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;feasible&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-f7ad9045"&gt;&lt;p class="cl-f7ad6e8e"&gt;&lt;span class="cl-f7ad61e6"&gt;relatively simple&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/template&gt;
+&lt;div class="flextable-shadow-host" id="9a5c9624-170c-4d19-80ee-9c643ef554ea"&gt;&lt;/div&gt;
+&lt;script&gt;
+var dest = document.getElementById("9a5c9624-170c-4d19-80ee-9c643ef554ea");
+var template = document.getElementById("bcf7392f-eb3a-4350-881c-3c9b7d261715");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+&lt;/script&gt;
+
+---
+class: middle
+
+# Deal with endogneity at the design stage
+
+.content-box-red[**Randomized Experiments**]
++ you have a liberty to determine the level of the variable of interest
++ by randomizing the value of the variable of interest, you can effectively break the link (association) with whatever is included in the error term
+
+---
+class: middle
+
+# The impact of fertilizer on corn yield (Non-Randomized)
+
+.content-box-red[**Data**]:
+
+Yield and nitrogen rate data obtained from a field that is managed by a farmer
+
+&lt;img src="non_randomized.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# The impact of fertilizer on corn yield (Non-Randomized)
+
+.content-box-green[**Farmer**]
+
++ decide nitrogen rate based on soil characteristics
+
+.content-box-green[**Researcher**]
+
++ soil characteristics is not observable, so it is in the error term
+
+`$$yield = \beta_0 + \beta_1 N + (\gamma SC + \mu)$$`
+
++ N (nitrogen rate) and SC (soil characteristics) are correlated
+
+---
+class: middle
+
+# The impact of fertilizer on corn yield (Non-Randomized)
+
+Suppose the farmer applied more nitrogen to the area where its soil characteristics lead to higher corn yield
+
+.content-box-green[**Question**]
+If the researcher estimate the model (which ignores soil characteristics), do you over- or under-estimate the impact of nitrogen rate on corn yield?
+
+---
+class: middle
+
+# Randomized Experiments
+
+&lt;img src="Introduction_x_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.content-box-red[**Important**]
+Soil quality (in error term) is no longer correlated with N!!
+
+---
+class: middle
+
+# Randomized Experiments on Education?
+
+.content-box-red[**Randomized Experiment?**]:
+
+Researchers determine randomly how much education subjects (people) can get?
+
+---
+class: middle
+
+# Endogeneity Problem in Economics
+
++ Economics is about understanding human behavior
+
+--
+
++ Almost always, you need to deal with endogeneity problem because people are `smart`: we make decisions based on available information (not just randomly) so that our decisions lead to good outcomes (&lt;span style = "color: blue;"&gt;whether our decisions turn out to be good or not is irrelevant&lt;/span&gt;)
+  - how much education one get is determined based on their judgment of their own ability (not by rolling a dice)
+  - how many fire fighters to be deployed was determined based on the scale of fire (not by rolling a dice)
+  - how much nitrogen to apply based on soil characteristics (not by rolling a dice)
+
+--
+
++ If people are not smart and just roll a dice for their decision making, we would have much easier time identifying causal effects
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "12:8",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

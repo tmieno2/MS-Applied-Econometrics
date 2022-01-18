@@ -5,4 +5,4 @@ library(here)
 # /*===========================================================
 #' # Introduction
 # /*===========================================================
-knit2pdf(here("LectureNotes/Introduction/Introduction.Rnw"))
+(here("LectureNotes/Introduction/Introduction_x.rmd"))
