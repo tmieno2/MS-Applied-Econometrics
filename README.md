@@ -1,11 +1,11 @@
 
-# Applied Econometrics (AECN 396/AECN896-003)
+# Applied Econometrics (AECN 396/AECN896-002)
 
-This is the repository for AECN896-003 at the University of Nebraska Lincoln, where you can find lecture slides and links to the datasets used during lectures.
+This is the repository for AECN896-002 at the University of Nebraska Lincoln, where you can find lecture slides and links to the datasets used during lectures.
 
 ## Syllabus
 
-Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/LectureNotes/syllabus_2022.pdf))
+Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/syllabus.pdf))
 
 ## Lecture Notes
 

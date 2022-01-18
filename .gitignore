@@ -1,7 +1,6 @@
 /Data/*
 /Assignments/*
 /Labs/*
-/Syllabus/*
 /*/*_cache/*
 /*/cache/*
 /*/figure/*
@@ -16,7 +15,6 @@
 *.synctex
 *.blg
 *.fdb
-*.html
 */*DS_store
 
 /*/*.csv
