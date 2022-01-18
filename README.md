@@ -3,6 +3,10 @@
 
 This is the repository for AECN896-003 at the University of Nebraska Lincoln, where you can find lecture slides and links to the datasets used during lectures.
 
+## Syllabus
+
+Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/syllabus_2022.pdf))
+
 ## Lecture Notes
 
 + Lecture 1: Introduction ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Introduction/Introduction.pdf))

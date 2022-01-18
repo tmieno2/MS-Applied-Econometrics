@@ -453,7 +453,7 @@ probit_lf <- glm(
 class: middle
 
 .left5[
-```{r model-sum-glm, eval = F}  
+```{r model-sum-glm-1, eval = F}  
 msummary(
   probit_lf,
   stars = TRUE,
@@ -469,7 +469,7 @@ autofit()
 ]
 
 .right5[
-```{r model-sum-glm-f, ref.label = "model-sum-glm", echo = F}  
+```{r model-sum-glm-1-f, ref.label = "model-sum-glm-1", echo = F}  
 
 ```
 ]
@@ -888,9 +888,9 @@ $P_{i,j} = \frac{e^{V_{i,j}}}{\sum_{k=1}^J e^{V_{i,k}}}$
 
 .content-box-green[**Interpretation of the coefficients**]
   
-$\frac{\partial P_{i,j}}{\partial x_{k,i,j}} & = \beta_k P_{i,j}(1-P_{i,j})$
+$\frac{\partial P_{i,j}}{\partial x_{k,i,j}} = \beta_k P_{i,j}(1-P_{i,j})$
     
-+ .blue[A marginal change in $k$th variable for alternative $j$ would change the probability of choosing alternative $j$ by $\beta_k P_{i,j}(1-P_{i,j})$]
++ A marginal change in $k$th variable for alternative $j$ would change the probability of choosing alternative $j$ by $\beta_k P_{i,j}(1-P_{i,j})$
     
 + the sign of the impact is the same as the sign of the coefficient
 

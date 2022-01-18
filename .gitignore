@@ -16,6 +16,8 @@
 *.synctex
 *.blg
 *.fdb
+*.html
+*/*DS_store
 
 /*/*.csv
 /*/*.rds
