@@ -5,7 +5,7 @@ This is the repository for AECN896-003 at the University of Nebraska Lincoln, wh
 
 ## Syllabus
 
-Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/syllabus_2022.pdf))
+Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/LectureNotes/syllabus_2022.pdf))
 
 ## Lecture Notes
 
