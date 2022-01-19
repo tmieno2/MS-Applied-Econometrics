@@ -265,7 +265,7 @@ The form of the function $f(\cdot)$ must be specified (almost always) before we 
 
 $$wage = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 training + u$$
 
-## $$\beta_0,\beta_1,\beta_2,\beta_3$$
+## $\beta_0,\beta_1,\beta_2,\beta_3$
 + are the <span style = "color: red;"> parameters </span> of the econometric model.
 + describe the directions and strengths of the relationship between $wage$ and the factors used to determine $wage$ in the model
 
