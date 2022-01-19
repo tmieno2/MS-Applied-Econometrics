@@ -448,7 +448,7 @@ class: middle
 
 You are interested in the causal impact of fire fighters on the number of death tolls in fire events
 
-```{r echo = F, out.width = "80%"}
+```{r echo = F}
 data.table(
   `fire event` = 1:5,
   `death toll` = c(10, 0, 5, 3, 50),
@@ -457,12 +457,11 @@ data.table(
   flextable() %>%
   autofit() %>%
   width(2.2, j = 3) %>%
-  align(j = 1:3, align = "center")
+  flextable::align(j = 1:3, align = "center")
 ```
 
---
-
 .content-box-green[**Questions**]
+
 + How are they associated?
 + Can you say anything about the causal effect of fire fighters deployment on the number of death tolls?
 
@@ -483,7 +482,7 @@ data.table(
   flextable() %>%
   autofit() %>%
   width(2.2, j = 3) %>%
-  align(j = 1:4, align = "center")
+  flextable::align(j = 1:4, align = "center")
 ```
 
 ---
