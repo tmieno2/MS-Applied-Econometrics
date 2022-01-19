@@ -11,6 +11,7 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+bibliography: ../ref.bib
 ---
 class: middle
 
@@ -182,7 +183,7 @@ class: middle
 ]
 
 .right6[
-```{r }
+```{r out.width="100%"}
 x <- seq(0, 5, length = 1000)
 y <- 1 + 2 * x
 g_1 <- ggplot(data = data.table(y = y, x = x)) +
@@ -619,7 +620,7 @@ class: middle
 .content-box-green[**two example**]
 
 .left5[
-```{r }
+```{r out.width="100%"}
 g_hp +
   geom_abline(intercept = 20000, slope = 7, color = "red")
 ```
@@ -630,7 +631,7 @@ g_hp +
 ]
 
 .right5[
-```{r }
+```{r out.width="100%"}
 g_hp +
   geom_abline(intercept = 70000, slope = 3.8, color = "red")
 ```
@@ -796,6 +797,45 @@ uni_reg
 ---
 class: middle
 
+Lots of information is stored in the regression results (`uni_reg`)
+
+```{r }
+#--- list the things inside the regression results ---#
+ls(uni_reg)
+```
+
+---
+class: middle
+
+Estimated coefficients:
+```{r }
+uni_reg$coefficients
+```
+
+Predicted values at the observation points:
+```{r }
+#* fitted values for the first 5 observation points
+uni_reg$fitted.values[1:5]
+```
+
+Residuals:
+```{r }
+#* residuals for the first 5 observation points
+uni_reg$residuals[1:5]
+```
+
+---
+class: middle
+
+You can have a nice quick summary of the regression results with `summary()` function:
+
+```{r }
+summary(uni_reg)
+```
+ 
+---
+class: middle
+
 .content-box-green[**Sample Regression Function (SRF)**]
 
 Once you have estimated $\beta_0$ and $\beta_1$, you can form sample regression function (srf)
@@ -810,6 +850,7 @@ This is the estimated version of the expected value of $y$ conditional on $x$.
 \begin{aligned}
   price =  `r round(uni_reg$coefficients[1],0)` + `r round(uni_reg$coefficients[2],3)` \times lotsize
 \end{aligned}
+
 
 ---
 class: middle
@@ -828,9 +869,6 @@ class: middle
 .content-box-green[**R code: Prediction**]
 
 ```{r echo = TRUE}
-#--- list the things inside the regression results ---#
-ls(uni_reg)
-
 #--- access fitted values for sample points ---#
 uni_reg$fitted.values[1:5]
 
@@ -1029,7 +1067,7 @@ mean(x_seq)
 ---
 class: middle
 
-This is what unbiasedness looks like:
+This is what unbiased estimation looks like:
 
 ```{r unbiased_viz, out.width="60%"}
 #--- set seed ---#
@@ -1056,9 +1094,9 @@ g_unsbiased
 ---
 class: middle
 
-This is what unbiasedness looks like:
+This is what biased estimation looks like:
 
-```{r unbiased_viz, out.width="60%"}
+```{r biased_viz, out.width="60%"}
 #--- set seed ---#
 set.seed(28394)
 
@@ -1109,20 +1147,20 @@ class: middle
 
 # Certain Conditions
 
-.content-box-green[**$SLR.1$: Linear in Parameters**]
+.content-box-green[**SLR.1: Linear in Parameters**] `r Citep(bib, "wooldridge2015introductory")`
 
 In the population model, the dependent variable, $y$, is related to the independent variable, $x$, and the error (or disturbance), $u$, as
 
 \begin{aligned}
-  y=\beta_0+\beta_1 x+u \label{peq}
+  y=\beta_0+\beta_1 x+u 
 \end{aligned}
 
-.content-box-green[**Note**]: this definition is from the Wooldridge textbook.
+(.content-box-green[**Note**]: this definition is from the textbook by Wooldridge)
 
 ---
 class: middle
 
-.content-box-green[**$SLR.2$: Random sampling**]
+.content-box-green[**SLR.2: Random sampling**] `r Citep(bib, "wooldridge2015introductory")`
 
 We have a random sample of size $n$, ${(x_i,y_i):i=1,2,\dots,n}$, following the population model.
 
@@ -1137,14 +1175,14 @@ We have a random sample of size $n$, ${(x_i,y_i):i=1,2,\dots,n}$, following the 
 ---
 class: middle
 
-.content-box-green[**$SLR.3$: Sample variation in covariates**]
+.content-box-green[**SLR.3: Sample variation in covariates**] `r Citep(bib, "wooldridge2015introductory")`
 
 The sample outcomes on $x$, namely, ${x_i,i=1,\dots,n}$, are not all the same value.
 
 ---
 class: middle
 
-.content-box-green[**$SLR.4$: Zero conditional mean**]
+.content-box-green[**SLR.4: Zero conditional mean**] `r Citep(bib, "wooldridge2015introductory")`
 
 The error u has an expected value of zero given any value of the explanatory variable. In other words,
 
@@ -1175,7 +1213,7 @@ Mean independence of $u$ and $x$ implies no correlation. But,correlation does no
     = & E_x[E_u[u|x]] \;\; \mbox{(iterated law of expectation)}
 \end{aligned}
 
-If zero conditional mean condition ($E(u|x)=0$) is satisfied,
+If zero conditional mean condition $(E(u|x)=0)$ is satisfied,
 
 \begin{aligned}
     Cov(u,x)= & E_x[0] = 0
@@ -1445,6 +1483,9 @@ class: middle
 
 $$Var(\hat{\beta}_1|x) = \sigma^2/SST_x$$
 
+<br>
+--
+
 .content-box-green[**What can you learn from this equation?**]
 + the variance of OLS estimators is smaller (larger) if the variance of error term is smaller (larger)
 + the greater (smaller) the variation in the covariate $x$, the smaller (larger) the variance of OLS estimators
@@ -1457,6 +1498,8 @@ class: middle
 .content-box-green[**Gauss-Markov Theorem**]
 
 Under conditions $SLR.1$ through $SLR.5$, OLS estimators are the best linear unbiased estimators (BLUEs)
+
+<br>
 
 .content-box-green[**In other words,**]
 
@@ -1484,7 +1527,7 @@ class: middle
 ---
 class: middle
 
-We don't observe $u_i$ (error), but we observe residuals ($\hat{u_i}$)
+We don't observe $u_i$ (error), but we observe $\hat{u_i}$ (residuals)
 
 .content-box-green[**Error and Residual**]
 \begin{align}
@@ -1529,8 +1572,6 @@ We use $\hat{\sigma}^2=\frac{1}{n-2}\sum_{i=1}^n \hat{u}_i^2$, which satisfies $
 ---
 class: middle
 
-The use of $\hat{\sigma}^2$
-
 Since $sd(\hat{\beta_1})=\sigma/\sqrt{SST_x}$, the natural estimator of $sd(\hat{\beta_1})$ is
 
 \begin{aligned}
@@ -1539,7 +1580,7 @@ Since $sd(\hat{\beta_1})=\sigma/\sqrt{SST_x}$, the natural estimator of $sd(\hat
 
 which is called <span style = "color: red;"> standard error of $\hat{\beta_1}$ </span>. 
 
-Later, we use $\hat{\beta_1}$ for testing.
+Later, we use $se(\hat{\beta_1})$ for testing.
 
 ---
 class: middle
@@ -1589,7 +1630,7 @@ g_wage_loess <- ggplot(data = wage, aes(y = wage, x = educ)) +
 
 .content-box-green[**Note**]
 
-+ transformation of variables is allowed without disturbing our analytical framework as long as the model is linear in \textcolor{blue}{parameter}.
++ transformation of variables is allowed without disturbing our analytical framework as long as the model is linear in <span style = "color: blue;"> parameter </span>.
 
 + transformation of variables change the interpretation of the coefficients estimates
 
@@ -1697,7 +1738,13 @@ class: middle
 
 .content-box-green[**Log-linear model: Example**]
 
-If you estimate $log(wage)=\beta_0 + \beta_1 educ + u \notag$,
+If you estimate the following model using the wage dataset:
+
+$$log(wage)=\beta_0 + \beta_1 educ + u \notag$$
+
+<br>
+
+Then, the estimated equation is the following:
 
 \begin{align}
   \widehat{log(wage)}=0.584+0.083 educ \notag
@@ -1710,7 +1757,7 @@ If you estimate $log(wage)=\beta_0 + \beta_1 educ + u \notag$,
 ---
 class: middle
 
-```{r g_wage_log}
+```{r g_wage_log, out.width="60%"}
 min_educ <- wage[, educ] %>% min()
 max_educ <- wage[, educ] %>% max()
 x <- seq(min_educ, max_educ, length = 1000)
@@ -1755,13 +1802,15 @@ When $x$ increases by $1\%$, $y$ increases by $\beta_1$
 ---
 class: middle
 
-```{r linear_log_vis}
+$$y = \beta_0 + \beta_1 log(x) = 1 + 2 \times log(x)$$
+
+```{r linear_log_vis, out.width="60%"}
 N <- 1000
 x <- seq(1, 20, length = N)
-y <- log(x)
+y <- 1 + 2 * log(x)
 plot_data <- data.table(y = y, x = x, type = "(0,1)")
 ggplot(data = plot_data) +
-  geom_line(aes(y = y, x = x, color = type)) +
+  geom_line(aes(y = y, x = x)) +
   scale_color_discrete(name = expression(list(beta[0], beta[1]))) +
   theme(
     legend.position = "bottom"
@@ -1797,7 +1846,7 @@ class: middle
 
 + In these models, the dependent variable and independent variable are non-linearly related, how come are these models called simple <span style = "color: blue;"> linear </span> model?
 
-+ <span style = "color: blue;"> ``linear'' </span> in simple <span style = "color: blue;"> linear </span> model means that the model is linear in <span style = "color: blue;"> parameter </span>, but not in <span style = "color: blue;"> variable </span>
++ <span style = "color: blue;"> linear </span> in simple <span style = "color: blue;"> linear </span> model means that the model is linear in <span style = "color: blue;"> parameter </span>, but not in <span style = "color: blue;"> variable </span>
 
 ---
 class: middle
