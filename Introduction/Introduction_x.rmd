@@ -557,7 +557,7 @@ class: middle
 class: middle
 
 # How to deal with endogeneity?
-```{r echo = FALSE}
+```{r echo = FALSE, out.width="100%"}
 data.table(
   Field = c("Econometrics", "Many other fields"),
   Design = c("not feasible (often)", "feasible"),
