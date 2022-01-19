@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Univariate Regression</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Univariate Regression
+### AECN 896-002
+
+---
+
+class: middle
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+
+$$
+\def\sumten{\sum_{i=1}^{10}}
+$$
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+$$
+
+# Outline
+
+1. [Ligistics](#logistics)
+2. [OLS](#ols)
+3. [Samll Sample Property](#ssp)
+
+---
+
+class: inverse, center, middle
+name: logistics
+
+# Logistics
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Plan
++ simple univariate regression analysis for the next two weeks
++ multivariate regression after that
+
+---
+class: middle
+
+# Population and Sample
+
+.content-box-green[**Population**]
+
+A set of `\(ALL\)` individuals, items, phenomenon, that you are interested in learning about 
+
+.content-box-green[**Example**]
+
++ Suppose you are interested in the impact of eduction on income across the U.S. Then, the population is all the individuals in U.S.
++ Suppose you are interested in the impact of water pricing on irrigation water demand for farmers in NE. Then, your population is all the farmers in NE.
+
+---
+class: middle
+
+# Population
+
+.content-box-red[**Important**]
+
+Population differs depending on the scope of your interest
+
++ If you are interested in understanding the impact of COVID-19 on child education achievement at the global scale, then your population is every sinlge kid in the world
+
++ If you are interested in understanding the impact of COVID-19 on child education achievement in U.S., then your population is every sinlge kid in U.S.
+
+
+---
+class: middle
+
+# Sample
+
+.content-box-green[**Sample**]
+
+Sample is a subset of population that you observe
+
++ data on education, income, and many other things for 300 individuals from each State
+
++ data on water price, irrigation water use, and many other things for 500 farmers who farm in the Upper Republican Basin (southwest corner of NE)
+
+---
+class: middle
+
+# Econometrics
+
+Learn about the population using sample
+
+---
+class: middle
+
+# Simple linear regression model
+
+Consider a phenomenon in the population that is correctly represented by the following model (&lt;span style = "color: blue;"&gt; This is the model you want to learn about using sample &lt;/span&gt;),
+
+.content-box-green[**A simple model in the population**]
+    \begin{align}
+    y=\beta_0+\beta_1 x + u 
+    \end{align}
+
++ `\(y\)`: to be explained by `\(x\)` (&lt;span style = "color: blue;"&gt; dependent variable&lt;/span&gt;)
++ `\(x\)`: explain `\(y\)` (&lt;span style = "color: blue;"&gt; independent variable &lt;/span&gt;, &lt;span style = "color: blue;"&gt; covariate &lt;/span&gt;, &lt;span style = "color: blue;"&gt; explanatory variable &lt;/span&gt;)
++ `\(u\)`: parts of `\(y\)` that cannot be explained by `\(x\)` (&lt;span style = "color: blue;"&gt; error term &lt;/span&gt;)
++ `\(\beta_0\)` and `\(\beta_1\)`: real numbers that gives the model a quantitative meaning (&lt;span style = "color: blue;"&gt; parameters &lt;/span&gt;)
+
+---
+class: middle
+
+# What does `\(\beta_1\)` measure?
+`\begin{align}
+y=\beta_0+\beta_1 x + u 
+\end{align}`
+
+If you change `\(x\)` by `\(1\)` unit while holding `\(u\)` (everything else) constant,
+
+`\begin{align}
+  y_{before} &amp; = \beta_0+\beta_1 x + u \\
+  y_{after} &amp; = \beta_0+\beta_1 (x + 1) + u 
+\end{align}`
+
+The difference in `\(y_{before}\)` and `\(y_{after}\)`,
+
+`\begin{align}
+  \Delta y = \beta_1
+\end{align}`
+
+That is, `\(y\)` changes by `\(\beta_1\)`. 
+
+We call `\(\beta_1\)` the &lt;span style = "color: blue;"&gt; ceteris paribus &lt;/span&gt; (with everything else fixed) causal impact of `\(x\)` on `\(y\)`.
+
+---
+class: middle
+
+# What does `\(\beta_0\)` measure?
+
+`\begin{align}
+y=\beta_0+\beta_1 x + u 
+\end{align}`
+
+When `\(x = 0\)` and `\(u=0\)`,
+`\begin{align}
+y=\beta_0
+\end{align}`
+
+So, `\(\beta_0\)` represents the intercept (let's see this graphically).
+
+---
+class: middle
+
+# Graphical representation 
+
+.left4[
++ `\(\beta_0\)`: intercept
++ `\(\beta_1\)`: coefficient (slope)
+]
+
+.right6[
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+
+
+
+
+# Why do we want &lt;span style = "color: blue;"&gt; ceteris paribus &lt;/span&gt; causal impact?
+
+.content-box-green[**Example: Quality of College**]
+
+You
++ have been admitted to University A (better, more expensive) and B (worse, less expensive)
++ are trying to decide which school to attend
++ are interested in knowing a boost in your future income to make a decision
+
+--
+
+.content-box-green[**You have found the following data**]
+
+
+&lt;template id="843948ba-4342-461a-ae14-7cab263868c8"&gt;&lt;style&gt;
+.tabwid table{
+  border-spacing:0px !important;
+  border-collapse:collapse;
+  line-height:1;
+  margin-left:auto;
+  margin-right:auto;
+  border-width: 0;
+  display: table;
+  margin-top: 1.275em;
+  margin-bottom: 1.275em;
+  border-color: transparent;
+}
+.tabwid_left table{
+  margin-left:0;
+}
+.tabwid_right table{
+  margin-right:0;
+}
+.tabwid td {
+    padding: 0;
+}
+.tabwid a {
+  text-decoration: none;
+}
+.tabwid thead {
+    background-color: transparent;
+}
+.tabwid tfoot {
+    background-color: transparent;
+}
+.tabwid table tr {
+background-color: transparent;
+}
+&lt;/style&gt;&lt;div class="tabwid"&gt;&lt;style&gt;.cl-12477f22{}.cl-12427dd8{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-12428a8a{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-12428a9e{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-1242b3ac{width:98.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b3ca{width:78.6pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b3cb{width:68.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b3de{width:78.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b3df{width:98.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b3e8{width:68.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b3fc{width:98.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b3fd{width:68.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-1242b406{width:78.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}&lt;/style&gt;&lt;table class='cl-12477f22'&gt;&lt;thead&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-1242b3fd"&gt;&lt;p class="cl-12428a8a"&gt;&lt;span class="cl-12427dd8"&gt;University&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-1242b3fc"&gt;&lt;p class="cl-12428a9e"&gt;&lt;span class="cl-12427dd8"&gt;average income&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-1242b406"&gt;&lt;p class="cl-12428a9e"&gt;&lt;span class="cl-12427dd8"&gt;sample size&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-1242b3cb"&gt;&lt;p class="cl-12428a8a"&gt;&lt;span class="cl-12427dd8"&gt;A&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-1242b3ac"&gt;&lt;p class="cl-12428a9e"&gt;&lt;span class="cl-12427dd8"&gt;130.13&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-1242b3ca"&gt;&lt;p class="cl-12428a9e"&gt;&lt;span class="cl-12427dd8"&gt;500&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-1242b3e8"&gt;&lt;p class="cl-12428a8a"&gt;&lt;span class="cl-12427dd8"&gt;B&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-1242b3df"&gt;&lt;p class="cl-12428a9e"&gt;&lt;span class="cl-12427dd8"&gt;90.13&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-1242b3de"&gt;&lt;p class="cl-12428a9e"&gt;&lt;span class="cl-12427dd8"&gt;500&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/template&gt;
+&lt;div class="flextable-shadow-host" id="fbde7737-89c3-4243-a341-e457cd91512b"&gt;&lt;/div&gt;
+&lt;script&gt;
+var dest = document.getElementById("fbde7737-89c3-4243-a341-e457cd91512b");
+var template = document.getElementById("843948ba-4342-461a-ae14-7cab263868c8");
+var caption = template.content.querySelector("caption");
+if(caption) {
+  caption.style.cssText = "display:block;text-align:center;";
+  var newcapt = document.createElement("p");
+  newcapt.appendChild(caption)
+  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
+}
+var fantome = dest.attachShadow({mode: 'open'});
+var templateContent = template.content;
+fantome.appendChild(templateContent);
+&lt;/script&gt;
+
+.content-box-green[**Question**]  
+
+Should you assume the difference 40 is the expected boost you would get if you are to attend University A instead of B?
+
+---
+class: middle
+
+# What would you be interested in?
+
+Let's say your ability score is `\(6\)` out of `\(10\)` (the higher, the better),
+
+`$$\mbox{(1)}\;\; E[inc|A,ability=9] -E[inc|B,ability=6]$$`
+`$$\mbox{(2)}\;\; E[inc|A,ability=6] -E[inc|B,ability=6]$$`
+
+Which one would like you to know?
+
+---
+class: middle
+
+# Ceteris Paribus Impact of School Quality
+
+.content-box-green[**Why ceteris paribus impact?**]
+
++ you want ability (an unobservable) to stay fixed when you change the quality of school because your innate ability is not going to miraculously increase by simply attending school A
+
++ you don't want the impact of school quality to be confounded with something else 
+
+---
+class: middle
+
+.content-box-green[**What do you observe?**]
+
++ red sloped line: `\(E[income|A, x]\)`
++ blue sloped line: `\(E[income|B, x]\)`
+
+&lt;img src="univariate_regression_x_files/figure-html/cp-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+class: inverse, center, middle
+name: logistics
+
+# Univariate Model
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Example of a simple linear model
+
+.content-box-green[**Corn yield and fertilizer**]
+`\begin{align}
+  yield=\beta_0+\beta_1 fertilizer+u 
+\end{align}`
+
+.content-box-green[**Questions**]
++ what is in the error term?
++ are you comfortable with this model?
+
+---
+class: middle
+
+# Estimating `\(\beta_1\)` using sample
+
+`\begin{align}
+  yield=\beta_0+\beta_1 fertilizer+u 
+\end{align}`
+
++ you do not know `\(\beta_0\)` and `\(\beta_1\)`, and would like to estimate them
++ you observe a series of `\(\{yield_i,fertilizer_i\}\)` combinations `\((i=1,\dots,n)\)`
++ you would like to estiamte `\(\beta_1\)`, the impact of fertilizer on yield, **ceteris paribus** (with everything else fixed)
+
+--
+
+.content-box-green[**Question**]
+
+How could we possibly find the **ceteris paribus** impact of fertilizer on yield when we do not observe whole bunch of other factors (error term)?
+
+---
+class: middle
+
+# Crucial conditions to identify the ceteris paribus impact
+
+It turns out, the following condition between `\(x\)` and `\(u\)` needs to be satisfied,
+
+.content-box-red[**Mean independence**]
++ mathematically:
+    \begin{align}
+      E(u|x)=E(u) 
+    \end{align}
++ verbally: the average value of the unobservables is the same at any value of x, and that the common average is equal to the average of `\(u\)` over the entire population
+
+.content-box-green[**In practice**]
+We use correlation and mean independence interchangeably (though not entirely correct)
+
+---
+class: middle
+
+# Crucial conditions to identify the ceteris paribus impact
+
+.content-box-red[**$E(u)=0$**]
+
+This is always satisfied as long as an intercept is included in the model:
+
+`$$y = \beta_0 + \beta_1 x + u_1,\;\; \mbox{where}\;\; E(u_1)=\alpha$$`
+
+Rewriting the model,
+
+$$
+`\begin{aligned}
+y &amp; = \beta_0 + \alpha + \beta_1 x + u_1 - \alpha \\\\
+  &amp; = \gamma_0 + \beta_1 x + u_2
+\end{aligned}`
+$$
+
+where, `\(\gamma_0=\beta_0+\alpha\)` and `\(u_2=u_1-\alpha\)`. 
+
+Now, `\(E[u_2]=0\)`.
+
+---
+class: middle
+
+# Crucial conditions to identify the ceteris paribus impact
+
+.content-box-green[**zero conditional mean**]
+
+Combining mean independence and `\(E[u] = 0\)`,
+
+$$
+`\begin{aligned}
+  &amp; \mbox{mean independence:}\;\; &amp; E(u|x)=E(u) \\\\
+  \Rightarrow &amp; \mbox{zero conditional mean:}\;\; &amp; E(u|x)=0 
+\end{aligned}`
+$$
+
+.content-box-green[**Verbally**]
+
+`\(x\)` and `\(u\)` are not correlated (systematically related to one another)
+
+
+
+
+---
+class: middle
+
+# Going back to the college-income example
+
+.content-box-green[**The model**]
+`\begin{aligned}
+  Income = \beta_0+\beta_1 College\;\; A + u
+\end{aligned}`
+
+where `\(College\;\; A\)` is 1 if attending college A, 0 if attending college B, and `\(u\)` is the error term that includes ability.
+
+--
+
+.content-box-green[**Zero conditional mean satisfied?**]
+`\begin{aligned}
+  E[u(ability)|college A] = 0?
+\end{aligned}`
+
+That is, are going to college A and ability (correlate) systematically related with each other?
+
+---
+class: middle
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+  
+---
+class: middle
+
+
+This is what it would like if college choice and ability are not correlated:
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Another Example
+
+.content-box-green[**yield-fertilizer relationship**] 
+
+`\begin{align}
+  yield=\beta_0+\beta_1 fertilizer + u 
+\end{align}`
+
+.content-box-green[**Questions**]
++ What's in `\(u\)`? (note that factors that do not affect yield are not part of `\(u\)`)
++ Is it correlated with fertilizer?
+
+---
+class: middle
+
+# Exercise
+
++ consider a phenomenon you are interested in understanding 
+  - dependent variable (variable to be explained) 
+  - explanatory variable (variable to explain) 
++ construct a simple linear modela
++ identify what is in the error term
++ check if they are correlated withe explanatory variable or not
+
+---
+
+class: inverse, center, middle
+name: OLS
+
+# Estimation of Parameters via OLS
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# So far
+
++ You have collected data with `\(n\)` observations on `\(y\)`  and `\(x\)`
++ This random sample is denoted as `\(\{(y_i,x_i):i=1,\dots,n\}\)`
++ For each `\(i\)`, we can write:
+
+`\begin{align}
+    y_i=\beta_0+\beta_1 x_i + u_i 
+\end{align}`
+
+---
+class: middle
+
+# The data set and model
+.content-box-green[**Objective**]
+
+Estimate the impact of lot size on house price
+
+.content-box-green[**Model**]
+
+`\begin{aligned}
+price_i = \beta_0 + \beta_1 lotsize_i+u_i
+\end{aligned}`
+
++ `\(price_i\)`: house price (\$) of house `\(i\)`
++ `\(lotsize_i\)`: lot size of house `\(i\)`
++ `\(u_i\)`: error term (everything else) of house `\(i\)`
+
+---
+class: middle
+
+# Data set we are going to use
+
+.content-box-green[**R code: Loading a data set**]
+
+```r
+#--- load the AER package  ---#
+library(AER) # load the AER package
+
+#--- load the HousePrices data set ---#
+data(HousePrices) # load
+
+#--- take a look ---#
+head(HousePrices[, 1:5])
+```
+
+```
+##   price lotsize bedrooms bathrooms stories
+## 1 42000    5850        3         1       2
+## 2 38500    4000        2         1       1
+## 3 49500    3060        3         1       1
+## 4 60500    6650        3         1       2
+## 5 61000    6360        2         1       1
+## 6 66000    4160        3         1       1
+```
+
+---
+class: middle
+
+# Random sample and regression
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-7-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Random sample and regression 
+
++ We want to draw a line like this, the slope of which is an estimate of `\(\beta_1\)`
++ A way: Ordinary Least Squares (OLS)
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-8-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**Residuals**]
+
+For particular values of `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)` you pick, the modeled value of `\(y\)` for individual `\(i\)` is `\(\hat{\beta}_0 + \hat{\beta}_1 x_i\)`.
+
+Then, the residual for individual `\(i\)` is:
+
+`\begin{aligned}
+    \hat{u}_i =  y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i)
+\end{aligned}`
+
+That is, residual is the observed value of the dependent variable less the value of modeled value. For different values of `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)`, you have a different value of residual.
+
+---
+class: middle
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-9-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
++ Among all the possible values of `\(\beta_0\)` and `\(\beta_1\)`, which one is the best? 
++ What criteria do we use (what does the best even mean?)
+
+.content-box-green[**two example**]
+
+.left5[
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
++ `\(\hat{\beta}_0=20000\)`
++ `\(\hat{\beta}_1=7\)`
+
+]
+
+.right5[
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
++ `\(\hat{\beta}_0=70000\)`
++ `\(\hat{\beta}_1=3.8\)`
+
+]
+
+---
+class: middle
+
+# Ordinary Least Squares (OLS) Methods
+
+.content-box-green[**Idea**]
+
+Let's find the value of `\(\beta_0\)` and `\(\beta_1\)` that minimizes the squared residuals!
+
+.content-box-green[**Mathematically**]
+
+`$$Min_{\hat{\beta}_0,\hat{\beta}_1} \sum_{i=1}^n \hat{u}_i^2, \mbox{where} \;\; \hat{u}_i=y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)$$`
+
+---
+class: middle
+
+# OLS Visualization
+
+&lt;img src="univariate_regression_x_files/figure-html/ols-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**Questions**]
+
++ Why do we square the residuals, and then sum them up together? What's gonna happen if you just sum up residuals?
+
++ How about taking the absolute value of residuals, and then sum them up?
+
+---
+class: middle
+
+# Deriving OLS estimates
+
+.content-box-green[**Mathematical problem to solve**]
+
+`$$Min_{\hat{\beta}_0,\hat{\beta}_1} \sum_{i=1}^n [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]^2$$`
+
+.content-box-green[**Steps**]
++ partial differentiation of the objective function with respect to `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)`
++ solve for `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)`
+
+---
+class: middle
+
+# OLS derivation: FOC
+
+`$$Min_{\hat{\beta}_0,\hat{\beta}_1} \sum_{i=1}^n [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]^2$$`
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+`\begin{align}
+\frac{\partial }{\partial \hat{\beta}_0}=&amp; 2 \sumn [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]=0 \\\\
+\frac{\partial }{\partial \hat{\beta}_1}=&amp; 2 \sumn x_i\cdot [y_i-(\hat{\beta}_0+\hat{\beta}_1 x_i)]= \sumn x_i\cdot \hat{u}_i = 0
+\end{align}`
+$$
+
+---
+class: middle
+
+.content-box-green[**OLS estimators: analytical formula**]
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+`\begin{aligned}
+  \hat{\beta}_1 &amp; = \frac{\sumn (x_i-\bar{x})(y_i-\bar{y})}{\sumn (x_i-\bar{x})^2}\\\\
+  \hat{\beta}_0 &amp; = \bar{y}-\hat{\beta}_1 \bar{x}
+\end{aligned}`
+$$
+
+.content-box-green[**Estimators**]
+
+Specific &lt;span style = "color: red;"&gt; rules (formula) &lt;/span&gt; to use once you get the data
+
+.content-box-green[**Estimates**]
+
+Numbers you get once you plug values (your data) into the formula
+
+---
+class: middle
+
+# OLS demonstration in R
+
+.content-box-green[**Model**]
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+`\begin{aligned}
+  \hat{\beta}_1 &amp; = \frac{\sumn (x_i-\bar{x})(y_i-\bar{y})}{\sumn (x_i-\bar{x})^2}\\\\
+  \hat{\beta}_0 &amp; = \bar{y}-\hat{\beta}_1 \bar{x}
+\end{aligned}`
+$$
+
+.content-box-green[**R code: hard way**]
+
+
+```r
+y &lt;- HousePrices$price
+x &lt;- HousePrices$lotsize
+
+#--- beta_1 ---#
+b1_num &lt;- sum((x - mean(x)) * (y - mean(y)))
+b1_denom &lt;- sum((x - mean(x))^2)
+b1 &lt;- b1_num / b1_denom
+b1
+```
+
+```
+## [1] 6.598768
+```
+
+---
+class: middle
+
+# OLS demonstration in R
+
+.content-box-green[**Model**]
+`\begin{aligned}
+  price = \beta_0 + \beta_1 lotsize + u
+\end{aligned}`
+
+.content-box-green[**Estimatio**]
+
+We can use the `feols()` function from the `fixest` pacakge.
+
+
+```r
+library(fixest)
+
+#--- run OLS on the above model ---#
+# lm(dep_var ~ indep_var,data=data_name)
+uni_reg &lt;- feols(price ~ lotsize, data = HousePrices)
+uni_reg
+```
+
+```
+## OLS estimation, Dep. Var.: price
+## Observations: 546 
+## Standard-errors: Standard 
+##               Estimate  Std. Error t value Pr(&gt;|t|))
+## (Intercept) 34136.2000 2491.100000  13.703 &lt; 2.2e-16
+## lotsize         6.5988    0.445847  14.801 &lt; 2.2e-16
+##                
+## (Intercept) ***
+## lotsize     ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## RMSE: 22,525.7   Adj. R2: 0.285766
+```
+
+---
+class: middle
+
+.content-box-green[**Sample Regression Function (SRF)**]
+
+Once you have estimated `\(\beta_0\)` and `\(\beta_1\)`, you can form sample regression function (srf)
+
+`\begin{aligned}
+    \hat{y}=\hat{\beta_0}+\hat{\beta_1}x 
+\end{aligned}`
+
+This is the estimated version of the expected value of `\(y\)` conditional on `\(x\)`.
+
+.content-box-green[**house price example**]
+`\begin{aligned}
+  price =  3.4136\times 10^{4} + 6.599 \times lotsize
+\end{aligned}`
+
+---
+class: middle
+
+.content-box-green[**Sample Regression Function (SRF)**]
+    
+`\begin{align}
+  \hat{y}=\hat{\beta_0}+\hat{\beta_1}x 
+\end{align}`
+
+If you plug a value into `\(x\)` in the SRF, you can get a prediction of `\(E[y|x]\)` `\((\hat{y})\)` (called either &lt;span style = "color: red;"&gt; fitted value &lt;/span&gt; or &lt;span style = "color: red;"&gt; predicted value &lt;/span&gt;)
+
+---
+class: middle
+
+.content-box-green[**R code: Prediction**]
+
+
+```r
+#--- list the things inside the regression results ---#
+ls(uni_reg)
+```
+
+```
+##  [1] "call"            "call_env"       
+##  [3] "coefficients"    "coeftable"      
+##  [5] "collin.min_norm" "cov.unscaled"   
+##  [7] "fitted.values"   "fml"            
+##  [9] "fml_all"         "hessian"        
+## [11] "ll_null"         "means"          
+## [13] "method"          "method_type"    
+## [15] "multicol"        "nobs"           
+## [17] "nobs_origin"     "nparams"        
+## [19] "obs_selection"   "residuals"      
+## [21] "scores"          "se"             
+## [23] "sigma2"          "sq.cor"         
+## [25] "ssr"             "ssr_null"
+```
+
+```r
+#--- access fitted values for sample points ---#
+uni_reg$fitted.values[1:5]
+```
+
+```
+## [1] 72738.98 60531.26 54328.42 78018.00 76104.35
+```
+
+```r
+#--- for values of lotsize that are not in the sample ---#
+newdata &lt;- data.frame(lotsize = c(3000, 12000, 15000))
+predict(uni_reg, newdata = newdata)
+```
+
+```
+## [1]  53932.49 113321.40 133117.71
+```
+
+---
+class: middle
+
+.content-box-green[**Exercise: The impact of lotsize**]
+
+Your current lot size is 3000. You are thinking of expanding your lot by 1000 (with everything else fixed), which would cost you 5,000 USD. Should you do it? Use R to figure it out.
+
+---
+class: middle
+
+.content-box-green[**R code: impact of lotsize**] 
+
+
+```r
+#--- access the coefficient values  ---#
+uni_reg$coefficients
+```
+
+```
+##  (Intercept)      lotsize 
+## 34136.191565     6.598768
+```
+
+```r
+# class(uni_reg)
+
+#--- assess the impact ---#
+uni_reg$coefficients * 1000 - 5000
+```
+
+```
+##  (Intercept)      lotsize 
+## 34131191.565     1598.768
+```
+
+---
+class: middle
+
+# `\(R^2\)`: Goodness of fit
+
+`\(R^2\)` is a measure of how good your model is in predicting the dependent variable (explaining  variations in the dependent variable) &lt;span style = "color: red;"&gt; compared &lt;/span&gt; to just using the average of the dependent variable as the predictor.
+
+---
+class: middle
+
+You can decompose observed value of `\(y\)` into two parts: fitted value and residual
+
+`\begin{align}
+    y_i=\hat{y}_i (\hat{\beta}_0+\hat{\beta}_1 x_i)+\hat{u}_i 
+\end{align}`
+
+now, subtracting `\(\bar{y}\)` (sample average of `\(y\)`),
+
+`\begin{align}
+    y_i-\bar{y}=\hat{y}_i-\bar{y}+\hat{u}_i 
+\end{align}`
+
++ `\(y_i-\bar{y}\)`: how far away is the actual value of `\(y\)` for `\(i\)`th observation from the sample average `\(\bar{y}\)`? (actual deviation from the mean)
++ `\(\hat{y_i}-\bar{y}\)`: how far away is the predicted value of `\(y\)` for `\(i\)`th observation from the sample average `\(\bar{y}\)`? (explained deviation from the mean)
++ `\(\hat{u_i}\)`: unexplained partial
+
+
+---
+class: middle
+
+.left3[
+&lt;br&gt;
+&lt;br&gt;
++ `\(y_i-\bar{y}\)`
++ `\(\hat{y_i}-\bar{y}\)`
++ `\(\hat{u_i}\)`
+]
+
+.right7[
+&lt;img src="univariate_regression_x_files/figure-html/good-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+
+.content-box-green[**total sum of squares (SST)**] 
+
+`\begin{align}
+  SST\equiv \sum_{i=1}^{n}(y_i-\bar{y})^2 
+\end{align}`
+
+.content-box-green[**explained sum of squares (SSE)**]
+`\begin{align}
+  SSE\equiv \sum_{i=1}^{n}(\hat{y}_i-\bar{y})^2 
+\end{align}`
+
+.content-box-green[**residual sum of squares (SSR)**]
+`\begin{align}
+  SSR\equiv \sum_{i=1}^{n}\hat{u}_i^2 
+\end{align}`
+
+---
+class: middle
+
+.content-box-green[**$R^2$" Definition**]
+`\begin{align}
+    R^2 = SSE/SST=1-SSR/SST 
+\end{align}`
+
+The value of `\(R^2\)` always lies between `\(0\)` and `\(1\)` as long as an intercept is included in the econometric model.
+
+.content-box-green[**What does `\(R^2\)` measure?**]
+
+`\(R^2\)` is a measure of how much improvement you've made by including independent variable(s) `\((y=\beta_0+\beta_1 x+u)\)` compared to when simply using the mean of dependent variable as the predictor `\((y=\beta_0+u)\)`
+
+---
+class: middle
+
+.content-box-green[**Important notes about `\(R^2\)`**]
+
++ `\(R^2\)` is of no value if you are interested in finding the causal (ceteris paribus) impact of a variable of interest (&lt;span style = "color: red;"&gt; More on this later when we discuss bias &lt;/span&gt;)
+
++ `\(R^2\)` is important if your interest lies in predicting `\(y\)`
+
+---
+
+class: inverse, center, middle
+name: ssp
+
+# Small Sample Properties of OLS
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Small sample property of OLS estimators
+
+.content-box-green[**What is an estimator?**] 
+
++ A function of data that produces an estimate (actual number) of a parameter of interest once you plug in actual values of data
+
++ OLS estimators: `\(\hat{\beta_1}=\frac{\sum_{i=1}^n(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^n (x_i-\bar{x})^2}\)`
+
+---
+class: middle
+
+.content-box-green[**What is small sample property?**]
+
+Properties that hold whatever the size of observation (small or large) is &lt;span style = "color: red;"&gt; prior to &lt;/span&gt; obtaining actual estimates (before getting data)
+
++ Put more simply: what can you expect from the estimators before you actually get data and obtain estimates?
+
++ Difference between small sample property and the algebraic properties we looked at earlier?
+
+---
+class: middle
+
+OLS is just a way of using available information to obtain estimates. Does it have desirable properties?
+
++ Unbiasedness
++ Efficiency
+
+As it turns out, OLS is a very good way of using available information!!
+
+---
+class: middle
+
+# Unbiasedness
+
+What does &lt;span style = "color: blue;"&gt; unbiased &lt;/span&gt; mean?
+
++ Consider a problem of estimating the expected value of a single variable, `\(x\)`
+
++ A good estimator is sample mean: `\(\frac{1}{n}\sum_i^n x_i\)`
+
+---
+class: middle
+
+.content-box-green[**R code: Sample Mean**]
+
+
+```r
+#--- set the number of observations ---#
+n &lt;- 100
+
+#--- generate random values ---#
+x_seq &lt;- rnorm(n) # Normal(mean=0,sd=1)
+
+#--- calcualte the mean ---#
+mean(x_seq)
+```
+
+```
+## [1] 0.03750092
+```
+
+---
+class: middle
+
+This is what unbiasedness looks like:
+
+&lt;img src="univariate_regression_x_files/figure-html/unbiased_viz-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+---
+class: middle
+
+This is what unbiasedness looks like:
+
+&lt;img src="univariate_regression_x_files/figure-html/unbiased_viz-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Unbiasedness of OLS estimators
+
+.content-box-green[**Unbiasedness of OLS estimators**]
+
+Under &lt;span style = "color: blue;"&gt; certain conditions &lt;/span&gt;, OLS estimators are unbiased. That is,
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+E[\hat{\beta_1}]=E\Big[\frac{\sumn (x_i-\bar{x})(y_i-\bar{y})}{\sumn  (x_i-\bar{x})^2}\Big]=\beta_1
+$$
+
+(We do not talk about unbiasedness of `\(\hat{\beta}_0\)` because we are almost never interested in the intercept. Given the limited time we have, it is not worthwhile talking about it)
+
+---
+class: middle
+
+# Certain Conditions
+
+.content-box-green[**$SLR.1$: Linear in Parameters**]
+
+In the population model, the dependent variable, `\(y\)`, is related to the independent variable, `\(x\)`, and the error (or disturbance), `\(u\)`, as
+
+`\begin{aligned}
+  y=\beta_0+\beta_1 x+u \label{peq}
+\end{aligned}`
+
+.content-box-green[**Note**]: this definition is from the Wooldridge textbook.
+
+---
+class: middle
+
+.content-box-green[**$SLR.2$: Random sampling**]
+
+We have a random sample of size `\(n\)`, `\({(x_i,y_i):i=1,2,\dots,n}\)`, following the population model.
+
+.content-box-green[**Non-random sampling**]
+
++ Example: You observe income-education data only for those who have income higher than $\$25K$
++ Benevolent and malevolent kinds:
+  + &lt;span style = "color: red;"&gt; exogenous &lt;/span&gt; sampling
+  + &lt;span style = "color: red;"&gt; endogenous &lt;/span&gt; sampling
++ We discuss this in more detial later
+
+---
+class: middle
+
+.content-box-green[**$SLR.3$: Sample variation in covariates**]
+
+The sample outcomes on `\(x\)`, namely, `\({x_i,i=1,\dots,n}\)`, are not all the same value.
+
+---
+class: middle
+
+.content-box-green[**$SLR.4$: Zero conditional mean**]
+
+The error u has an expected value of zero given any value of the explanatory variable. In other words,
+
+`\begin{align}
+    E[u|x]=0  
+\end{align}`
+
+Along with random sampling condition, this implies that
+`\begin{align}
+  E[u_i|x_i]=0 
+\end{align}`
+
+---
+class: middle
+
+# Correlation and Mean Independence
+
+.content-box-green[**Note**]
+
+Mean independence of `\(u\)` and `\(x\)` implies no correlation. But,correlation does not imply mean independence.
+
+.content-box-green[**Mean Independence Implies Correlation (proof)**]
+
+`\begin{aligned}
+    Cov(u,x)= &amp; E[(u-E[u])(x-E[x])] \\\\
+    = &amp; E[ux]-E[u]E[x]-E[u]E[x]+E[u]E[x]\\\\
+    = &amp; E[ux] \\\\
+    = &amp; E_x[E_u[u|x]] \;\; \mbox{(iterated law of expectation)}
+\end{aligned}`
+
+If zero conditional mean condition ($E(u|x)=0$) is satisfied,
+
+`\begin{aligned}
+    Cov(u,x)= &amp; E_x[0] = 0
+\end{aligned}`
+
+---
+class: middle
+
+# Good and bad empiricists
+
+.content-box-green[**Good Empiricists**]
+
++ have ability to judge if the above conditions are satisfied for the particular context you are working on
+
++ have ability to correct (if possible) for the problems associated with the violations of any of the above conditions
+
++ knows the context well so you can make appropriate judgments
+
+---
+class: middle
+
+# Unbiasedness of OLS estimators
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+`\begin{aligned}
+\hat{\beta}_1 = &amp; \frac{\sumn (x_i-\bar{x})(y_i-\bar{y})}{\sumn (x_i-\bar{x})^2}  \\\\
+= &amp; \frac{\sumn (x_i-\bar{x})y_i}{\sumn (x_i-\bar{x})^2} \;\; \Big[\mbox{because }\sumn (x_i-\bar{x})\bar{y}=0\Big]\\\\
+= &amp; \frac{\sumn (x_i-\bar{x})y_i}{SST_x} \;\;\Big[\mbox{where,}\;\; SST_x=\sumn (x_i-\bar{x})^2\Big]  \\\\
+= &amp; \frac{\sumn (x_i-\bar{x})(\beta_0+\beta_1 x_i+u_i)}{SST_x} \\\\
+= &amp; \frac{\sumn (x_i-\bar{x})\beta_0 +\sumn \beta_1(x_i-\bar{x})x_i+\sumn(x_i-\bar{x})u_i}{SST_x} 
+\end{aligned}`
+$$
+
+---
+class: middle
+
+$$
+`\begin{aligned}
+  \hat{\beta}_1 = &amp; \frac{\sumn  (x_i-\bar{x})\beta_0 + \beta_1 \sumn  (x_i-\bar{x})x_i+\sumn (x_i-\bar{x})u_i}{SST_x}
+\end{aligned}`
+$$
+
+$$
+`\begin{aligned}
+  \mbox{Since } &amp; \sumn  (x_i-\bar{x})=0\;\; \mbox{and}\\
+    &amp; \sumn  (x_i-\bar{x})x_i=\sumn  (x_i-\bar{x})^2=SST_x,
+\end{aligned}`
+$$
+
+$$
+`\begin{aligned}
+  \hat{\beta}_1 = \frac{\beta_1 SST_x+\sumn (x_i-\bar{x})u_i}{SST_x} 
+  = \beta_1+(1/SST_x)\sumn (x_i-\bar{x})u_i
+\end{aligned}`
+$$
+
+---
+class: middle
+
+`$$\hat{\beta}_1 = \beta_1+(1/SST_x)\sumn (x_i-\bar{x})u_i$$`
+
+Taking, expectation of `\(\hat{\beta}_1\)` conditional on `\(\mathbf{x}=\{x_1,\dots,x_n\}\)`,
+
+$$
+`\begin{align}
+\Rightarrow E[\hat{\beta}_1|\mathbf{x}] = &amp; E[\beta_1|\mathbf{x}]+E[(1/SST_x)\sumn (x_i-\bar{x})u_i|\mathbf{x}]  \\\\
+= &amp; \beta_1 + (1/SST_x)\sumn (x_i-\bar{x}) E[u_i|\mathbf{x}] 
+\end{align}`
+$$
+
+So, if condition 4 `\((E[u_i|\mathbf{x}]=0)\)` is satisfied,
+
+$$
+\def\Ex{E_{x}}
+`\begin{align}
+E[\hat{\beta}_1|x] = &amp; \beta_1 \\\\
+\Ex[\hat{\beta}_1|x] = &amp; E[\hat{\beta}_1] = \beta_1
+\end{align}`
+$$
+
+---
+class: middle
+
+# Unbiasedness of OLS estimators
+
+.content-box-green[**Reconsider the following example**]
+
+`\begin{align}
+price=\beta_0+\beta_1\times lotsize + u 
+\end{align}`
+
++ `\(price\)`: house price (USD)
++ `\(lotsize\)`: lot size
++ `\(u\)`: error term (everything else)
+
+.content-box-green[**Questions**]
+
++ What's in `\(u\)`?
++ Do you think `\(E[u|x]\)` is satisfied? In other words (roughly speaking), is `\(u\)` uncorrelated with `\(x\)`? 
+
+---
+class: middle
+
+.content-box-green[**Important notes (again)**]
+
++ Unbiasedness property of OLS estimators says &lt;span style = "color: blue;"&gt; nothing &lt;/span&gt; about the estimate that we obtain for a given sample
+
++ It is always possible that we could obtain an unlucky sample that would give us a point estimate far from `\(\beta_1\)`, and we can never know for sure whether this is the case.
+
+---
+class: middle
+
+# Variance of OLS estimator
+
++ OLS estimators are random variables, which means that they have distributions 
+
++ OLS estimators have variance (how spread out OLS estimates can be)
+
+---
+class: middle
+
+.content-box-green[**Example**]
+
+Consider two estimators of `\(E[x]\)`:
+
+$$
+`\begin{align}
+\theta_{smart} = &amp; \frac{1}{n} \sumn x_i  \;\;(n=1000) \\\\
+\theta_{stupid} = &amp; \frac{1}{10} \sumten x_i 
+\end{align}`
+$$
+
+---
+class: middle
+
+.content-box-green[**Variance of estimators**]
+
+&lt;img src="univariate_regression_x_files/figure-html/variance_viz-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Variance of OLS estimators
+
+.content-box-green[**Variance of OLS estimators**]
+
+If `\(Var(u|x)=\sigma^2\)` and the four conditions (we used to prove unbiasedness of OLS estimators) are satisfied,
+
+$$
+`\begin{align}
+  Var(\hat{\beta}_1) = \frac{\sigma^2}{\sumn (x_i-\bar{x})^2}=\frac{\sigma^2}{SST_x} 
+\end{align}`
+$$
+
+---
+class: middle
+
+.content-box-green[**Homoskedasticity**]
+
+The error `\(u\)` has the same variance give any value of the covariate `\(x\)` `\((Var(u|x)=\sigma^2)\)`
+
+.content-box-green[**Heterokedasticity**]
+
+The variance of the error `\(u\)` differs depending on the value of `\(x\)` `\((Var(u|x)=f(x))\)`
+
+---
+class: middle
+
+
+
+Homoskedastic Error
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-19-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+Heteroskedastic Error
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-20-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+House Price Example
+
+&lt;img src="univariate_regression_x_files/figure-html/unnamed-chunk-21-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+Homoskedasticity Condition (Assumption)
+
++ We did &lt;span style = "color: red;"&gt; NOT &lt;/span&gt; use this condition to prove that OLS estimators are unbiased
+
++ In most applications, homoskedasticity condition is not satisfied, which has important implications on:
+    - estimation of variance (standard error) of OLS estimators
+    - significance test
+
+
+(&lt;span style = "color: red;"&gt; A lot more on this issue later &lt;/span&gt;)
+
+---
+class: middle
+
+.content-box-green[**Variance of the OLS estimators**] 
+
+`$$Var(\hat{\beta}_1|x) = \sigma^2/SST_x$$`
+
+.content-box-green[**What can you learn from this equation?**]
++ the variance of OLS estimators is smaller (larger) if the variance of error term is smaller (larger)
++ the greater (smaller) the variation in the covariate `\(x\)`, the smaller (larger) the variance of OLS estimators
+    - if you are running experiments, spread the value of `\(x\)` as much as possible
+    - you will rarely have this luxury
+
+---
+class: middle
+
+.content-box-green[**Gauss-Markov Theorem**]
+
+Under conditions `\(SLR.1\)` through `\(SLR.5\)`, OLS estimators are the best linear unbiased estimators (BLUEs)
+
+.content-box-green[**In other words,**]
+
+No other &lt;span style = "color: blue;"&gt; unbiased linear &lt;/span&gt; estimators have smaller variance than the OLS estimators (desirable efficiency property of OLS)
+
+---
+class: middle
+
+# Estimating the error variance
+
++ `\(Var(\hat{\beta}_1|x) = \sigma^2/SST_x\)` will never be known. But, you can estimate it.
+
++ Once you estimate `\(Var(\hat{\beta}_1|x)\)`, you can test the statistical significance of `\(\hat{\beta}_1\)` (More on this later)
+
+---
+class: middle
+
+`\begin{align}
+&amp; Var(u_i)=\sigma^2=E[u_i^2] \;\; \Big( Var(u_i)\equiv E[u_i^2]-E[u_i]^2 \Big) 
+\end{align}`
+
++ So, `\(\frac{1}{n}\sum_{i=1}^n u_i^2\)` is an unbiased estimator of `\(Var(u_i)\)`
++ What is the problem with this estimator?
+
+---
+class: middle
+
+We don't observe `\(u_i\)` (error), but we observe residuals ($\hat{u_i}$)
+
+.content-box-green[**Error and Residual**]
+`\begin{align}
+    y_i = \beta_0+\beta_1 x_i + u_i \\
+    y_i = \hat{\beta}_0+\hat{\beta}_1 x_i + \hat{u}_i 
+\end{align}`
+
+.content-box-green[**Residuals as unbiased estimators of error**]
+`\begin{align}
+  \hat{u}_i &amp; = y_i -\hat{\beta}_0-\hat{\beta}_1 x_i \\
+  \hat{u}_i &amp; = \beta_0+\beta_1 x_i + u_i -\hat{\beta}_0-\hat{\beta}_1 x_i \\
+  \Rightarrow \hat{u}_i -u_i &amp; = (\beta_0-\hat{\beta}_0)+(\beta_1-\hat{\beta}_1) x_i \\
+  \Rightarrow E[\hat{u}_i -u_i] &amp; = E[(\beta_0-\hat{\beta}_0)+(\beta_1-\hat{\beta}_1) x_i]=0
+\end{align}`
+
+---
+class: middle
+
++ We know `\(E[\hat{u}_i-u_i]=0\)`
+
++ so, why don't we use `\(\hat{u}_i\)` (observable) in place of `\(u_i\)` (unobservable)
+
++ `\(\frac{1}{n}\sum_{i=1}^n \hat{u}_i^2\)` as an estimator of `\(\sigma^2\)`?
+
++ Unfortunately, `\(\frac{1}{n}\sum_{i=1}^n \hat{u}_i^2\)` is a biased estimator of `\(\sigma^2\)`
+
+---
+class: middle
+
+.content-box-green[**Algebraic property of OLS**]
+`\begin{align}
+    \sum_{i=1}^n \hat{u}_i=0\;\; \mbox{and}\;\; \sum_{i=1}^n x_i\hat{u}_i=0\notag
+\end{align}`
+
++ this means that once you know the value of `\(n-2\)` residuals, you can find the value of the other two by solving the above equations
++ so, it's almost as if you have `\(n-2\)` value of residuals instead of `\(n\)`
+
+.content-box-green[**Unbiased estimator of the variance of the error term**]
+
+We use `\(\hat{\sigma}^2=\frac{1}{n-2}\sum_{i=1}^n \hat{u}_i^2\)`, which satisfies `\(E[\frac{1}{n-2}\sum_{i=1}^n \hat{u}_i^2]=\sigma^2\)`
+
+---
+class: middle
+
+The use of `\(\hat{\sigma}^2\)`
+
+Since `\(sd(\hat{\beta_1})=\sigma/\sqrt{SST_x}\)`, the natural estimator of `\(sd(\hat{\beta_1})\)` is
+
+`\begin{aligned}
+  se(\hat{\beta_1}) =\sqrt{\hat{\sigma}^2}/\sqrt{SST_x},
+\end{aligned}`
+
+which is called &lt;span style = "color: red;"&gt; standard error of `\(\hat{\beta_1}\)` &lt;/span&gt;. 
+
+Later, we use `\(\hat{\beta_1}\)` for testing.
+
+---
+class: middle
+
+.content-box-green[**R code: Standard Error**]
+
+
+```
+## OLS estimation, Dep. Var.: price
+## Observations: 546 
+## Standard-errors: Standard 
+##               Estimate  Std. Error t value Pr(&gt;|t|))
+## (Intercept) 34136.2000 2491.100000  13.703 &lt; 2.2e-16
+## lotsize         6.5988    0.445847  14.801 &lt; 2.2e-16
+##                
+## (Intercept) ***
+## lotsize     ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## RMSE: 22,525.7   Adj. R2: 0.285766
+```
+
+---
+
+class: inverse, center, middle
+name: logistics
+
+# Functional Form and Scale
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+
+
+# Functional Form
+
+.content-box-green[**Note**]
+
++ transformation of variables is allowed without disturbing our analytical framework as long as the model is linear in \textcolor{blue}{parameter}.
+
++ transformation of variables change the interpretation of the coefficients estimates
+
+.content-box-green[**Golas**]
+
++ present popular functional forms
+
++ use simple calculus to examine the interpretation of the coefficients
+
+---
+class: middle
+
+.content-box-green[**log-linear**]
+`\begin{align}
+  log(y_i)= \beta_0+\beta_1 x_i + u_i \notag
+\end{align}`
+
+.content-box-green[**linear-log**]
+`\begin{align}
+  y_i= \beta_0+\beta_1 log(x_i) + u_i \notag
+\end{align}`
+
+.content-box-green[**log-log**]
+`\begin{align}
+  log(y_i)= \beta_0+\beta_1 log(x_i) + u_i \notag
+\end{align}`
+
+---
+class: middle
+
+# Log-linear functional form
+
+.content-box-green[**Model**]
+`\begin{align}
+  log(y_i)= \beta_0+\beta_1 x_i + u_i \notag
+\end{align}`
+
+.content-box-green[**Calculus**]
+
+Differentiating the both sides wrt `\(x_i\)`,
+`\begin{align}
+  \frac{1}{y_i}\cdot\frac{\partial y_i}{\partial x_i} = \beta_1 \Rightarrow \frac{\Delta y_i}{y_i} = \beta_1 \Delta x_i \notag
+\end{align}`
+
+.content-box-green[**Interpretation**]
+
+`\(\beta_1\)` measures a percentage change in `\(y_i\)` when `\(x_i\)` is increased by one unit
+
+
+
+---
+class: middle
+
+# Log-linear model
+
+.content-box-green[**Model**]
+
+`\begin{align}
+    log(wage)=\beta_0 + \beta_1 educ + u \notag
+\end{align}`
+
+.content-box-green[**Calculus**]
+
+Differentiating both sides with respect to `\(educ\)`,
+
+`\begin{align}
+    \frac{1}{wage} \frac{\partial wage}{\partial educ} = \beta_1 \Rightarrow \frac{\Delta wage}{wage} = \beta_1\Delta educ\notag
+\end{align}`
+
+.content-box-green[**Interpretation**]
+
+If education increases by 1 year `\((\Delta educ=1)\)`, then wage increases by `\(\beta_1*100\%\)` `\((\frac{\Delta wage}{wage}=\beta_1)\)`
+
+---
+class: middle
+
+.content-box-green[**Log-linear model: Example**]
+
+If you estimate `\(log(wage)=\beta_0 + \beta_1 educ + u \notag\)`,
+
+`\begin{align}
+  \widehat{log(wage)}=0.584+0.083 educ \notag
+\end{align}`
+
+`\begin{align}
+  E[\widehat{wage}]=e^{0.584+0.083 educ} 
+\end{align}`
+
+---
+class: middle
+
+&lt;img src="univariate_regression_x_files/figure-html/g_wage_log-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Functional form: Linear-log
+
+.content-box-green[**Model**]
+
+`\begin{align}
+  y_i= \beta_0+\beta_1 log(x_i) +u_i \notag
+\end{align}`
+
+.content-box-green[**Calculus**]
+
+Differentiating the both sides wrt `\(x_i\)`,
+`\begin{align}
+  \frac{\partial y_i}{\partial x_i} = \beta_1/x_i \Rightarrow \Delta y_i = \beta_1\frac{\Delta x_i}{x_i} \notag
+\end{align}`
+
+--
+
+.content-box-green[**Interpretation**]
+
+When `\(x\)` increases by `\(1\%\)`, `\(y\)` increases by `\(\beta_1\)`
+
+---
+class: middle
+
+&lt;img src="univariate_regression_x_files/figure-html/linear_log_vis-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Functional form: Log-log
+
+.content-box-green[**Model**]
+`\begin{align}
+  log(y_i)= \beta_0+\beta_1 log(x_i) +u_i \notag
+\end{align}`
+
+.content-box-green[**Calculus**]
+
+Differentiating the both sides wrt `\(x_i\)`,
+
+`\begin{align}
+  \frac{\partial y_i}{y_i}/\frac{\partial x_i}{x_i} = \beta_1 \Rightarrow \frac{\Delta y_i}{y_i} = \beta_1 \frac{\Delta x_i}{x_i}\notag
+\end{align}`
+
+.content-box-green[**Interpretation**]
+
+A &lt;span style = "color: blue;"&gt; percentage &lt;/span&gt; change in `\(x\)` would result in a `\(\beta_1\)` &lt;span style = "color: blue;"&gt; percentage &lt;/span&gt; change in `\(y_i\)` (constant elasticity)
+
+---
+class: middle
+
+# Simple Linear Regression
+
++ In these models, the dependent variable and independent variable are non-linearly related, how come are these models called simple &lt;span style = "color: blue;"&gt; linear &lt;/span&gt; model?
+
++ &lt;span style = "color: blue;"&gt; ``linear'' &lt;/span&gt; in simple &lt;span style = "color: blue;"&gt; linear &lt;/span&gt; model means that the model is linear in &lt;span style = "color: blue;"&gt; parameter &lt;/span&gt;, but not in &lt;span style = "color: blue;"&gt; variable &lt;/span&gt;
+
+---
+class: middle
+
+# Non-linear (in parameter) Models
+
+.content-box-green[**Example**]
+
+`\begin{align*}
+  y_i=\beta_0+x_i^{\beta_1}+u_i \\
+  y_i=\frac{x_i}{\beta_0+\beta_1 x_i}+u_i
+\end{align*}`
+
+.content-box-green[**Notes**]
+
+Transformation of the dependent and independent variables would not affect the propertirs of the OLS estimator as long as the model is linear in parameter.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "12:8",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

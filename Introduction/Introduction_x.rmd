@@ -70,12 +70,12 @@ class: middle
 ---
 class: middle
 
-# Text Books 
+# Text Books
 
 ## Required:
 Wooldridge, Jeffrey M. 2006. "Introductory Econometrics: A Modern Approach (<span style = "color: red;">5</span>th edition)." Mason, OH: Thomson/South-Western.
 
-## Recommended 
+## Recommended
 + Florian, Heiss. 2016 "Using R for Introductory Econometrics." CreateSpace Independent Publishing Platform. (free version available online [here](http://www.urfie.net/))
 
 ---
@@ -128,7 +128,7 @@ class: middle
 .content-box-red[**Caution**]  
 + 2nd year students have answers to all the questions I will assign (I will use exactly the same problems because they are really good to learn econometrics)
 + You are free to copy and paste (or rephrase) the answers for your assignment. I won't bother to try to tell if you have copied and pasted answers.
-+ However, you are simply doing dis-service to yourself by depriving yourself of learning opporunities
++ However, you are simply doing dis-service to yourself by depriving yourself of learning opportunities
 + Moreover, your lack of understanding of the material will be clearly manifested on your final paper (I am not at all shy of giving bad grades on the final paper)
 
 ---
@@ -156,7 +156,7 @@ Here is the time line of the paper assignment:
 ---
 class: middle
 
-# Paper Proposal 
+# Paper Proposal
 
 ## Introduction
 + clear identification of what you are trying to find out (research question) 
@@ -172,7 +172,7 @@ class: middle
 ---
 class: middle
 
-# Final Paper 
+# Final Paper
 
 ## Introduction
   + clear identification of what you are trying to find out (research question) [1 point]
@@ -204,7 +204,7 @@ the <span style = "color: red;"> process </span> of how you end up with the fina
 class: inverse, center, middle
 name: econometrics
 
-# What is econometrics about? 
+# What is econometrics about?
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
@@ -351,7 +351,7 @@ class: middle
 
 # Steps 5 and 6
 This is what you learn for the next few months!!
-  + estiamte the model using econometrics
+  + estimate the model using econometrics
   + test hypothesis
 
 ---
@@ -416,11 +416,11 @@ For you to be convinced to buy glasses, these claims needs to be causal, not ass
 class: middle
 # Causality and Association
 
-However, this seems to be a more likely explanation of the assocication:
+However, this seems to be a more likely explanation of the association:
 
 + One spends more time studying academic subjects
   - smarter (or knowledgeable) $\rightarrow$ pursue higher education and graduate college 
-  - worsened eyesights $\Rightarrow$ wear glasses
+  - worsened eyesight $\Rightarrow$ wear glasses
 
 ---
 class: middle
@@ -553,7 +553,7 @@ Most of the time, you will be faced with endogeneity problems caused by at least
 
 .content-box-red[**Central Question**]
 
-How can we avoid or solve endogneity problems?
+How can we avoid or solve endogeneity problems?
 
 ---
 class: middle
