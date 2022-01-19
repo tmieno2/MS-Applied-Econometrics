@@ -389,13 +389,10 @@ Here, changes in $A$ cause changes in $B$, not the other way around
 ---
 class: middle
 
-# Causality and Association
-
 Let's watch this [interesting CM](https://www.youtube.com/watch?v=KSHMgoUWBmY).
 
 ---
 class: middle
-# Causality and Association
 
 .content-box-green[**Claims made in the video**]
 
@@ -414,7 +411,6 @@ For you to be convinced to buy glasses, these claims needs to be causal, not ass
 
 ---
 class: middle
-# Causality and Association
 
 However, this seems to be a more likely explanation of the association:
 
@@ -424,8 +420,6 @@ However, this seems to be a more likely explanation of the association:
 
 ---
 class: middle
-
-# Causality and Association
 
 .content-box-green[**Important**]:
 + We care about isolating causal effects, but not association
@@ -504,8 +498,6 @@ Variables of interest are correlated with some unobservables (variables that can
 ---
 class: middle
 
-# Endogeneity Problem
-
 In the above example,
 
 + <span style = "color: red;"> variable of interest </span>: the number of firefighters
@@ -526,8 +518,6 @@ In the above example,
 ---
 class: middle
 
-# Endogeneity Problem:
-
 .content-box-green[**Another example: education on wage**]
 $$wage = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 training + u$$
     
@@ -539,8 +529,6 @@ What are unobservables in $u$ that are likely to be correlated with $educ$?
 
 ---
 class: middle
-
-# Endogeneity Problem
 
 Most of the time, you will be faced with endogeneity problems caused by at least one of the followings,
 
