@@ -256,6 +256,11 @@ $$\mbox{(2)}\;\; E[inc|A,ability=6] -E[inc|B,ability=6]$$
 
 Which one would like you to know?
 
+.content-box-green[**Aside**]: Contional Expectation 
+
+$E[Y|X]$ represents expected value of $Y$ conditoinal on $X$ (For a given value of $X$, the expected value of $Y$).
+
+
 ---
 class: middle
 
@@ -272,8 +277,8 @@ class: middle
 
 .content-box-green[**What do you observe?**]
 
-+ red sloped line: $E[income|A, x]$
-+ blue sloped line: $E[income|B, x]$
++ red sloped line: $E[income|A, ability]$
++ blue sloped line: $E[income|B, ability]$
 
 ```{r cp, out.width = "60%"}
 g_CI <-
