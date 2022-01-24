@@ -1,4 +1,5 @@
 library(knitr)
+library(knitr)
 library(rmarkdown)
 library(here)
 library(xaringanBuilder)
@@ -14,3 +15,9 @@ build_pdf(here("LectureNotes/Introduction/Introduction_x.html"))
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/1_UnivariateRegression/univariate_regression_x.rmd"))
 build_pdf(here("LectureNotes/1_UnivariateRegression/univariate_regression_x.html"))
+
+# /*===========================================================
+#' # Multivariate Regression
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/2_MultivariateRegression/multivariate_regression_x.rmd"))
+build_pdf(here("LectureNotes/2_MultivariateRegression/multivariate_regression_x.html"))

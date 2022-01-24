@@ -1,5 +1,5 @@
 ---
-title: "Univariate Regression"
+title: "Multivariate Regression"
 author: "AECN 896-002"
 output:
   xaringan::moon_reader:
@@ -46,17 +46,16 @@ $$
 
 # Outline
 
-1. [Introduction to Univariate Regression](#intro)
+1. [Ligistics](#logistics)
 2. [OLS](#ols)
 3. [Samll Sample Property](#ssp)
-4. [Functinoal Form and Scaling](#form)
 
 ---
 
 class: inverse, center, middle
-name: intro
+name: logistics
 
-# Univariate Regression: Introduction
+# Logistics
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
@@ -298,6 +297,16 @@ g_CI <-
 
 g_CI
 ```
+
+
+---
+
+class: inverse, center, middle
+name: logistics
+
+# Univariate Model
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
 ---
 class: middle
@@ -1631,7 +1640,7 @@ summary(uni_reg)
 ---
 
 class: inverse, center, middle
-name: form
+name: logistics
 
 # Functional Form and Scale
 
