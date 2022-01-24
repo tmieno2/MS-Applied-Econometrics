@@ -1,0 +1,366 @@
+---
+title: "Multivariate Regression"
+author: "AECN 896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 12:8
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+bibliography: ../ref.bib
+---
+class: middle
+
+```{r, child = "./../setup.Rmd"}
+```
+
+```{r knitr-setup, include = FALSE, cache = F}
+library(knitr)
+opts_chunk$set(
+  echo = F,
+  root.dir = here()
+)
+```
+
+```{r prep, include = FALSE, cache = F}
+library(data.table)
+library(magick)
+library(fixest)
+library(officer)
+library(flextable)
+library(dplyr)
+library(ggplot2)
+```
+
+$$
+\def\sumten{\sum_{i=1}^{10}}
+$$
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+$$
+
+# Outline
+
+1. [Introduction](#mvr)
+2. [FWL theorem](#fwl)
+3. [Samll Sample Property](#ssp)
+
+---
+
+class: inverse, center, middle
+name: mvr
+
+# Multivariate Regression: Introduction
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# Univariate vs Multivariate Regression Models
+
+.content-box-green[**Univariate**]
+
+The most important assumption $E[u|x]$ is almost always violated (unless you data comes from randomized experiments) because all the other variables are sitting in the error term, which can be correlated with $x$.
+
+.content-box-green[**Multivariate**]
+
+More independent variables mean less factors left in the error term, which makes the endogeneity problem \textcolor{blue}{less} severe
+
+---
+class: middle
+
+.content-box-green[**Bi-variate vs. Uni-variate**]
+  
+\begin{aligned}
+  \mbox{Bi-variate}\;\; wage = & \beta_0 + \beta_1 educ + \beta_2 exper + u_2 \\
+  \mbox{Uni-variate}\;\; wage = & \beta_0 + \beta_1 educ + u_1 (=u_2+\beta_2 exper)
+\end{aligned}
+
+.content-box-green[**What's different?**]
+
++ **bi-variate**: able to measure the effect of education on wage, <span style = "color: blue;"> holding experience fixed </span> because experience is modeled explicitly (<span style = "color: red;"> We say $exper$ is controlled for. </span>)
+
++ **uni-variate**: $\hat{\beta_1}$ is biased unless experience is uncorrelated with education because experience was in error term
+
+---
+class: middle
+
+.content-box-green[**Another example**]
+
+The impact of per student spending (`expend`) on standardized test score (`avgscore`) at the high school level
+
+\begin{aligned}
+avgscore= & \beta_0+\beta_1 expend + u_1 (=u_2+\beta_2 avginc) \notag \\
+avgscore= & \beta_0+\beta_1 expend +\beta_2 avginc + u_2 \notag
+\end{aligned}
+
+---
+class: middle
+
+# Model with two independent variables
+
+More generally,
+
+\begin{aligned}
+  y=\beta_0+\beta_1 x_1 + \beta_2 x_2 + u
+\end{aligned}
+
++ $\beta_0$: intercept
++ $\beta_1$: measure the change in $y$ with respect to $x_1$, holding other factors fixed
++ $\beta_2$: measure the change in $y$ with respect to $x_1$, holding other factors fixed
+
+---
+class: middle
+
+# The Crucial Condition (Assumption) for Unbiasedness of the OLS Estimator
+
+.content-box-green[**Uni-variate**]
+
+For $y = \beta_0 + \beta_1x + u$, 
+
+$E[u|x]=0$
+
+<br>
+
+.content-box-green[**Bi-variate**]
+
+For $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u$, 
+
++ Mathematically: $E[u|x_1,x_2]=0$
++ Verbally: for any values of $x_1$ and $x_2$, the expected value of the unobservables is zero
+
+---
+class: middle
+
+.content-box-green[**Mean independence condition: example**] 
+
+In the following wage model,
+
+\begin{aligned}
+  wage = & \beta_0 + \beta_1 educ + \beta_2 exper + u
+\end{aligned}
+
+Mean independence condition is
+
+\begin{aligned}
+  E[u|educ,exper]=0
+\end{aligned}
+
+**Verbally**: this condition would be satisfied if innate ability of students is on average unrelated to education level and experience. 
+
+---
+class: middle
+
+# The model with $k$ independent variables
+
+.content-box-green[**Model**]
+
+\begin{aligned}
+  y=\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k x_k + u
+\end{aligned}
+
+.content-box-green[**Mean independence assumption?**]  
+
+$\beta_{OLS}$ (OLS estimators of $\beta$s) is unbiased if,
+
+\begin{aligned}
+    E[u|x_1,x_2,\dots,x_k]=0
+\end{aligned}
+
+**Verbally**: this condition would be satisfied if the error term is uncorrelated wtih any of the independent variables, $x_1,x_2,\dots,x_k$. 
+
+---
+class: middle
+
+# Deriving OLS estimators
+
+.content-box-green[**OLS**]
+
+Find the combination of $\beta$s that minimizes the sum of squared residuals
+
+.content-box-green[**So,**]
+
+Denoting the collection of $\hat{\beta}$s as $\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})$,
+
+\begin{aligned}
+    Min_{\theta} \sum_{i=1}^n \Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \hat{\beta_k} x_{k,i}) \Big]^2
+\end{aligned}
+
+---
+class: middle
+
+Find the FOCs by partially differentiating the objective function (sum of squared residuals) wrt each of $\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})$,
+
+\begin{aligned}
+    \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = & 0 \;\; (\beta_0) \\
+    \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_1) \\
+  \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_2) \\
+  \vdots \\
+  \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_k) \\
+\end{aligned}
+
+---
+class: middle
+
+Or more succinctly,
+\begin{aligned}
+  \sum_{i=1}^n \hat{u}_i = & 0 \;\; (\beta_0) \\
+  \sum_{i=1}^n x_{i,1}\hat{u}_i = & 0  \;\; (\beta_1) \\
+  \sum_{i=1}^n x_{i,2}\hat{u}_i = & 0  \;\; (\beta_2) \\
+  \vdots \\
+  \sum_{i=1}^n x_{i,k}\hat{u}_i = & 0  \;\; (\beta_k) \\
+\end{aligned}
+
+---
+class: middle
+
+# Implementation of multivariate OLS
+
+.content-box-green[**R code: Implementation in R**]
+
+```{r echo = TRUE}
+#--- generate data ---#
+N <- 100 # sample size
+x1 <- rnorm(N) # independent variable
+x2 <- rnorm(N) # independent variable
+u <- rnorm(N) # error
+y <- 1 + x1 + x2 + u # dependent variable
+data <- data.frame(y = y, x1 = x1, x2 = x2)
+
+#--- OLS ---#
+reg <- lm(y ~ x1 + x2, data = data)
+reg_sum <- summary(reg) # get summary
+reg_sum$coef # print out coef estimates
+```
+
+---
+
+class: inverse, center, middle
+name: mvr
+
+# Frisch–Waugh–Lovell Theorem
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+Consider the following simple model,
+
+\begin{aligned}
+  y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_3 x_{3,i} + u_i
+\end{aligned}
+
+Suppose you are interested in estimating only $\beta_1$.
+
+---
+class: middle
+
+Let's consider the following two methods,
+
+.content-box-green[**Method 1: Regular OLS**]
+
+Regress $y$ on $x_1$, $x_2$, and $x_3$ with an intercept to estimate $\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$ at the same time (just like you normally do)
+
+.content-box-green[**Method 2: 3-step**]
+
++ regress $y$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_y$
++ regress $x_1$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_{x_1}$
++ regress $\hat{u}_y$ on $\hat{u}_{x_1}$ $(\hat{u}_y=\alpha_1 \hat{u}_{x_1}+v_3)$
+
+.content-box-green[**Frisch-–Waugh-–Lovell theorem**]
+
+Methods 1 and 2 produces the same coefficient estimate on $x_1$
+
+$$\hat{\beta_1} = \hat{\alpha_1}$$
+
+---
+class: middle
+
+---
+class: middle
+
+# Partialing out Interpretation from Method 2
+
+.content-box-green[**Step 1**]
+
+Regress $y$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_y$
+
++ $\hat{u}_y$ is void of the impact of $x_2$ and $x_3$ on $y$
+
+.content-box-green[**Step 2**]
+
+Regress $x_1$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_{x_1}$
+
++ $$\hat{u}_{x_1}$ is void of the impact of $x_2$ and $x_3$ on $x_1$
+
+.content-box-green[**Step 3**]
+
+Regress $\hat{u}_y$ on $\hat{u}_{x_1}$, which produces an estimte of $\beta_1$ that is identical to that you can get from regressin $y$ on $x_1$, $x_2$, and $x_3$
+
+---
+class: middle
+
+# Interpretation
+
++ Regressing $y$ on all explanatory variables ($x_1$, $x_2$, and $x_3$) in a multivariate regression is as if you are looking at the impact of a single explanatory variable with the effects of all the other effects partiled out
+
++ In other words, including variables beyond your variable of interest lets you <span style = "color: red;"> control for (remove the effect of) </span> other variables, avoiding confusing the impact of the variable of interest with the impact of other variables. 
+
+---
+
+class: inverse, center, middle
+name: ssp
+
+# Small Sample Properties of OLS Estimators
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# Unbiasedness of OLS Estimators
+
+OLS estimators of multivariate models are unbiased under <span style = "color: blue;"> certain </span> conditions
+
+---
+class: middle
+
+.content-box-green[**Condition 1**]
+
+Your model is correct (Assumption $MLR.1$)
+
+<br>
+
+.content-box-green[**Condition 2**]
+
+Random sampling (Assumption $MLR.2$)
+
+<br>
+
+.content-box-green[**Conditions 3**]
+
+No perfect collinearity (Assumption $MLR.3$)
+
+---
+class: middle
+
+# Perfect Collinearity
+
+.content-box-green[**No Perfect Collinearity**]
+
+Any variable cannot be a linear function of the other variables
+
+.content-box-green[**Example (silly)**]
+
+\begin{aligned}
+  wage = \beta_0 + \beta_1 educ + \beta_2 (3\times educ) + u
+\end{aligned}
+
+(<span style = "color: blue;"> More on this later when we talk about dummy variables</span>)

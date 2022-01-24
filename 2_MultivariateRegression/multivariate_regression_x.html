@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Multivariate Regression</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="AECN 896-002" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Multivariate Regression
+### AECN 896-002
+
+---
+
+class: middle
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+
+.remark-slide-content.hljs-github h1 {
+  margin-top: 5px;  
+  margin-bottom: 25px;  
+}
+
+.remark-slide-content.hljs-github {
+  padding-top: 10px;  
+  padding-left: 30px;  
+  padding-right: 30px;  
+}
+
+.panel-tabs {
+  &lt;!-- color: #062A00; --&gt;
+  color: #841F27;
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panel-tab {
+  margin-top: 0px;  
+  margin-bottom: 0px;  
+  margin-left: 3px;  
+  margin-right: 3px;  
+  padding-top: 0px;  
+  padding-bottom: 0px;  
+}
+
+.panelset .panel-tabs .panel-tab {
+  min-height: 40px;
+}
+
+.remark-slide th {
+  border-bottom: 1px solid #ddd;
+}
+
+.remark-slide thead {
+  border-bottom: 0px;
+}
+
+.gt_footnote {
+  padding: 2px;  
+}
+
+.remark-slide table {
+  border-collapse: collapse;
+}
+
+.remark-slide tbody {
+  border-bottom: 2px solid #666;
+}
+
+
+.important {
+  background-color: lightpink;
+  border: 2px solid blue;
+  font-weight: bold;
+} 
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  background: #ffe7e7;
+} 
+
+.hljs-github .hljs {
+  background: #f2f2fd;
+}
+
+.remark-inline-code {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: #e6e6e6;
+}
+
+.r.hljs.remark-code.remark-inline-code{
+  font-size: 0.9em
+}
+
+.left-full {
+  width: 80%;
+  height: 92%;
+  float: left;
+}
+
+.left-code {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right-plot {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left5 {
+  width: 49%;
+  height: 92%;
+  float: left;
+}
+
+.right5 {
+  width: 49%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left3 {
+  width: 29%;
+  height: 92%;
+  float: left;
+}
+
+.right7 {
+  width: 69%;
+  float: right;
+  padding-left: 1%;
+}
+
+.left4 {
+  width: 38%;
+  height: 92%;
+  float: left;
+}
+
+.right6 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+}
+
+ul li{
+  margin: 7px;
+}
+
+ul, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+ol li{
+  margin: 7px;
+}
+
+ol, li{
+  margin-left: 15px; 
+  padding-left: 0px; 
+}
+
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+.content-box { 
+    box-sizing: border-box;
+    background-color: #e2e2e2;
+}
+.content-box-blue,
+.content-box-gray,
+.content-box-grey,
+.content-box-army,
+.content-box-green,
+.content-box-purple,
+.content-box-red,
+.content-box-yellow {
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  padding: 0px 5px 0px 5px;
+  width: 100%;
+}
+.content-box-blue { background-color: #F0F8FF; }
+.content-box-gray { background-color: #e2e2e2; }
+.content-box-grey { background-color: #F5F5F5; }
+.content-box-army { background-color: #737a36; }
+.content-box-green { background-color: #d9edc2; }
+.content-box-purple { background-color: #e2e2f9; }
+.content-box-red { background-color: #ffcccc; }
+.content-box-yellow { background-color: #fef5c4; }
+.content-box-blue .remark-inline-code,
+.content-box-blue .remark-inline-code,
+.content-box-gray .remark-inline-code,
+.content-box-grey .remark-inline-code,
+.content-box-army .remark-inline-code,
+.content-box-green .remark-inline-code,
+.content-box-purple .remark-inline-code,
+.content-box-red .remark-inline-code,
+.content-box-yellow .remark-inline-code { 
+  background: none;
+}
+
+.full-width {
+    display: flex;
+    width: 100%;
+    flex: 1 1 auto;
+}
+&lt;/style&gt;
+
+
+&lt;style type="text/css"&gt;
+blockquote, .blockquote {
+  display: block;
+  margin-top: 0.1em;
+  margin-bottom: 0.2em;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: solid 10px #0148A4;
+  border-top: solid 2px #0148A4;
+  border-bottom: solid 2px #0148A4;
+  border-right: solid 2px #0148A4;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  color: #e64626;
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.blockquote p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h1:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h2:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h3:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.blockquote &gt; h4:first-of-type {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.text-shadow {
+  text-shadow: 0 0 4px #424242;
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides &gt; slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+}
+.scroll-box-30 {
+  height:30em;
+  overflow-y: scroll;
+}
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+ 
+&lt;/style&gt;
+
+
+
+
+
+
+$$
+\def\sumten{\sum_{i=1}^{10}}
+$$
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+$$
+
+# Outline
+
+1. [Introduction](#mvr)
+2. [FWL theorem](#fwl)
+3. [Samll Sample Property](#ssp)
+
+---
+
+class: inverse, center, middle
+name: mvr
+
+# Multivariate Regression: Introduction
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Univariate vs Multivariate Regression Models
+
+.content-box-green[**Univariate**]
+
+The most important assumption `\(E[u|x]\)` is almost always violated (unless you data comes from randomized experiments) because all the other variables are sitting in the error term, which can be correlated with `\(x\)`.
+
+.content-box-green[**Multivariate**]
+
+More independent variables mean less factors left in the error term, which makes the endogeneity problem \textcolor{blue}{less} severe
+
+---
+class: middle
+
+.content-box-green[**Bi-variate vs. Uni-variate**]
+  
+`\begin{aligned}
+  \mbox{Bi-variate}\;\; wage = &amp; \beta_0 + \beta_1 educ + \beta_2 exper + u_2 \\
+  \mbox{Uni-variate}\;\; wage = &amp; \beta_0 + \beta_1 educ + u_1 (=u_2+\beta_2 exper)
+\end{aligned}`
+
+.content-box-green[**What's different?**]
+
++ **bi-variate**: able to measure the effect of education on wage, &lt;span style = "color: blue;"&gt; holding experience fixed &lt;/span&gt; because experience is modeled explicitly (&lt;span style = "color: red;"&gt; We say `\(exper\)` is controlled for. &lt;/span&gt;)
+
++ **uni-variate**: `\(\hat{\beta_1}\)` is biased unless experience is uncorrelated with education because experience was in error term
+
+---
+class: middle
+
+.content-box-green[**Another example**]
+
+The impact of per student spending (`expend`) on standardized test score (`avgscore`) at the high school level
+
+`\begin{aligned}
+avgscore= &amp; \beta_0+\beta_1 expend + u_1 (=u_2+\beta_2 avginc) \notag \\
+avgscore= &amp; \beta_0+\beta_1 expend +\beta_2 avginc + u_2 \notag
+\end{aligned}`
+
+---
+class: middle
+
+# Model with two independent variables
+
+More generally,
+
+`\begin{aligned}
+  y=\beta_0+\beta_1 x_1 + \beta_2 x_2 + u
+\end{aligned}`
+
++ `\(\beta_0\)`: intercept
++ `\(\beta_1\)`: measure the change in `\(y\)` with respect to `\(x_1\)`, holding other factors fixed
++ `\(\beta_2\)`: measure the change in `\(y\)` with respect to `\(x_1\)`, holding other factors fixed
+
+---
+class: middle
+
+# The Crucial Condition (Assumption) for Unbiasedness of the OLS Estimator
+
+.content-box-green[**Uni-variate**]
+
+For `\(y = \beta_0 + \beta_1x + u\)`, 
+
+`\(E[u|x]=0\)`
+
+&lt;br&gt;
+
+.content-box-green[**Bi-variate**]
+
+For `\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u\)`, 
+
++ Mathematically: `\(E[u|x_1,x_2]=0\)`
++ Verbally: for any values of `\(x_1\)` and `\(x_2\)`, the expected value of the unobservables is zero
+
+---
+class: middle
+
+.content-box-green[**Mean independence condition: example**] 
+
+In the following wage model,
+
+`\begin{aligned}
+  wage = &amp; \beta_0 + \beta_1 educ + \beta_2 exper + u
+\end{aligned}`
+
+Mean independence condition is
+
+`\begin{aligned}
+  E[u|educ,exper]=0
+\end{aligned}`
+
+**Verbally**: this condition would be satisfied if innate ability of students is on average unrelated to education level and experience. 
+
+---
+class: middle
+
+# The model with `\(k\)` independent variables
+
+.content-box-green[**Model**]
+
+`\begin{aligned}
+  y=\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k x_k + u
+\end{aligned}`
+
+.content-box-green[**Mean independence assumption?**]  
+
+`\(\beta_{OLS}\)` (OLS estimators of `\(\beta\)`s) is unbiased if,
+
+`\begin{aligned}
+    E[u|x_1,x_2,\dots,x_k]=0
+\end{aligned}`
+
+**Verbally**: this condition would be satisfied if the error term is uncorrelated wtih any of the independent variables, `\(x_1,x_2,\dots,x_k\)`. 
+
+---
+class: middle
+
+# Deriving OLS estimators
+
+.content-box-green[**OLS**]
+
+Find the combination of `\(\beta\)`s that minimizes the sum of squared residuals
+
+.content-box-green[**So,**]
+
+Denoting the collection of `\(\hat{\beta}\)`s as `\(\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})\)`,
+
+`\begin{aligned}
+    Min_{\theta} \sum_{i=1}^n \Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \hat{\beta_k} x_{k,i}) \Big]^2
+\end{aligned}`
+
+---
+class: middle
+
+Find the FOCs by partially differentiating the objective function (sum of squared residuals) wrt each of `\(\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})\)`,
+
+`\begin{aligned}
+    \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = &amp; 0 \;\; (\beta_0) \\
+    \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_1) \\
+  \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_2) \\
+  \vdots \\
+  \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_k) \\
+\end{aligned}`
+
+---
+class: middle
+
+Or more succinctly,
+`\begin{aligned}
+  \sum_{i=1}^n \hat{u}_i = &amp; 0 \;\; (\beta_0) \\
+  \sum_{i=1}^n x_{i,1}\hat{u}_i = &amp; 0  \;\; (\beta_1) \\
+  \sum_{i=1}^n x_{i,2}\hat{u}_i = &amp; 0  \;\; (\beta_2) \\
+  \vdots \\
+  \sum_{i=1}^n x_{i,k}\hat{u}_i = &amp; 0  \;\; (\beta_k) \\
+\end{aligned}`
+
+---
+class: middle
+
+# Implementation of multivariate OLS
+
+.content-box-green[**R code: Implementation in R**]
+
+
+```r
+#--- generate data ---#
+N &lt;- 100 # sample size
+x1 &lt;- rnorm(N) # independent variable
+x2 &lt;- rnorm(N) # independent variable
+u &lt;- rnorm(N) # error
+y &lt;- 1 + x1 + x2 + u # dependent variable
+data &lt;- data.frame(y = y, x1 = x1, x2 = x2)
+
+#--- OLS ---#
+reg &lt;- lm(y ~ x1 + x2, data = data)
+reg_sum &lt;- summary(reg) # get summary
+reg_sum$coef # print out coef estimates
+```
+
+```
+##             Estimate Std. Error
+## (Intercept) 1.006640 0.09615339
+## x1          0.931657 0.09502627
+## x2          1.177465 0.09778003
+##               t value
+## (Intercept) 10.469107
+## x1           9.804205
+## x2          12.041975
+##                 Pr(&gt;|t|)
+## (Intercept) 1.305196e-17
+## x1          3.549438e-16
+## x2          5.732606e-21
+```
+
+---
+
+class: inverse, center, middle
+name: mvr
+
+# Frisch–Waugh–Lovell Theorem
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+Consider the following simple model,
+
+`\begin{aligned}
+  y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_3 x_{3,i} + u_i
+\end{aligned}`
+
+Suppose you are interested in estimating only `\(\beta_1\)`.
+
+---
+class: middle
+
+Let's consider the following two methods,
+
+.content-box-green[**Method 1: Regular OLS**]
+
+Regress `\(y\)` on `\(x_1\)`, `\(x_2\)`, and `\(x_3\)` with an intercept to estimate `\(\beta_0\)`, `\(\beta_1\)`, `\(\beta_2\)`, `\(\beta_3\)` at the same time (just like you normally do)
+
+.content-box-green[**Method 2: 3-step**]
+
++ regress `\(y\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_y\)`
++ regress `\(x_1\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_{x_1}\)`
++ regress `\(\hat{u}_y\)` on `\(\hat{u}_{x_1}\)` `\((\hat{u}_y=\alpha_1 \hat{u}_{x_1}+v_3)\)`
+
+.content-box-green[**Frisch-–Waugh-–Lovell theorem**]
+
+Methods 1 and 2 produces the same coefficient estimate on `\(x_1\)`
+
+`$$\hat{\beta_1} = \hat{\alpha_1}$$`
+
+---
+class: middle
+
+---
+class: middle
+
+# Partialing out Interpretation from Method 2
+
+.content-box-green[**Step 1**]
+
+Regress `\(y\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_y\)`
+
++ `\(\hat{u}_y\)` is void of the impact of `\(x_2\)` and `\(x_3\)` on `\(y\)`
+
+.content-box-green[**Step 2**]
+
+Regress `\(x_1\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_{x_1}\)`
+
++ $$\hat{u}_{x_1}$ is void of the impact of `\(x_2\)` and `\(x_3\)` on `\(x_1\)`
+
+.content-box-green[**Step 3**]
+
+Regress `\(\hat{u}_y\)` on `\(\hat{u}_{x_1}\)`, which produces an estimte of `\(\beta_1\)` that is identical to that you can get from regressin `\(y\)` on `\(x_1\)`, `\(x_2\)`, and `\(x_3\)`
+
+---
+class: middle
+
+# Interpretation
+
++ Regressing `\(y\)` on all explanatory variables ($x_1$, `\(x_2\)`, and `\(x_3\)`) in a multivariate regression is as if you are looking at the impact of a single explanatory variable with the effects of all the other effects partiled out
+
++ In other words, including variables beyond your variable of interest lets you &lt;span style = "color: red;"&gt; control for (remove the effect of) &lt;/span&gt; other variables, avoiding confusing the impact of the variable of interest with the impact of other variables. 
+
+---
+
+class: inverse, center, middle
+name: ssp
+
+# Small Sample Properties of OLS Estimators
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# Unbiasedness of OLS Estimators
+
+OLS estimators of multivariate models are unbiased under &lt;span style = "color: blue;"&gt; certain &lt;/span&gt; conditions
+
+---
+class: middle
+
+.content-box-green[**Condition 1**]
+
+Your model is correct (Assumption `\(MLR.1\)`)
+
+&lt;br&gt;
+
+.content-box-green[**Condition 2**]
+
+Random sampling (Assumption `\(MLR.2\)`)
+
+&lt;br&gt;
+
+.content-box-green[**Conditions 3**]
+
+No perfect collinearity (Assumption `\(MLR.3\)`)
+
+---
+class: middle
+
+# Perfect Collinearity
+
+.content-box-green[**No Perfect Collinearity**]
+
+Any variable cannot be a linear function of the other variables
+
+.content-box-green[**Example (silly)**]
+
+`\begin{aligned}
+  wage = \beta_0 + \beta_1 educ + \beta_2 (3\times educ) + u
+\end{aligned}`
+
+(&lt;span style = "color: blue;"&gt; More on this later when we talk about dummy variables&lt;/span&gt;)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "12:8",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

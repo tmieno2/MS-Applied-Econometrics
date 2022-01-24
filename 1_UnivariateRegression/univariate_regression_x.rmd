@@ -519,7 +519,7 @@ class: middle
 + consider a phenomenon you are interested in understanding 
   - dependent variable (variable to be explained) 
   - explanatory variable (variable to explain) 
-+ construct a simple linear modela
++ construct a simple linear model
 + identify what is in the error term
 + check if they are correlated withe explanatory variable or not
 
