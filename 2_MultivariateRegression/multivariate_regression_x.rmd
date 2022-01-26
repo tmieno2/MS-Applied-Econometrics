@@ -274,14 +274,11 @@ Regress $y$ on $x_1$, $x_2$, and $x_3$ with an intercept to estimate $\beta_0$, 
 + regress $x_1$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_{x_1}$
 + regress $\hat{u}_y$ on $\hat{u}_{x_1}$ $(\hat{u}_y=\alpha_1 \hat{u}_{x_1}+v_3)$
 
-.content-box-green[**Frisch-–Waugh-–Lovell theorem**]
+.content-box-green[**Frisch-Waugh–Lovell theorem**]
 
 Methods 1 and 2 produces the same coefficient estimate on $x_1$
 
 $$\hat{\beta_1} = \hat{\alpha_1}$$
-
----
-class: middle
 
 ---
 class: middle
@@ -298,7 +295,7 @@ Regress $y$ on $x_2$ and $x_3$ with an intercept and get residuals, which we cal
 
 Regress $x_1$ on $x_2$ and $x_3$ with an intercept and get residuals, which we call $\hat{u}_{x_1}$
 
-+ $$\hat{u}_{x_1}$ is void of the impact of $x_2$ and $x_3$ on $x_1$
++ $\hat{u}_{x_1}$ is void of the impact of $x_2$ and $x_3$ on $x_1$
 
 .content-box-green[**Step 3**]
 
@@ -309,7 +306,7 @@ class: middle
 
 # Interpretation
 
-+ Regressing $y$ on all explanatory variables ($x_1$, $x_2$, and $x_3$) in a multivariate regression is as if you are looking at the impact of a single explanatory variable with the effects of all the other effects partiled out
++ Regressing $y$ on all explanatory variables $(x_1$, $x_2$, and $x_3)$ in a multivariate regression is as if you are looking at the impact of a single explanatory variable with the effects of all the other effects partiled out
 
 + In other words, including variables beyond your variable of interest lets you <span style = "color: red;"> control for (remove the effect of) </span> other variables, avoiding confusing the impact of the variable of interest with the impact of other variables. 
 
@@ -325,7 +322,7 @@ name: ssp
 ---
 class: middle
 
-# Unbiasedness of OLS Estimators
+.content-box-green[**Unbiasedness of OLS Estimator**] 
 
 OLS estimators of multivariate models are unbiased under <span style = "color: blue;"> certain </span> conditions
 
@@ -364,3 +361,88 @@ Any variable cannot be a linear function of the other variables
 \end{aligned}
 
 (<span style = "color: blue;"> More on this later when we talk about dummy variables</span>)
+
+---
+class: middle
+
+.content-box-red[**Zero Conditional Mean**]
+
+\begin{aligned}
+  E[u|x_1,x_2,\dots,x_k]=0 \;\;\mbox{(Assumption MLR.4)}
+\end{aligned}
+
+---
+class: middle
+
+
+.content-box-green[**Unbiasedness of OLS estimators**]
+
+If all the conditions $MLR.1\sim MLR.4$ are satisfied, OLS estimators are unbiased.
+
+$$
+\def\ehb{E[\hat{\beta}_j]}
+\begin{aligned}
+  \ehb=\beta_j \;\; ^\forall j=0,1,\dots,k
+\end{aligned}
+$$
+
+---
+class: middle
+
+.content-box-green[**Endogeneity (Definition)**]
+
+$$E[u|x_1,x_2,\dots,x_k] = f(x_1,x_2,\dots,x_k) \ne 0$$
+
+.content-box-green[**What could cause endogeneity problem?**]
++ functional form misspecification
+\begin{aligned}
+  wage = & \beta_0 + \beta_1 log(x_1) + \beta_2 x_2 + u_1 \;\;\mbox{(true)}\\
+  wage = & \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u_2 (=log(x_1)-x_1) \;\; \mbox{(yours)}
+\end{aligned}
++ omission of variables that are correlated with any of $x_1,x_2,\dots,x_k$ (<span style = "color: blue;"> more on this soon </span>)
++ <span style = "color: blue;"> other sources of enfogeneity later </span>
+
+---
+class: middle
+
+# Variance of the OLS estimators
+
+.content-box-green[**Homoeskedasticity**]
+
+\begin{aligned}
+Var(u|x_1,\dots,x_k)=\sigma^2 \;\;\mbox{(Assumption MLR.5)}
+\end{aligned}
+
+<br>
+
+.content-box-green[**Variance**]
+
+Under conditions $MLR.1$ through $MLR.5$, conditional on the sample values of the independent variables,
+
+\begin{aligned}
+    Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
+\end{aligned}
+
+where $SST_j= \sum_{i=1}^n (x_{ji}-\bar{x_j})^2$ and $R_j^2$ is the R-squared from regressing $x_j$ on all other independent variables including an intercept. (<span style = "color: blue;"> We will revisit this equation</span>)
+
+---
+class: middle
+
+# Estimating $\sigma^2$
+
+Just like uni-variate regression, you need to estimate $\sigma^2$ if you want to estimate the variance (and standard deviation) of the OLS estimators.
+
+.content-box-green[**uni-variate regression**]
+\begin{aligned}
+  \hat{\sigma}^2=\sum_{i=1}^N \frac{\hat{u}_i^2}{n-2}
+\end{aligned}
+
+.content-box-green[**multi-variate regression**]
+
+A model with $k$ independent variables with intercept.
+
+\begin{aligned}
+  \hat{\sigma}^2=\sum_{i=1}^N \frac{\hat{u}_i^2}{n-(k+1)}
+\end{aligned}
+
+You solved $k+1$ simultaneous equations to get $\hat{\beta}_j$ $(j=0,\dots,k)$. So, once you know the value of $n-k-1$ of the residuals, you know the rest.

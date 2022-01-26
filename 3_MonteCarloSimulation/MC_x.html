@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Multivariate Regression</title>
+    <title>Monte Carlo Simulation</title>
     <meta charset="utf-8" />
     <meta name="author" content="AECN 896-002" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -21,7 +21,7 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Multivariate Regression
+# Monte Carlo Simulation
 ### AECN 896-002
 
 ---
@@ -366,425 +366,579 @@ $$
 # Outline
 
 1. [Introduction](#mvr)
-2. [FWL theorem](#fwl)
-3. [Samll Sample Property](#ssp)
+2. [MC Simulations](#mcs)
 
 ---
 
 class: inverse, center, middle
 name: mvr
 
-# Multivariate Regression: Introduction
+# Monte Carlo Simulation: Introduction
 
 &lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
 
 ---
 class: middle
 
-# Univariate vs Multivariate Regression Models
+.content-box-green[**Monte Carlo Simulation**]
 
-.content-box-green[**Univariate**]
-
-The most important assumption `\(E[u|x]\)` is almost always violated (unless you data comes from randomized experiments) because all the other variables are sitting in the error term, which can be correlated with `\(x\)`.
-
-.content-box-green[**Multivariate**]
-
-More independent variables mean less factors left in the error term, which makes the endogeneity problem \textcolor{blue}{less} severe
+A way to test econometric theories via simulation
 
 ---
 class: middle
 
-.content-box-green[**Bi-variate vs. Uni-variate**]
-  
-`\begin{aligned}
-  \mbox{Bi-variate}\;\; wage = &amp; \beta_0 + \beta_1 educ + \beta_2 exper + u_2 \\
-  \mbox{Uni-variate}\;\; wage = &amp; \beta_0 + \beta_1 educ + u_1 (=u_2+\beta_2 exper)
-\end{aligned}`
-
-.content-box-green[**What's different?**]
-
-+ **bi-variate**: able to measure the effect of education on wage, &lt;span style = "color: blue;"&gt; holding experience fixed &lt;/span&gt; because experience is modeled explicitly (&lt;span style = "color: red;"&gt; We say `\(exper\)` is controlled for. &lt;/span&gt;)
-
-+ **uni-variate**: `\(\hat{\beta_1}\)` is biased unless experience is uncorrelated with education because experience was in error term
+.content-box-green[**How is it used in econometrics?**]
++ confirm ecoometric theory numerically
+    - OLS estimators are unbiased if `\(E[u|x]=0\)` along with other conditions (theory)
+    - I know the above theory is right, but let's check if it is true numerically
++ You kind of sense that something in your data may cause problems, but there is no proven econometric theory about what's gonna happen (I used MC simulation for this purpose a lot)
++ assist students in understanding econometric theories by providing actual numbers instead of a series of Greek letters
 
 ---
 class: middle
 
-.content-box-green[**Another example**]
+.content-box-green[**Question**]
 
-The impact of per student spending (`expend`) on standardized test score (`avgscore`) at the high school level
+Suppose you are interested in checking what happens to OLS estimators if `\(E[u|x]=0\)` (the error term and `\(x\)` are not correlated) is violated. 
 
-`\begin{aligned}
-avgscore= &amp; \beta_0+\beta_1 expend + u_1 (=u_2+\beta_2 avginc) \notag \\
-avgscore= &amp; \beta_0+\beta_1 expend +\beta_2 avginc + u_2 \notag
-\end{aligned}`
+Can you use the real data to do this?
 
 ---
 class: middle
 
-# Model with two independent variables
+.content-box-green[**Key part of MC simulation**]
 
-More generally,
+&lt;span style = "color: blue;"&gt; You &lt;/span&gt; generate data (you have control over how data are generated)
 
-`\begin{aligned}
-  y=\beta_0+\beta_1 x_1 + \beta_2 x_2 + u
-\end{aligned}`
-
-+ `\(\beta_0\)`: intercept
-+ `\(\beta_1\)`: measure the change in `\(y\)` with respect to `\(x_1\)`, holding other factors fixed
-+ `\(\beta_2\)`: measure the change in `\(y\)` with respect to `\(x_1\)`, holding other factors fixed
++ You know the true parameter unlike the real data generating process
++ You can change only the part that you want to change about data generating process and econometric methods with everything else fixed
 
 ---
 class: middle
 
-# The Crucial Condition (Assumption) for Unbiasedness of the OLS Estimator
+# Generating data
 
-.content-box-green[**Uni-variate**]
+.content-box-green[**Pseudo random number generators**]
 
-For `\(y = \beta_0 + \beta_1x + u\)`, 
-
-`\(E[u|x]=0\)`
-
-&lt;br&gt;
-
-.content-box-green[**Bi-variate**]
-
-For `\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u\)`, 
-
-+ Mathematically: `\(E[u|x_1,x_2]=0\)`
-+ Verbally: for any values of `\(x_1\)` and `\(x_2\)`, the expected value of the unobservables is zero
+Algorithms for generating a sequence of numbers whose properties &lt;span style = "color: blue;"&gt; approximate &lt;/span&gt; the properties of sequences of random numbers
 
 ---
 class: middle
 
-.content-box-green[**Mean independence condition: example**] 
+.content-box-green[**Examples in R: Uniform Distribution**]
 
-In the following wage model,
 
-`\begin{aligned}
-  wage = &amp; \beta_0 + \beta_1 educ + \beta_2 exper + u
-\end{aligned}`
+```r
+runif(5) # default is min=0 and max=1
+```
 
-Mean independence condition is
-
-`\begin{aligned}
-  E[u|educ,exper]=0
-\end{aligned}`
-
-**Verbally**: this condition would be satisfied if innate ability of students is on average unrelated to education level and experience. 
+```
+## [1] 0.4258418 0.7233281 0.1956357 0.5908759 0.7668188
+```
 
 ---
 class: middle
 
-# The model with `\(k\)` independent variables
+```r
+x &lt;- runif(10000)
+hist(x)
+```
+
+&lt;img src="MC_x_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**Pseudo random number generator**]
+
++ Pseudo random number generators are not really random number generators
++ What numbers you will get are pre-determined
++ What numbers you will get can be determined by setting a &lt;span style = "color: red;"&gt; seed &lt;/span&gt;
+
+.content-box-green[**An example**]
+
+
+```r
+set.seed(2387438)
+runif(5)
+```
+
+```
+## [1] 0.0474233 0.7116970 0.4066674 0.2422949 0.3567480
+```
+
+.content-box-green[**Question**]
+
+What benefits does setting a seed have?
+
+---
+class: middle
+
+.content-box-green[**Examples in R: Normal Distribution**]
+
+.left5[
+
+`\(x \sim N(0, 1)\)`
+
+```r
+# default is mean = 0,sd = 1
+x &lt;- rnorm(10000)
+hist(x)
+```
+
+&lt;img src="MC_x_files/figure-html/norm_1-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.right5[
+
+`\(x \sim N(2, 2)\)`
+
+```r
+# mean = 2, sd = 2
+x &lt;- rnorm(10000, mean = 2, sd = 2)
+hist(x)
+```
+
+&lt;img src="MC_x_files/figure-html/norm_2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+
+.content-box-green[**Other distributions**] 
+
++ Beta
++ Chi-square
++ F
++ Logistic
++ Log-normal
++ many others
+
+---
+class: middle
+
+.content-box-green[**d, p, q, r**]
+
+For each distribution, you have four different kinds of functions:
+
++ &lt;span style = "color: red;"&gt; `d`&lt;/span&gt;`norm`: density function
++ &lt;span style = "color: red;"&gt; `p`&lt;/span&gt;`norm`: distribution function
++ &lt;span style = "color: red;"&gt; `q`&lt;/span&gt;`norm`: quantile function
++ &lt;span style = "color: red;"&gt; `r`&lt;/span&gt;`norm`: random draw
+
+---
+class: middle
+
+.content-box-green[**dnorm**]
+
+`dnorm(x)` gives you the height of the density function at `\(x\)`.
+
+---
+class: middle
+
+`dnorm(-1)` and `dnorm(2)`
+
+
+
+&lt;img src="MC_x_files/figure-html/pnorm2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**pnorm**]
+
+`pnorm(x)` gives you the probability that a single random draw is &lt;span style = "color: red;"&gt; less &lt;/span&gt; than `\(x\)`.
+
+---
+class: middle
+
+`pnorm(-1)`
+
+&lt;img src="MC_x_files/figure-html/pnorm1_1-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+---
+class: middle
+
+`pnorm(2)`
+
+&lt;img src="MC_x_files/figure-html/pnorm1_2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**Practice**]
+
+What is the probability that a single random draw from a Normal distribution with `mean = 1` and `sd = 2`?
+
+---
+class: middle
+
+`qnorm(x)`, where `\(0 &lt; x &lt; 1\)`, gives you a number `\(\pi\)`, where the probability of observing a number from a single random draw is less than `\(\pi\)` with probability of `\(x\)`. 
+
+We call the output of `qnorm(x)`, `\(x%\)` quantile of the standard Normal distribution (because the default is `mean = 0` and `sd = 1` for `rnorm()`). 
+
+---
+class: middle
+
+`qnorm(0.95)`
+
+&lt;img src="MC_x_files/figure-html/qnorm1-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+.content-box-green[**Practice**]
+
+What is the 88% quantile of Normal distribution with `mean = 0` and `sd = 9`?
+
+
+---
+
+class: inverse, center, middle
+name: mcs
+
+# Monte Carlo Simulation: Introduction
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+.content-box-green[**Monte Carlo Simulation: Steps**]
+
++ specify the data generating process
++ generate data based on the data generating process
++ get an estimate based on the generated data (e.g. OLS, mean)
++ repeat the above steps many many times
++ compare your estimates with the true parameter
+
+.content-box-green[**Question**]
+
+Why do the steps `\(1-3\)` many many times?
+
+---
+class: middle
+
+# Monte Carlo Simulation: Example 1
+
+Is sample mean really an unbiased estimator of the expected value? 
+
+That is, is `\(E[\frac{1}{n}\sum_{i=1}^n x_i] = E[x]\)`, where `\(x_i\)` is an independent random draw from the same distribution,
+
+---
+class: middle
+
+.content-box-green[**Sample Mean: Steps 1-3**]
+
+
+```r
+#--- steps 1 and 2:  ---#
+# specify the data generating process and generate data
+x &lt;- runif(100) # Here, E[x]=0.5
+
+#--- step 3 ---#
+# calculate sample mean
+mean_x &lt;- mean(x)
+mean_x
+```
+
+```
+## [1] 0.507078
+```
+
+---
+class: middle
+
+.content-box-green[**Sample Mean: Step 4**]
+
++ repeat the above steps many times
++ We use a &lt;span style = "color: blue;"&gt; loop &lt;/span&gt; to do the same (similar) thing over and over again
+
+---
+class: middle
+
+.content-box-green[**Loop: for loop**] 
+
+
+```r
+#--- the number of iterations ---#
+B &lt;- 1000
+
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  print(i) # print i
+}
+```
+
+---
+class: middle
+
+.content-box-green[**Step 4**]
+
+
+```r
+#--- the number of iterations ---#
+B &lt;- 1000
+
+#--- create a storage that stores estimates ---#
+estimate_storage_mean &lt;- rep(0, B)
+
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  #--- steps 1 and 2:  ---#
+  # specify the data generating process and generate data
+  x &lt;- runif(100) # Here, E[x]=0.5
+
+  #--- step 3 ---#
+  # calculate sample mean
+  mean_x &lt;- mean(x)
+  estimate_storage_mean[i] &lt;- mean_x
+}
+```
+
+---
+class: middle
+
+Compare your estimates with the true parameter
+
+
+```r
+mean(estimate_storage_mean)
+```
+
+```
+## [1] 0.500199
+```
+
+```r
+hist(estimate_storage_mean)
+```
+
+&lt;img src="MC_x_files/figure-html/step_5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Monte Carlo Simulation: Example 2
+
+.content-box-green[**Question**]
+
+What happens to `\(\beta_1\)` if `\(E[u|x]\ne 0\)` when estimating `\(y=\beta_0+\beta_1 x + u\)`?
+
+---
+class: middle
+
+
+```r
+#--- Preparation ---#
+B &lt;- 1000 # the number of iterations
+N &lt;- 100 # sample size
+estimate_storage &lt;- rep(0, B) # estimates storage
+
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  #--- steps 1 and 2:  ---#
+  mu &lt;- rnorm(N) # the common term shared by both x and u
+  x &lt;- rnorm(N) + mu # independent variable
+  u &lt;- rnorm(N) + mu # error
+  y &lt;- 1 + x + u # dependent variable
+  data &lt;- data.table(y = y, x = x)
+
+  #--- OLS ---#
+  reg &lt;- lm(y ~ x, data = data) # OLS
+  estimate_storage[i] &lt;- reg$coef["x"]
+}
+```
+
+---
+class: middle
+
+
+```r
+hist(estimate_storage)
+```
+
+&lt;img src="MC_x_files/figure-html/ex2_res-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Examle 3: Variance of OLS Estimators
 
 .content-box-green[**Model**]
 
 `\begin{aligned}
-  y=\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k x_k + u
+    y = \beta_0 + \beta_1 x + u \\
 \end{aligned}`
 
-.content-box-green[**Mean independence assumption?**]  
++ `\(x\sim N(0,1)\)`
++ `\(u\sim N(0,1)\)`
++ `\(E[u|x]=0\)`
 
-`\(\beta_{OLS}\)` (OLS estimators of `\(\beta\)`s) is unbiased if,
+.content-box-green[**Variance of the OLS estimator**] 
 
-`\begin{aligned}
-    E[u|x_1,x_2,\dots,x_k]=0
-\end{aligned}`
+True Variance of `\(\hat{\beta_1}\)`: `\(V(\hat{\beta_1}) = \frac{\sigma^2}{\sum_{i=1}^n (x_i-\bar{x})^2} = \frac{\sigma^2}{SST_X}\)`
 
-**Verbally**: this condition would be satisfied if the error term is uncorrelated wtih any of the independent variables, `\(x_1,x_2,\dots,x_k\)`. 
+Its estimator: `\(\widehat{V(\hat{\beta_1})} =\frac{\hat{\sigma}^2}{SST_X} = \frac{\sum_{i=1}^n \hat{u}_i^2}{n-2} \times \frac{1}{SST_X}\)`
+
+.content-box-green[**Question**]
+
+Does the estimator really work? (Is it unbiased?)
 
 ---
 class: middle
-
-# Deriving OLS estimators
-
-.content-box-green[**OLS**]
-
-Find the combination of `\(\beta\)`s that minimizes the sum of squared residuals
-
-.content-box-green[**So,**]
-
-Denoting the collection of `\(\hat{\beta}\)`s as `\(\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})\)`,
-
-`\begin{aligned}
-    Min_{\theta} \sum_{i=1}^n \Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \hat{\beta_k} x_{k,i}) \Big]^2
-\end{aligned}`
-
----
-class: middle
-
-Find the FOCs by partially differentiating the objective function (sum of squared residuals) wrt each of `\(\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})\)`,
-
-`\begin{aligned}
-    \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = &amp; 0 \;\; (\beta_0) \\
-    \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_1) \\
-  \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_2) \\
-  \vdots \\
-  \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_k) \\
-\end{aligned}`
-
----
-class: middle
-
-Or more succinctly,
-`\begin{aligned}
-  \sum_{i=1}^n \hat{u}_i = &amp; 0 \;\; (\beta_0) \\
-  \sum_{i=1}^n x_{i,1}\hat{u}_i = &amp; 0  \;\; (\beta_1) \\
-  \sum_{i=1}^n x_{i,2}\hat{u}_i = &amp; 0  \;\; (\beta_2) \\
-  \vdots \\
-  \sum_{i=1}^n x_{i,k}\hat{u}_i = &amp; 0  \;\; (\beta_k) \\
-\end{aligned}`
-
----
-class: middle
-
-# Implementation of multivariate OLS
-
-.content-box-green[**R code: Implementation in R**]
 
 
 ```r
-#--- generate data ---#
+set.seed(903478)
+
+#--- Preparation ---#
+B &lt;- 10000 # the number of iterations
 N &lt;- 100 # sample size
-x1 &lt;- rnorm(N) # independent variable
-x2 &lt;- rnorm(N) # independent variable
-u &lt;- rnorm(N) # error
-y &lt;- 1 + x1 + x2 + u # dependent variable
-data &lt;- data.frame(y = y, x1 = x1, x2 = x2)
+beta_storage &lt;- rep(0, B) # estimates storage for beta
+V_beta_storage &lt;- rep(0, B) # estimates storage for V(beta)
+x &lt;- rnorm(N) # x values are the same for every iteration
+SST_X &lt;- sum((x - mean(x))^2)
 
-#--- OLS ---#
-reg &lt;- lm(y ~ x1 + x2, data = data)
-reg_sum &lt;- summary(reg) # get summary
-reg_sum$coef # print out coef estimates
-```
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  #--- steps 1 and 2:  ---#
+  u &lt;- 2 * rnorm(N) # error
+  y &lt;- 1 + x + u # dependent variable
+  data &lt;- data.frame(y = y, x = x)
 
-```
-##              Estimate
-## (Intercept) 0.9725894
-## x1          1.0548631
-## x2          0.9501089
-##             Std. Error
-## (Intercept)  0.1103380
-## x1           0.1035703
-## x2           0.1202508
-##               t value
-## (Intercept)  8.814634
-## x1          10.184997
-## x2           7.901058
-##                 Pr(&gt;|t|)
-## (Intercept) 4.847857e-14
-## x1          5.346509e-17
-## x2          4.351849e-12
+  #--- OLS ---#
+  reg &lt;- lm(y ~ x, data = data) # OLS
+  beta_storage[i] &lt;- reg$coef["x"]
+  #* store estimated variance of beta_1_hat
+  V_beta_storage[i] &lt;- vcov(reg)["x", "x"]
+}
 ```
 
 ---
+class: middle
 
-class: inverse, center, middle
-name: mvr
+.content-box-green[**True Variance**]
 
-# Frisch–Waugh–Lovell Theorem
++ `\(SST_X = 112.07\)`
++ `\(\sigma^2 = 4\)`
 
-&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+`$$V(\hat{\beta}) = 4/112.07 = 0.0357$$`
+
+.content-box-green[**Check**]
+
+Your Estimates of Variance of `\(\hat{\beta_1}\)`?
+
+
+```r
+# === mean ===#
+mean(V_beta_storage)
+```
+
+```
+## [1] 0.03579118
+```
+---
+class: middle
+
+
+```r
+ggplot(data = data.frame(x = V_beta_storage)) +
+  geom_density(aes(x = x)) +
+  geom_vline(xintercept = round(4 / SST_X, digits = 4))
+```
+
+&lt;img src="MC_x_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: middle
 
-Consider the following simple model,
+# Exercise
+
+.content-box-green[**Problem**]
+
+Using MC simulations, find out how the variation in `\(x\)` affects the OLS estimators
+
+---
+class: middle
+
+.content-box-green[**Model setup**]
 
 `\begin{aligned}
-  y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_3 x_{3,i} + u_i
+  y = \beta_0 + \beta_1 x_1 + u \\
+  y = \beta_0 + \beta_1 x_2 + u
 \end{aligned}`
 
-Suppose you are interested in estimating only `\(\beta_1\)`.
++ `\(x_1\sim N(0,1)\)` and `\(x_2\sim N(0,9)\)`
++ `\(u\sim N(0,1)\)`
++ `\(E[u_1|x]=0\)` and `\(E[u_2|x]=0\)`
 
 ---
 class: middle
 
-Let's consider the following two methods,
+# Solution
 
-.content-box-green[**Method 1: Regular OLS**]
 
-Regress `\(y\)` on `\(x_1\)`, `\(x_2\)`, and `\(x_3\)` with an intercept to estimate `\(\beta_0\)`, `\(\beta_1\)`, `\(\beta_2\)`, `\(\beta_3\)` at the same time (just like you normally do)
+```r
+#--- assign new names ---#
+beta_1s &lt;- estimate_storage[, 1]
+beta_2s &lt;- estimate_storage[, 2]
 
-.content-box-green[**Method 2: 3-step**]
+#--- mean ---#
+mean(beta_1s)
+```
 
-+ regress `\(y\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_y\)`
-+ regress `\(x_1\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_{x_1}\)`
-+ regress `\(\hat{u}_y\)` on `\(\hat{u}_{x_1}\)` `\((\hat{u}_y=\alpha_1 \hat{u}_{x_1}+v_3)\)`
+```
+## [1] 0.9961388
+```
 
-.content-box-green[**Frisch-Waugh–Lovell theorem**]
+```r
+mean(beta_2s)
+```
 
-Methods 1 and 2 produces the same coefficient estimate on `\(x_1\)`
+```
+## [1] 0.9994399
+```
 
-`$$\hat{\beta_1} = \hat{\alpha_1}$$`
+```r
+#--- sd ---#
+sd(beta_1s)
+```
 
----
-class: middle
+```
+## [1] 0.1041601
+```
 
-# Partialing out Interpretation from Method 2
+```r
+sd(beta_2s)
+```
 
-.content-box-green[**Step 1**]
-
-Regress `\(y\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_y\)`
-
-+ `\(\hat{u}_y\)` is void of the impact of `\(x_2\)` and `\(x_3\)` on `\(y\)`
-
-.content-box-green[**Step 2**]
-
-Regress `\(x_1\)` on `\(x_2\)` and `\(x_3\)` with an intercept and get residuals, which we call `\(\hat{u}_{x_1}\)`
-
-+ `\(\hat{u}_{x_1}\)` is void of the impact of `\(x_2\)` and `\(x_3\)` on `\(x_1\)`
-
-.content-box-green[**Step 3**]
-
-Regress `\(\hat{u}_y\)` on `\(\hat{u}_{x_1}\)`, which produces an estimte of `\(\beta_1\)` that is identical to that you can get from regressin `\(y\)` on `\(x_1\)`, `\(x_2\)`, and `\(x_3\)`
-
----
-class: middle
-
-# Interpretation
-
-+ Regressing `\(y\)` on all explanatory variables `\((x_1\)`, `\(x_2\)`, and `\(x_3)\)` in a multivariate regression is as if you are looking at the impact of a single explanatory variable with the effects of all the other effects partiled out
-
-+ In other words, including variables beyond your variable of interest lets you &lt;span style = "color: red;"&gt; control for (remove the effect of) &lt;/span&gt; other variables, avoiding confusing the impact of the variable of interest with the impact of other variables. 
-
----
-
-class: inverse, center, middle
-name: ssp
-
-# Small Sample Properties of OLS Estimators
-
-&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=1000px&gt;&lt;/html&gt;
+```
+## [1] 0.03322701
+```
 
 ---
 class: middle
 
-.content-box-green[**Unbiasedness of OLS Estimator**] 
-
-OLS estimators of multivariate models are unbiased under &lt;span style = "color: blue;"&gt; certain &lt;/span&gt; conditions
-
----
-class: middle
-
-.content-box-green[**Condition 1**]
-
-Your model is correct (Assumption `\(MLR.1\)`)
-
-&lt;br&gt;
-
-.content-box-green[**Condition 2**]
-
-Random sampling (Assumption `\(MLR.2\)`)
-
-&lt;br&gt;
-
-.content-box-green[**Conditions 3**]
-
-No perfect collinearity (Assumption `\(MLR.3\)`)
-
----
-class: middle
-
-# Perfect Collinearity
-
-.content-box-green[**No Perfect Collinearity**]
-
-Any variable cannot be a linear function of the other variables
-
-.content-box-green[**Example (silly)**]
-
-`\begin{aligned}
-  wage = \beta_0 + \beta_1 educ + \beta_2 (3\times educ) + u
-\end{aligned}`
-
-(&lt;span style = "color: blue;"&gt; More on this later when we talk about dummy variables&lt;/span&gt;)
-
----
-class: middle
-
-.content-box-red[**Zero Conditional Mean**]
-
-`\begin{aligned}
-  E[u|x_1,x_2,\dots,x_k]=0 \;\;\mbox{(Assumption MLR.4)}
-\end{aligned}`
-
----
-class: middle
+# Visualization
 
 
-.content-box-green[**Unbiasedness of OLS estimators**]
+```r
+plot_data_1 &lt;- data.table(x = beta_1s, type = "Equation 1")
+plot_data_2 &lt;- data.table(x = beta_2s, type = "Equation 2")
+plot_data &lt;- rbind(plot_data_1, plot_data_2)
+ggplot(data = plot_data) +
+  geom_density(aes(x = x, fill = type), alpha = 0.5) +
+  scale_fill_discrete(name = "") +
+  xlab("Coefficient Estimate") +
+  theme(
+    legend.position = "bottom"
+  )
+```
 
-If all the conditions `\(MLR.1\sim MLR.4\)` are satisfied, OLS estimators are unbiased.
+&lt;img src="MC_x_files/figure-html/compare_viz_1-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+  
 
-$$
-\def\ehb{E[\hat{\beta}_j]}
-`\begin{aligned}
-  \ehb=\beta_j \;\; ^\forall j=0,1,\dots,k
-\end{aligned}`
-$$
 
----
-class: middle
-
-.content-box-green[**Endogeneity (Definition)**]
-
-`$$E[u|x_1,x_2,\dots,x_k] = f(x_1,x_2,\dots,x_k) \ne 0$$`
-
-.content-box-green[**What could cause endogeneity problem?**]
-+ functional form misspecification
-`\begin{aligned}
-  wage = &amp; \beta_0 + \beta_1 log(x_1) + \beta_2 x_2 + u_1 \;\;\mbox{(true)}\\
-  wage = &amp; \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u_2 (=log(x_1)-x_1) \;\; \mbox{(yours)}
-\end{aligned}`
-+ omission of variables that are correlated with any of `\(x_1,x_2,\dots,x_k\)` (&lt;span style = "color: blue;"&gt; more on this soon &lt;/span&gt;)
-+ &lt;span style = "color: blue;"&gt; other sources of enfogeneity later &lt;/span&gt;
-
----
-class: middle
-
-# Variance of the OLS estimators
-
-.content-box-green[**Homoeskedasticity**]
-
-`\begin{aligned}
-Var(u|x_1,\dots,x_k)=\sigma^2 \;\;\mbox{(Assumption MLR.5)}
-\end{aligned}`
-
-&lt;br&gt;
-
-.content-box-green[**Variance**]
-
-Under conditions `\(MLR.1\)` through `\(MLR.5\)`, conditional on the sample values of the independent variables,
-
-`\begin{aligned}
-    Var(\hat{\beta}_j)= \frac{\sigma^2}{SST_j(1-R^2_j)},
-\end{aligned}`
-
-where `\(SST_j= \sum_{i=1}^n (x_{ji}-\bar{x_j})^2\)` and `\(R_j^2\)` is the R-squared from regressing `\(x_j\)` on all other independent variables including an intercept. (&lt;span style = "color: blue;"&gt; We will revisit this equation&lt;/span&gt;)
-
----
-class: middle
-
-# Estimating `\(\sigma^2\)`
-
-Just like uni-variate regression, you need to estimate `\(\sigma^2\)` if you want to estimate the variance (and standard deviation) of the OLS estimators.
-
-.content-box-green[**uni-variate regression**]
-`\begin{aligned}
-  \hat{\sigma}^2=\sum_{i=1}^N \frac{\hat{u}_i^2}{n-2}
-\end{aligned}`
-
-.content-box-green[**multi-variate regression**]
-
-A model with `\(k\)` independent variables with intercept.
-
-`\begin{aligned}
-  \hat{\sigma}^2=\sum_{i=1}^N \frac{\hat{u}_i^2}{n-(k+1)}
-\end{aligned}`
-
-You solved `\(k+1\)` simultaneous equations to get `\(\hat{\beta}_j\)` `\((j=0,\dots,k)\)`. So, once you know the value of `\(n-k-1\)` of the residuals, you know the rest.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

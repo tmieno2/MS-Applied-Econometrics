@@ -1,0 +1,647 @@
+---
+title: "Monte Carlo Simulation"
+author: "AECN 896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 12:8
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+bibliography: ../ref.bib
+---
+class: middle
+
+```{r, child = "./../setup.Rmd"}
+```
+
+```{r knitr-setup, include = FALSE, cache = F}
+library(knitr)
+opts_chunk$set(
+  root.dir = here()
+)
+```
+
+```{r prep, include = FALSE, cache = F}
+library(data.table)
+library(magick)
+library(fixest)
+library(officer)
+library(flextable)
+library(dplyr)
+library(ggplot2)
+```
+
+$$
+\def\sumten{\sum_{i=1}^{10}}
+$$
+
+$$
+\def\sumn{\sum_{i=1}^{n}}
+$$
+
+# Outline
+
+1. [Introduction](#mvr)
+2. [MC Simulations](#mcs)
+
+---
+
+class: inverse, center, middle
+name: mvr
+
+# Monte Carlo Simulation: Introduction
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+.content-box-green[**Monte Carlo Simulation**]
+
+A way to test econometric theories via simulation
+
+---
+class: middle
+
+.content-box-green[**How is it used in econometrics?**]
++ confirm ecoometric theory numerically
+    - OLS estimators are unbiased if $E[u|x]=0$ along with other conditions (theory)
+    - I know the above theory is right, but let's check if it is true numerically
++ You kind of sense that something in your data may cause problems, but there is no proven econometric theory about what's gonna happen (I used MC simulation for this purpose a lot)
++ assist students in understanding econometric theories by providing actual numbers instead of a series of Greek letters
+
+---
+class: middle
+
+.content-box-green[**Question**]
+
+Suppose you are interested in checking what happens to OLS estimators if $E[u|x]=0$ (the error term and $x$ are not correlated) is violated. 
+
+Can you use the real data to do this?
+
+---
+class: middle
+
+.content-box-green[**Key part of MC simulation**]
+
+<span style = "color: blue;"> You </span> generate data (you have control over how data are generated)
+
++ You know the true parameter unlike the real data generating process
++ You can change only the part that you want to change about data generating process and econometric methods with everything else fixed
+
+---
+class: middle
+
+# Generating data
+
+.content-box-green[**Pseudo random number generators**]
+
+Algorithms for generating a sequence of numbers whose properties <span style = "color: blue;"> approximate </span> the properties of sequences of random numbers
+
+---
+class: middle
+
+.content-box-green[**Examples in R: Uniform Distribution**]
+
+```{r echo = T}
+runif(5) # default is min=0 and max=1
+```
+
+---
+class: middle
+```{r echo = T}
+x <- runif(10000)
+hist(x)
+```
+
+---
+class: middle
+
+.content-box-green[**Pseudo random number generator**]
+
++ Pseudo random number generators are not really random number generators
++ What numbers you will get are pre-determined
++ What numbers you will get can be determined by setting a <span style = "color: red;"> seed </span>
+
+.content-box-green[**An example**]
+
+```{r echo = T}
+set.seed(2387438)
+runif(5)
+```
+
+.content-box-green[**Question**]
+
+What benefits does setting a seed have?
+
+---
+class: middle
+
+.content-box-green[**Examples in R: Normal Distribution**]
+
+.left5[
+
+$x \sim N(0, 1)$
+```{r norm_1, out.width = "100%"}
+# default is mean = 0,sd = 1
+x <- rnorm(10000)
+hist(x)
+```
+]
+
+.right5[
+
+$x \sim N(2, 2)$
+```{r norm_2, out.width = "100%"}
+# mean = 2, sd = 2
+x <- rnorm(10000, mean = 2, sd = 2)
+hist(x)
+```
+]
+
+---
+class: middle
+
+.content-box-green[**Other distributions**] 
+
++ Beta
++ Chi-square
++ F
++ Logistic
++ Log-normal
++ many others
+
+---
+class: middle
+
+.content-box-green[**d, p, q, r**]
+
+For each distribution, you have four different kinds of functions:
+
++ <span style = "color: red;"> `d`</span>`norm`: density function
++ <span style = "color: red;"> `p`</span>`norm`: distribution function
++ <span style = "color: red;"> `q`</span>`norm`: quantile function
++ <span style = "color: red;"> `r`</span>`norm`: random draw
+
+---
+class: middle
+
+.content-box-green[**dnorm**]
+
+`dnorm(x)` gives you the height of the density function at $x$.
+
+---
+class: middle
+
+`dnorm(-1)` and `dnorm(2)`
+
+```{r pnorm, echo = F, include = F}
+x <- seq(-3, 3, length = 1000)
+
+pdf <- dnorm(x)
+plot_data <- data.table(y = pdf, x = x)
+ggplot() +
+  geom_line(data = plot_data, aes(y = y, x = x), color = "red") +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+```
+
+```{r pnorm2, echo = F}
+x <- seq(-3, 3, length = 1000)
+pdf <- dnorm(x)
+plot_data <- data.table(y = pdf, x = x)
+ggplot() +
+  geom_line(data = plot_data, aes(y = y, x = x), color = "red") +
+  geom_point(
+    data = data.table(y = dnorm(2), x = 2),
+    aes(y = y, x = x),
+    color = "blue", size = 2
+  ) +
+  annotate(
+    "text",
+    label = paste0("dnorm(-1) = ", round(dnorm(-1), digits = 2)),
+    y = 0.25, x = -2,
+    size = 3
+  ) +
+  geom_line(
+    data = data.table(y = seq(0, dnorm(-1), length = 20), x = -1),
+    aes(y = y, x = x),
+    linetype = 2
+  ) +
+  geom_point(
+    data = data.table(y = dnorm(-1), x = -1),
+    aes(y = y, x = x),
+    color = "blue", size = 2
+  ) +
+  annotate(
+    "text",
+    label = paste0("dnorm(2) = ", round(dnorm(2), digits = 2)),
+    y = 0.1, x = 2.5,
+    size = 3
+  ) +
+  geom_line(
+    data = data.table(y = seq(0, dnorm(2), length = 20), x = 2),
+    aes(y = y, x = x),
+    linetype = 2
+  ) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+```
+
+---
+class: middle
+
+.content-box-green[**pnorm**]
+
+`pnorm(x)` gives you the probability that a single random draw is <span style = "color: red;"> less </span> than $x$.
+
+---
+class: middle
+
+`pnorm(-1)`
+
+```{r pnorm1_1, echo = F}
+
+ggplot() +
+  geom_line(data = plot_data, aes(y = y, x = x), color = "red") +
+  geom_ribbon(
+    data = plot_data[x <= -1, ],
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "blue",
+    alpha = 0.4
+  ) +
+  annotate(
+    "text",
+    label = paste0("pnorm(-1) = ", round(pnorm(-1), digits = 2)),
+    y = 0.05, x = 0,
+    size = 3
+  )
+```
+---
+class: middle
+
+`pnorm(2)`
+
+```{r pnorm1_2, echo = F}
+
+ggplot() +
+  geom_line(data = plot_data, aes(y = y, x = x), color = "red") +
+  geom_ribbon(
+    data = plot_data[x <= 2, ],
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "blue",
+    alpha = 0.4
+  ) +
+  annotate(
+    "text",
+    label = paste0("pnorm(2) = ", round(pnorm(2), digits = 2)),
+    y = 0.05, x = 0,
+    size = 3
+  )
+```
+
+---
+class: middle
+
+.content-box-green[**Practice**]
+
+What is the probability that a single random draw from a Normal distribution with `mean = 1` and `sd = 2`?
+
+---
+class: middle
+
+`qnorm(x)`, where $0 < x < 1$, gives you a number $\pi$, where the probability of observing a number from a single random draw is less than $\pi$ with probability of $x$. 
+
+We call the output of `qnorm(x)`, $x%$ quantile of the standard Normal distribution (because the default is `mean = 0` and `sd = 1` for `rnorm()`). 
+
+---
+class: middle
+
+`qnorm(0.95)`
+
+```{r qnorm1, echo = F}
+x <- seq(-3, 3, length = 1000)
+pdf <- dnorm(x)
+plot_data <- data.table(y = pdf, x = x)
+ggplot() +
+  geom_line(data = plot_data, aes(y = y, x = x), color = "red") +
+  geom_ribbon(data = plot_data[x < 1.64, ], aes(ymax = y, ymin = 0, x = x), fill = "green", alpha = 0.3) +
+  annotate(
+    "text",
+    label = "qnorm(0.95)=1.64",
+    x = 2.2, y = 0.3,
+    size = 3
+  ) +
+  geom_point(aes(y = 0, x = 1.64)) +
+  annotate(
+    "text",
+    label = "1.64",
+    x = 1.64, y = 0.03,
+    size = 3
+  ) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+```
+
+---
+class: middle
+
+.content-box-green[**Practice**]
+
+What is the 88% quantile of Normal distribution with `mean = 0` and `sd = 9`?
+
+
+---
+
+class: inverse, center, middle
+name: mcs
+
+# Monte Carlo Simulation: Introduction
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+.content-box-green[**Monte Carlo Simulation: Steps**]
+
++ specify the data generating process
++ generate data based on the data generating process
++ get an estimate based on the generated data (e.g. OLS, mean)
++ repeat the above steps many many times
++ compare your estimates with the true parameter
+
+.content-box-green[**Question**]
+
+Why do the steps $1-3$ many many times?
+
+---
+class: middle
+
+# Monte Carlo Simulation: Example 1
+
+Is sample mean really an unbiased estimator of the expected value? 
+
+That is, is $E[\frac{1}{n}\sum_{i=1}^n x_i] = E[x]$, where $x_i$ is an independent random draw from the same distribution,
+
+---
+class: middle
+
+.content-box-green[**Sample Mean: Steps 1-3**]
+
+```{r }
+#--- steps 1 and 2:  ---#
+# specify the data generating process and generate data
+x <- runif(100) # Here, E[x]=0.5
+
+#--- step 3 ---#
+# calculate sample mean
+mean_x <- mean(x)
+mean_x
+```
+
+---
+class: middle
+
+.content-box-green[**Sample Mean: Step 4**]
+
++ repeat the above steps many times
++ We use a <span style = "color: blue;"> loop </span> to do the same (similar) thing over and over again
+
+---
+class: middle
+
+.content-box-green[**Loop: for loop**] 
+
+```{r loop, eval=F}
+#--- the number of iterations ---#
+B <- 1000
+
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  print(i) # print i
+}
+```
+
+---
+class: middle
+
+.content-box-green[**Step 4**]
+
+```{r step_4}
+#--- the number of iterations ---#
+B <- 1000
+
+#--- create a storage that stores estimates ---#
+estimate_storage_mean <- rep(0, B)
+
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  #--- steps 1 and 2:  ---#
+  # specify the data generating process and generate data
+  x <- runif(100) # Here, E[x]=0.5
+
+  #--- step 3 ---#
+  # calculate sample mean
+  mean_x <- mean(x)
+  estimate_storage_mean[i] <- mean_x
+}
+```
+
+---
+class: middle
+
+Compare your estimates with the true parameter
+
+```{r step_5}
+mean(estimate_storage_mean)
+hist(estimate_storage_mean)
+```
+
+---
+class: middle
+
+# Monte Carlo Simulation: Example 2
+
+.content-box-green[**Question**]
+
+What happens to $\beta_1$ if $E[u|x]\ne 0$ when estimating $y=\beta_0+\beta_1 x + u$?
+
+---
+class: middle
+
+```{r ex2_code}
+#--- Preparation ---#
+B <- 1000 # the number of iterations
+N <- 100 # sample size
+estimate_storage <- rep(0, B) # estimates storage
+
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  #--- steps 1 and 2:  ---#
+  mu <- rnorm(N) # the common term shared by both x and u
+  x <- rnorm(N) + mu # independent variable
+  u <- rnorm(N) + mu # error
+  y <- 1 + x + u # dependent variable
+  data <- data.table(y = y, x = x)
+
+  #--- OLS ---#
+  reg <- lm(y ~ x, data = data) # OLS
+  estimate_storage[i] <- reg$coef["x"]
+}
+```
+
+---
+class: middle
+
+```{r ex2_res}
+hist(estimate_storage)
+```
+
+---
+class: middle
+
+# Examle 3: Variance of OLS Estimators
+
+.content-box-green[**Model**]
+
+\begin{aligned}
+    y = \beta_0 + \beta_1 x + u \\
+\end{aligned}
+
++ $x\sim N(0,1)$
++ $u\sim N(0,1)$
++ $E[u|x]=0$
+
+.content-box-green[**Variance of the OLS estimator**] 
+
+True Variance of $\hat{\beta_1}$: $V(\hat{\beta_1}) = \frac{\sigma^2}{\sum_{i=1}^n (x_i-\bar{x})^2} = \frac{\sigma^2}{SST_X}$
+
+Its estimator: $\widehat{V(\hat{\beta_1})} =\frac{\hat{\sigma}^2}{SST_X} = \frac{\sum_{i=1}^n \hat{u}_i^2}{n-2} \times \frac{1}{SST_X}$
+
+.content-box-green[**Question**]
+
+Does the estimator really work? (Is it unbiased?)
+
+---
+class: middle
+
+```{r ex_3}
+set.seed(903478)
+
+#--- Preparation ---#
+B <- 10000 # the number of iterations
+N <- 100 # sample size
+beta_storage <- rep(0, B) # estimates storage for beta
+V_beta_storage <- rep(0, B) # estimates storage for V(beta)
+x <- rnorm(N) # x values are the same for every iteration
+SST_X <- sum((x - mean(x))^2)
+
+#--- repeat steps 1-3 B times ---#
+for (i in 1:B) {
+  #--- steps 1 and 2:  ---#
+  u <- 2 * rnorm(N) # error
+  y <- 1 + x + u # dependent variable
+  data <- data.frame(y = y, x = x)
+
+  #--- OLS ---#
+  reg <- lm(y ~ x, data = data) # OLS
+  beta_storage[i] <- reg$coef["x"]
+  #* store estimated variance of beta_1_hat
+  V_beta_storage[i] <- vcov(reg)["x", "x"]
+}
+```
+
+---
+class: middle
+
+.content-box-green[**True Variance**]
+
++ $SST_X = `r round(SST_X, digits = 2)`$
++ $\sigma^2 = 4$
+
+$$V(\hat{\beta}) = 4/`r round(SST_X, digits = 2)` = `r round(4/SST_X, digits = 4)`$$
+
+.content-box-green[**Check**]
+
+Your Estimates of Variance of $\hat{\beta_1}$?
+
+```{r }
+# === mean ===#
+mean(V_beta_storage)
+```
+---
+class: middle
+
+```{r }
+ggplot(data = data.frame(x = V_beta_storage)) +
+  geom_density(aes(x = x)) +
+  geom_vline(xintercept = round(4 / SST_X, digits = 4))
+```
+
+---
+class: middle
+
+# Exercise
+
+.content-box-green[**Problem**]
+
+Using MC simulations, find out how the variation in $x$ affects the OLS estimators
+
+---
+class: middle
+
+.content-box-green[**Model setup**]
+
+\begin{aligned}
+  y = \beta_0 + \beta_1 x_1 + u \\
+  y = \beta_0 + \beta_1 x_2 + u
+\end{aligned}
+
++ $x_1\sim N(0,1)$ and $x_2\sim N(0,9)$
++ $u\sim N(0,1)$
++ $E[u_1|x]=0$ and $E[u_2|x]=0$
+
+---
+class: middle
+
+# Solution
+
+```{r compare_sol_1}
+#--- assign new names ---#
+beta_1s <- estimate_storage[, 1]
+beta_2s <- estimate_storage[, 2]
+
+#--- mean ---#
+mean(beta_1s)
+mean(beta_2s)
+
+#--- sd ---#
+sd(beta_1s)
+sd(beta_2s)
+```
+
+---
+class: middle
+
+# Visualization
+
+```{r compare_viz_1}
+plot_data_1 <- data.table(x = beta_1s, type = "Equation 1")
+plot_data_2 <- data.table(x = beta_2s, type = "Equation 2")
+plot_data <- rbind(plot_data_1, plot_data_2)
+ggplot(data = plot_data) +
+  geom_density(aes(x = x, fill = type), alpha = 0.5) +
+  scale_fill_discrete(name = "") +
+  xlab("Coefficient Estimate") +
+  theme(
+    legend.position = "bottom"
+  )
+```
+  
+
+

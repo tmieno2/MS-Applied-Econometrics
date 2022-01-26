@@ -21,3 +21,9 @@ build_pdf(here("LectureNotes/1_UnivariateRegression/univariate_regression_x.html
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/2_MultivariateRegression/multivariate_regression_x.rmd"))
 build_pdf(here("LectureNotes/2_MultivariateRegression/multivariate_regression_x.html"))
+
+# /*===========================================================
+#' # MC
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/3_MonteCarloSimulation/MC_x.rmd"))
+build_pdf(here("LectureNotes/3_MonteCarloSimulation/MC_x.html"))

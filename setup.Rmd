@@ -1,4 +1,4 @@
-```{r setup-knitr, include = FALSE}
+```{r setup-knitr, include = FALSE, cache = F}
 
 library(knitr)
 options(htmltools.dir.version = FALSE)
@@ -14,7 +14,7 @@ opts_chunk$set(
   # fig.path='Figs/',
   cache = T,
   root.dir = here(),
-  echo = F
+  echo = T
 )
 
 library(flipbookr)

@@ -13,7 +13,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 2: Univariate Regression ([html](https://tmieno2.github.io/MS-Applied-Econometrics/1_UnivariateRegression/univariate_regression_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/1_UnivariateRegression/univariate_regression_x.pdf))
 
-+ Lecture 3: Multivariate Regression ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/MultivariateRegression/multivariate.pdf))
++ Lecture 3: Multivariate Regression ([html](https://tmieno2.github.io/MS-Applied-Econometrics/2_MultivariateRegression/multivariate_regression_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/2_MultivariateRegression/multivariate_regression_x.pdf))
 
 + Lecture 4: Monte Carlo Simulation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/MonteCarloSimulation/MC.pdf))
 
