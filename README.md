@@ -15,7 +15,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 3: Multivariate Regression ([html](https://tmieno2.github.io/MS-Applied-Econometrics/2_MultivariateRegression/multivariate_regression_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/2_MultivariateRegression/multivariate_regression_x.pdf))
 
-+ Lecture 4: Monte Carlo Simulation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/MonteCarloSimulation/MC.pdf))
++ Lecture 4: Monte Carlo Simulation ([html](https://tmieno2.github.io/MS-Applied-Econometrics/3_MonteCarloSimulation/MC_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/3_MonteCarloSimulation/MC_x.pdf))
 
 + Lecture 5: Omitted Variable Bias and Multicollinearity ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/OmittedVariableMulticollinear/OmittedMulticollinear_x.html))
 
