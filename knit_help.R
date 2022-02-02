@@ -1,5 +1,4 @@
 library(knitr)
-library(knitr)
 library(rmarkdown)
 library(here)
 library(xaringanBuilder)

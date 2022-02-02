@@ -66,11 +66,11 @@ class: middle
 
 .content-box-green[**Univariate**]
 
-The most important assumption $E[u|x]$ is almost always violated (unless you data comes from randomized experiments) because all the other variables are sitting in the error term, which can be correlated with $x$.
+The most important assumption $E[u|x] = 0$ (zero conditional mean) is almost always violated (unless you data comes from randomized experiments) because all the other variables are sitting in the error term, which can be correlated with $x$.
 
 .content-box-green[**Multivariate**]
 
-More independent variables mean less factors left in the error term, which makes the endogeneity problem \textcolor{blue}{less} severe
+More independent variables mean less factors left in the error term, which makes the endogeneity problem <span style = "color: blue;"> less </span>severe
 
 ---
 class: middle
@@ -198,11 +198,11 @@ class: middle
 Find the FOCs by partially differentiating the objective function (sum of squared residuals) wrt each of $\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})$,
 
 \begin{aligned}
-    \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = & 0 \;\; (\beta_0) \\
-    \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_1) \\
-  \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_2) \\
+    \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = & 0 \;\; (\hat{\beta}_0) \\
+    \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\hat{\beta}_1) \\
+  \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\hat{\beta}_2) \\
   \vdots \\
-  \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\beta_k) \\
+  \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= & 0  \;\; (\hat{\beta}_k) \\
 \end{aligned}
 
 ---
@@ -210,11 +210,11 @@ class: middle
 
 Or more succinctly,
 \begin{aligned}
-  \sum_{i=1}^n \hat{u}_i = & 0 \;\; (\beta_0) \\
-  \sum_{i=1}^n x_{i,1}\hat{u}_i = & 0  \;\; (\beta_1) \\
-  \sum_{i=1}^n x_{i,2}\hat{u}_i = & 0  \;\; (\beta_2) \\
+  \sum_{i=1}^n \hat{u}_i = & 0 \;\; (\hat{\beta}_0) \\
+  \sum_{i=1}^n x_{i,1}\hat{u}_i = & 0  \;\; (\hat{\beta}_1) \\
+  \sum_{i=1}^n x_{i,2}\hat{u}_i = & 0  \;\; (\hat{\beta}_2) \\
   \vdots \\
-  \sum_{i=1}^n x_{i,k}\hat{u}_i = & 0  \;\; (\beta_k) \\
+  \sum_{i=1}^n x_{i,k}\hat{u}_i = & 0  \;\; (\hat{\beta}_k) \\
 \end{aligned}
 
 ---

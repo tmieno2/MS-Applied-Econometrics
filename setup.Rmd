@@ -29,6 +29,11 @@ xaringanExtra::use_panelset()
 xaringanExtra::use_clipboard()
 ```
 
+```{r set-options, echo=FALSE, cache=FALSE}
+#* set the width of R output
+options(width = 400)
+```
+
 ```{r xaringan-themer, include = FALSE, warning = FALSE, cache = F}
 library(xaringanthemer)
 style_duo_accent(

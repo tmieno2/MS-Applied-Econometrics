@@ -41,6 +41,8 @@ class: middle
 
 
 
+
+
 &lt;style type="text/css"&gt;
 
 .remark-slide-content.hljs-github h1 {
@@ -385,11 +387,11 @@ class: middle
 
 .content-box-green[**Univariate**]
 
-The most important assumption `\(E[u|x]\)` is almost always violated (unless you data comes from randomized experiments) because all the other variables are sitting in the error term, which can be correlated with `\(x\)`.
+The most important assumption `\(E[u|x] = 0\)` (zero conditional mean) is almost always violated (unless you data comes from randomized experiments) because all the other variables are sitting in the error term, which can be correlated with `\(x\)`.
 
 .content-box-green[**Multivariate**]
 
-More independent variables mean less factors left in the error term, which makes the endogeneity problem \textcolor{blue}{less} severe
+More independent variables mean less factors left in the error term, which makes the endogeneity problem &lt;span style = "color: blue;"&gt; less &lt;/span&gt;severe
 
 ---
 class: middle
@@ -517,11 +519,11 @@ class: middle
 Find the FOCs by partially differentiating the objective function (sum of squared residuals) wrt each of `\(\hat{\theta} (=\{\hat{\beta_0},\hat{\beta_1},\dots,\hat{\beta_k}\})\)`,
 
 `\begin{aligned}
-    \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = &amp; 0 \;\; (\beta_0) \\
-    \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_1) \\
-  \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_2) \\
+    \sum_{i=1}^n(y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) = &amp; 0 \;\; (\hat{\beta}_0) \\
+    \sum_{i=1}^n x_{i,1}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\hat{\beta}_1) \\
+  \sum_{i=1}^n x_{i,2}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\hat{\beta}_2) \\
   \vdots \\
-  \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\beta_k) \\
+  \sum_{i=1}^n x_{i,k}\Big[ y_i-(\hat{\beta_0}+\hat{\beta_1} x_{1,i} + \hat{\beta_2} x_{2,i} + \dots + \beta_k x_{k,i}) \Big]= &amp; 0  \;\; (\hat{\beta}_k) \\
 \end{aligned}`
 
 ---
@@ -529,11 +531,11 @@ class: middle
 
 Or more succinctly,
 `\begin{aligned}
-  \sum_{i=1}^n \hat{u}_i = &amp; 0 \;\; (\beta_0) \\
-  \sum_{i=1}^n x_{i,1}\hat{u}_i = &amp; 0  \;\; (\beta_1) \\
-  \sum_{i=1}^n x_{i,2}\hat{u}_i = &amp; 0  \;\; (\beta_2) \\
+  \sum_{i=1}^n \hat{u}_i = &amp; 0 \;\; (\hat{\beta}_0) \\
+  \sum_{i=1}^n x_{i,1}\hat{u}_i = &amp; 0  \;\; (\hat{\beta}_1) \\
+  \sum_{i=1}^n x_{i,2}\hat{u}_i = &amp; 0  \;\; (\hat{\beta}_2) \\
   \vdots \\
-  \sum_{i=1}^n x_{i,k}\hat{u}_i = &amp; 0  \;\; (\beta_k) \\
+  \sum_{i=1}^n x_{i,k}\hat{u}_i = &amp; 0  \;\; (\hat{\beta}_k) \\
 \end{aligned}`
 
 ---
@@ -560,22 +562,10 @@ reg_sum$coef # print out coef estimates
 ```
 
 ```
-##              Estimate
-## (Intercept) 0.9725894
-## x1          1.0548631
-## x2          0.9501089
-##             Std. Error
-## (Intercept)  0.1103380
-## x1           0.1035703
-## x2           0.1202508
-##               t value
-## (Intercept)  8.814634
-## x1          10.184997
-## x2           7.901058
-##                 Pr(&gt;|t|)
-## (Intercept) 4.847857e-14
-## x1          5.346509e-17
-## x2          4.351849e-12
+##             Estimate Std. Error  t value     Pr(&gt;|t|)
+## (Intercept) 1.038586  0.1044137 9.946834 1.746308e-16
+## x1          1.073511  0.1145876 9.368472 3.099972e-15
+## x2          1.022455  0.1067612 9.577028 1.098774e-15
 ```
 
 ---
