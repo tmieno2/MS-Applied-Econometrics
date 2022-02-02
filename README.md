@@ -41,7 +41,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 ## Assignments
 
-+ [Assignment 1](https://www.dropbox.com/sh/8q8twk1gph0qts0/AADYc4cWzYJCArWUtNZmPNsva?dl=0)([submission link](https://www.dropbox.com/request/UYPeg7SVSkNiIDwWD5CX))
++ [Assignment 1](https://www.dropbox.com/sh/8q8twk1gph0qts0/AADYc4cWzYJCArWUtNZmPNsva?dl=0) ([submission link](https://www.dropbox.com/request/UYPeg7SVSkNiIDwWD5CX))
 
 + [Assignment 2](https://www.dropbox.com/sh/f8f9tdqla719qxw/AACZ8YjVFOC6H8Eck4-rRs1ta?dl=0)
 
