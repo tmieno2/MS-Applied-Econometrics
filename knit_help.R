@@ -26,3 +26,9 @@ build_pdf(here("LectureNotes/2_MultivariateRegression/multivariate_regression_x.
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/3_MonteCarloSimulation/MC_x.rmd"))
 build_pdf(here("LectureNotes/3_MonteCarloSimulation/MC_x.html"))
+
+# /*===========================================================
+#' # Omitted Variable/Multicollinearity
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/3_MonteCarloSimulation/MC_x.rmd"))
+build_pdf(here("LectureNotes/3_MonteCarloSimulation/MC_x.html"))

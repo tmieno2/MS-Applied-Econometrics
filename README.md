@@ -29,7 +29,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 9: Endogeneity ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Endogeneity/endogeneity_x.html))
 
-+ Lecture 10: Instrumental Variable (IV) Estimation([slide](https://tmieno2.github.io/MS-Applied-Econometrics/InstrumentalVariable/iv_x.html))
++ Lecture 10: Instrumental Variable (IV) Estimation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/InstrumentalVariable/iv_x.html))
 
 + Lecture 11: Panel Data Estimation Methods ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Panel/panel_x.html))
 
