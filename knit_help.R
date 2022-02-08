@@ -28,7 +28,19 @@ rmarkdown::render(here("LectureNotes/3_MonteCarloSimulation/MC_x.rmd"))
 build_pdf(here("LectureNotes/3_MonteCarloSimulation/MC_x.html"))
 
 # /*===========================================================
-#' # Omitted Variable/Multicollinearity
+#' # 4. Omitted Variable/Multicollinearity
 # /*===========================================================
-rmarkdown::render(here("LectureNotes/3_MonteCarloSimulation/MC_x.rmd"))
-build_pdf(here("LectureNotes/3_MonteCarloSimulation/MC_x.html"))
+rmarkdown::render(here("LectureNotes/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.rmd"))
+build_pdf(here("LectureNotes/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.html"))
+
+# /*===========================================================
+#' # 4. Omitted Variable/Multicollinearity
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.rmd"))
+build_pdf(here("LectureNotes/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.html"))
+
+# /*===========================================================
+#' # 5. Hypothesis Testing
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/5_Testing/testing_x.rmd"))
+build_pdf(here("LectureNotes/5_Testing/testing_x.html"))
