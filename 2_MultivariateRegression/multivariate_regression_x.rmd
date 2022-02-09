@@ -238,9 +238,56 @@ data <- data.frame(y = y, x1 = x1, x2 = x2)
 
 #--- OLS ---#
 reg <- feols(y ~ x1 + x2, data = data)
-reg_sum <- summary(reg) # get summary
-reg_sum$coef # print out coef estimates
+
+#* print the results
+reg
 ```
+
+---
+class: middle
+
+# Presenting regression results
+
+When you are asked to present regression results in assignments or your final paper, use the `msummary()` function from the `modelsummary` package.
+
+.left5[
+.content-box-green[**Example**]
+
+```{r echo = TRUE, eval = F}
+#* load the package (isntall it if you have not)
+library(modelsummary)
+
+#* run regression
+reg_results <- feols(speed ~ dist, data = cars)
+
+#* report regression table
+msummary(
+  reg_results,
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+)
+```
+]
+
+.right5[
+```{r echo = F, eval = T}
+#* load the package (isntall it if you have not)
+library(modelsummary)
+
+#* run regression
+reg_results <- feols(speed ~ dist, data = cars)
+
+#* report regression table
+msummary(
+  reg_results,
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+)
+```
+]
+
 
 ---
 
