@@ -352,6 +352,8 @@ slides &gt; slide {
 &lt;/style&gt;
 
 
+
+
 # What variables to include or not 
 
 &lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=440px&gt;&lt;/html&gt;  
@@ -494,7 +496,12 @@ name: case-2
 # Monte Carlo Simulation
 
 
+
 ```r
+#* load packages
+# library(fixest)
+# library(data.table)
+
 #--------------------------
 # Monte Carlo Simulation
 #--------------------------
@@ -514,8 +521,8 @@ for (i in 1:B) { # iterate the same process B times
   data &lt;- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 &lt;- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 &lt;- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 &lt;- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 &lt;- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] &lt;- beta_ee1
@@ -552,7 +559,7 @@ g_case_1 &lt;- ggplot(data = plot_data) +
 g_case_1
 ```
 
-&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -959,8 +966,8 @@ for (i in 1:B) { # iterate the same process B times
   data &lt;- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 &lt;- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 &lt;- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 &lt;- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 &lt;- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] &lt;- beta_ee1
@@ -997,7 +1004,7 @@ g_case_2 &lt;- ggplot(data = plot_data) +
 g_case_2
 ```
 
-&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1404,8 +1411,8 @@ for (i in 1:B) { # iterate the same process B times
   data &lt;- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 &lt;- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 &lt;- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 &lt;- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 &lt;- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] &lt;- beta_ee1
@@ -1442,7 +1449,7 @@ g_case_3 &lt;- ggplot(data = plot_data) +
 g_case_3
 ```
 
-&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1851,8 +1858,8 @@ for (i in 1:B) { # iterate the same process B times
   data &lt;- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 &lt;- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 &lt;- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 &lt;- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 &lt;- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] &lt;- beta_ee1
@@ -1889,7 +1896,7 @@ g_case_4 &lt;- ggplot(data = plot_data) +
 g_case_4
 ```
 
-&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="OmittedMulticollinear_x_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 

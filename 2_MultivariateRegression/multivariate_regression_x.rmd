@@ -225,6 +225,9 @@ class: middle
 .content-box-green[**R code: Implementation in R**]
 
 ```{r echo = TRUE}
+#--- load the fixest package ---#
+library(fixest)
+
 #--- generate data ---#
 N <- 100 # sample size
 x1 <- rnorm(N) # independent variable
@@ -234,7 +237,7 @@ y <- 1 + x1 + x2 + u # dependent variable
 data <- data.frame(y = y, x1 = x1, x2 = x2)
 
 #--- OLS ---#
-reg <- lm(y ~ x1 + x2, data = data)
+reg <- feols(y ~ x1 + x2, data = data)
 reg_sum <- summary(reg) # get summary
 reg_sum$coef # print out coef estimates
 ```

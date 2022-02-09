@@ -486,6 +486,9 @@ What happens to $\beta_1$ if $E[u|x]\ne 0$ when estimating $y=\beta_0+\beta_1 x 
 class: middle
 
 ```{r ex2_code}
+#--- load the fixest pacakge for feols() ---#
+library(fixest)
+
 #--- Preparation ---#
 B <- 1000 # the number of iterations
 N <- 100 # sample size
@@ -498,11 +501,11 @@ for (i in 1:B) {
   x <- rnorm(N) + mu # independent variable
   u <- rnorm(N) + mu # error
   y <- 1 + x + u # dependent variable
-  data <- data.table(y = y, x = x)
+  data <- data.frame(y = y, x = x)
 
   #--- OLS ---#
-  reg <- lm(y ~ x, data = data) # OLS
-  estimate_storage[i] <- reg$coef["x"]
+  reg <- feols(y ~ x, data = data) # OLS
+  estimate_storage[i] <- reg$coefficient["x"]
 }
 ```
 
@@ -560,8 +563,8 @@ for (i in 1:B) {
   data <- data.frame(y = y, x = x)
 
   #--- OLS ---#
-  reg <- lm(y ~ x, data = data) # OLS
-  beta_storage[i] <- reg$coef["x"]
+  reg <- feols(y ~ x, data = data) # OLS
+  beta_storage[i] <- reg$coefficient["x"]
   #* store estimated variance of beta_1_hat
   V_beta_storage[i] <- vcov(reg)["x", "x"]
 }
@@ -621,6 +624,31 @@ class: middle
 class: middle
 
 # Solution
+
+```{r sol_exc}
+#--- Preparation ---#
+B <- 1000 # the number of iterations
+N <- 100 # sample size
+estimate_storage <- matrix(0, B, 2) # estimates storage
+
+for (i in 1:B) {
+  #--- generate data ---#
+  x_1 <- rnorm(N, sd = 1) # indep var 1
+  x_2 <- rnorm(N, sd = 3) # indep var 2
+  u <- rnorm(N) # error
+  y_1 <- 1 + x_1 + u # dependent variable 1
+  y_2 <- 1 + x_2 + u # dependent variable 2
+  data <- data.table(y_1 = y_1, y_2 = y_2, x_1 = x_1, x_2 = x_2)
+
+  #--- OLS ---#
+  reg_1 <- feols(y_1 ~ x_1, data = data) # OLS
+  reg_2 <- feols(y_2 ~ x_2, data = data) # OLS
+
+  #--- store coef estimates ---#
+  estimate_storage[i, 1] <- reg_1$coefficient["x_1"] # equation 1
+  estimate_storage[i, 2] <- reg_2$coefficient["x_2"] # equation 2
+}
+```
 
 ```{r compare_sol_1}
 #--- assign new names ---#

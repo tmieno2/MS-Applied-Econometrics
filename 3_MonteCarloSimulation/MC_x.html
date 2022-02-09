@@ -435,7 +435,7 @@ runif(5) # default is min=0 and max=1
 ```
 
 ```
-## [1] 0.4258418 0.7233281 0.1956357 0.5908759 0.7668188
+## [1] 0.7276097 0.5903365 0.6655839 0.9031736 0.5203449
 ```
 
 ---
@@ -742,6 +742,9 @@ class: middle
 
 
 ```r
+#--- load the fixest pacakge for feols() ---#
+library(fixest)
+
 #--- Preparation ---#
 B &lt;- 1000 # the number of iterations
 N &lt;- 100 # sample size
@@ -754,11 +757,11 @@ for (i in 1:B) {
   x &lt;- rnorm(N) + mu # independent variable
   u &lt;- rnorm(N) + mu # error
   y &lt;- 1 + x + u # dependent variable
-  data &lt;- data.table(y = y, x = x)
+  data &lt;- data.frame(y = y, x = x)
 
   #--- OLS ---#
-  reg &lt;- lm(y ~ x, data = data) # OLS
-  estimate_storage[i] &lt;- reg$coef["x"]
+  reg &lt;- feols(y ~ x, data = data) # OLS
+  estimate_storage[i] &lt;- reg$coefficient["x"]
 }
 ```
 
@@ -820,8 +823,8 @@ for (i in 1:B) {
   data &lt;- data.frame(y = y, x = x)
 
   #--- OLS ---#
-  reg &lt;- lm(y ~ x, data = data) # OLS
-  beta_storage[i] &lt;- reg$coef["x"]
+  reg &lt;- feols(y ~ x, data = data) # OLS
+  beta_storage[i] &lt;- reg$coefficient["x"]
   #* store estimated variance of beta_1_hat
   V_beta_storage[i] &lt;- vcov(reg)["x", "x"]
 }
@@ -889,6 +892,32 @@ class: middle
 class: middle
 
 # Solution
+
+
+```r
+#--- Preparation ---#
+B &lt;- 1000 # the number of iterations
+N &lt;- 100 # sample size
+estimate_storage &lt;- matrix(0, B, 2) # estimates storage
+
+for (i in 1:B) {
+  #--- generate data ---#
+  x_1 &lt;- rnorm(N, sd = 1) # indep var 1
+  x_2 &lt;- rnorm(N, sd = 3) # indep var 2
+  u &lt;- rnorm(N) # error
+  y_1 &lt;- 1 + x_1 + u # dependent variable 1
+  y_2 &lt;- 1 + x_2 + u # dependent variable 2
+  data &lt;- data.table(y_1 = y_1, y_2 = y_2, x_1 = x_1, x_2 = x_2)
+
+  #--- OLS ---#
+  reg_1 &lt;- feols(y_1 ~ x_1, data = data) # OLS
+  reg_2 &lt;- feols(y_2 ~ x_2, data = data) # OLS
+
+  #--- store coef estimates ---#
+  estimate_storage[i, 1] &lt;- reg_1$coefficient["x_1"] # equation 1
+  estimate_storage[i, 2] &lt;- reg_2$coefficient["x_2"] # equation 2
+}
+```
 
 
 ```r

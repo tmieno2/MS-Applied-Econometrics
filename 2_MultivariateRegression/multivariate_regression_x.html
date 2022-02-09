@@ -547,6 +547,9 @@ class: middle
 
 
 ```r
+#--- load the fixest package ---#
+library(fixest)
+
 #--- generate data ---#
 N &lt;- 100 # sample size
 x1 &lt;- rnorm(N) # independent variable
@@ -556,16 +559,13 @@ y &lt;- 1 + x1 + x2 + u # dependent variable
 data &lt;- data.frame(y = y, x1 = x1, x2 = x2)
 
 #--- OLS ---#
-reg &lt;- lm(y ~ x1 + x2, data = data)
+reg &lt;- feols(y ~ x1 + x2, data = data)
 reg_sum &lt;- summary(reg) # get summary
 reg_sum$coef # print out coef estimates
 ```
 
 ```
-##             Estimate Std. Error  t value     Pr(&gt;|t|)
-## (Intercept) 1.038586  0.1044137 9.946834 1.746308e-16
-## x1          1.073511  0.1145876 9.368472 3.099972e-15
-## x2          1.022455  0.1067612 9.577028 1.098774e-15
+## NULL
 ```
 
 ---

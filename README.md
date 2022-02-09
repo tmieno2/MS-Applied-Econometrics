@@ -17,9 +17,9 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 3: Monte Carlo Simulation ([html](https://tmieno2.github.io/MS-Applied-Econometrics/3_MonteCarloSimulation/MC_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/3_MonteCarloSimulation/MC_x.pdf))
 
-+ Lecture 4: Omitted Variable Bias and Multicollinearity ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.pdf))
++ Lecture 4: Omitted Variable Bias and Multicollinearity ([html](https://tmieno2.github.io/MS-Applied-Econometrics/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.pdf))
 
-+ Lecture 5: Hypothesis Testing ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/5_Testing/testing_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/5_Testing/testing_x.pdf))
++ Lecture 5: Hypothesis Testing ([html](https://tmieno2.github.io/MS-Applied-Econometrics/5_Testing/testing_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/5_Testing/testing_x.pdf))
 
 + Lecture 6: Standard Error Estimation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/StandardErrorEstimation/se_estimation_x.html))
 

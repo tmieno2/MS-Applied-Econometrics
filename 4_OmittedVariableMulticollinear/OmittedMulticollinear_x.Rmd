@@ -16,6 +16,11 @@ output:
 ```{r, child = './../setup.Rmd'}
 ```
 
+```{r include = F}
+library(fixest)
+library(data.table)
+```
+
 # What variables to include or not 
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>  
@@ -157,7 +162,12 @@ $EE_2$: $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
 
 # Monte Carlo Simulation
 
+
 ```{r }
+#* load packages
+# library(fixest)
+# library(data.table)
+
 #--------------------------
 # Monte Carlo Simulation
 #--------------------------
@@ -177,8 +187,8 @@ for (i in 1:B) { # iterate the same process B times
   data <- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 <- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 <- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 <- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 <- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] <- beta_ee1
@@ -618,8 +628,8 @@ for (i in 1:B) { # iterate the same process B times
   data <- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 <- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 <- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 <- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 <- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] <- beta_ee1
@@ -1059,8 +1069,8 @@ for (i in 1:B) { # iterate the same process B times
   data <- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 <- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 <- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 <- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 <- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] <- beta_ee1
@@ -1502,8 +1512,8 @@ for (i in 1:B) { # iterate the same process B times
   data <- data.frame(y = y, x1 = x1, x2 = x2)
 
   #--- OLS ---#
-  beta_ee1 <- lm(y ~ x1, data = data)$coef["x1"] # OLS with EE1
-  beta_ee2 <- lm(y ~ x1 + x2, data = data)$coef["x1"] # OLS with EE2
+  beta_ee1 <- feols(y ~ x1, data = data)$coefficient["x1"] # OLS with EE1
+  beta_ee2 <- feols(y ~ x1 + x2, data = data)$coefficient["x1"] # OLS with EE2
 
   #--- store estimates ---#
   estiamtes_strage[i, 1] <- beta_ee1
