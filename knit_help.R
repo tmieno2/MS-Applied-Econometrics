@@ -22,16 +22,10 @@ rmarkdown::render(here("LectureNotes/2_MultivariateRegression/multivariate_regre
 build_pdf(here("LectureNotes/2_MultivariateRegression/multivariate_regression_x.html"))
 
 # /*===========================================================
-#' # MC
+#' # 3. MC
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/3_MonteCarloSimulation/MC_x.rmd"))
 build_pdf(here("LectureNotes/3_MonteCarloSimulation/MC_x.html"))
-
-# /*===========================================================
-#' # 4. Omitted Variable/Multicollinearity
-# /*===========================================================
-rmarkdown::render(here("LectureNotes/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.rmd"))
-build_pdf(here("LectureNotes/4_OmittedVariableMulticollinear/OmittedMulticollinear_x.html"))
 
 # /*===========================================================
 #' # 4. Omitted Variable/Multicollinearity

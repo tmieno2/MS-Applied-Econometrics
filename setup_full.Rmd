@@ -5,18 +5,18 @@ options(htmltools.dir.version = FALSE)
 options(knitr.duplicate.label = "allow")
 
 opts_chunk$set(
-  fig.align = "center", 
+  fig.align = "center",
   fig.retina = 5,
-  fig.dim = c(4, 3.5), 
-  out.width = "100%", 
-  warning = F, 
+  fig.dim = c(4, 3.5),
+  out.width = "100%",
+  warning = F,
   message = F,
-  #fig.path='Figs/',
+  # fig.path='Figs/',
   cache = T
-  #, echo=F, warning=F, message=F
-  )
+  # , echo=F, warning=F, message=F
+)
 
-# setwd("~/Dropbox/TeachingUNL/DataScience/LectureNotes/Chapter-4-DataVisualization") 
+# setwd("~/Dropbox/TeachingUNL/DataScience/LectureNotes/Chapter-4-DataVisualization")
 
 library(flipbookr)
 library(flair)
@@ -35,7 +35,7 @@ library(xaringanthemer)
 style_duo_accent(
   header_h1_font_size = "1.8rem",
   header_h2_font_size = "1rem",
-  code_inline_background_color = "#e6e6e6", 
+  code_inline_background_color = "#e6e6e6",
   text_font_size = "0.7rem",
   code_font_size = "0.6rem",
   link_color = "#ff005a"
@@ -54,7 +54,7 @@ suppressMessages(library(ggthemes))
 suppressMessages(library(RColorBrewer))
 suppressMessages(library(parallel))
 suppressMessages(library(tidyverse))
-````
+```
 
 ```{css css-setup, echo = F}
 @import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i&display=swap);
@@ -603,6 +603,4 @@ slides > slide {
   height: 90%;
   overflow-y: scroll;
 }
-
- 
 ```

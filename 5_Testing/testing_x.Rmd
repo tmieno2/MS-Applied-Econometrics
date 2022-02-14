@@ -13,11 +13,28 @@ output:
       countIncrementalSlides: false
 ---
 
-```{r, child = './../setup_full.Rmd'}
+
+```{r, include = F, cache = F}
+opts_chunk$set(
+  fig.align = "center",
+  fig.retina = 5,
+  fig.dim = c(4, 3),
+  out.width = "60%",
+  warning = F,
+  message = F,
+  # fig.path='Figs/',
+  cache = T,
+  root.dir = here(),
+  echo = T
+)
 ```
 
-```{r echo = F, eval = F}
-setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Testing/")
+
+```{r, child = here("LectureNotes/setup_full.Rmd"), cache = F}
+```
+
+```{r include = F}
+# setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Testing/")
 ```
 
 # Before we start 
@@ -85,9 +102,9 @@ So, if the null hypothesis is indeed true, this is the distribution of your test
 ```{r echo = F, out.width = "50%"}
 x <- seq(-4, 4, length = 1000)
 y <- dnorm(x, sd = 1)
-plot_data <- data.table(x = x,y = y)
+plot_data <- data.table(x = x, y = y)
 ggplot(data = plot_data) +
-  geom_line(aes(x = x,y = y),color = 'black')
+  geom_line(aes(x = x, y = y), color = "black")
 ```
 
 ---
@@ -97,9 +114,9 @@ ggplot(data = plot_data) +
 ```{r echo = F, out.width = "50%"}
 x <- seq(-4, 4, length = 1000)
 y <- dnorm(x, sd = 1)
-plot_data <- data.table(x = x,y = y)
+plot_data <- data.table(x = x, y = y)
 ggplot(data = plot_data) +
-  geom_line(aes(x = x,y = y),color = 'black')
+  geom_line(aes(x = x, y = y), color = "black")
 ```
 
 --
@@ -142,10 +159,10 @@ You could alternatively use $\theta - \alpha$. But, in that case, you need to be
 
 ```{r echo = F, out.width = "50%"}
 x <- seq(-4, 4, length = 1000)
-y <- dnorm(x, sd = 2/10)
-plot_data <- data.table(x = x,y = y)
+y <- dnorm(x, sd = 2 / 10)
+plot_data <- data.table(x = x, y = y)
 ggplot(data = plot_data) +
-  geom_line(aes(x = x,y = y),color = 'black')
+  geom_line(aes(x = x, y = y), color = "black")
 ```
 
 --
@@ -156,7 +173,7 @@ Suppose you have obtained 100 samples $(J = 100)$ and calculated $\theta$ (sampl
 
 Then, your test statistic is $2-1 = 1$. 
 
-Is is unlikely for you to get 1 if the null hypothesis is true? 
+Is it unlikely for you to get 1 if the null hypothesis is true? 
 
 The conclusion would be exactly the same as using $\sqrt{J} \times (\theta - \alpha)/2$ because the distribution under the null is adjusted according to the test statistic you use.
 
@@ -165,6 +182,40 @@ The conclusion would be exactly the same as using $\sqrt{J} \times (\theta - \al
 .content-box-green[**Note**]
 
 We always use normalize test statistic so that we can always look up the same distribution.
+
+---
+class: middle
+
+# Summary
+
+.content-box-green[**What do we need?**]
+
++ test-statistic of which we know the distribution (e.g., t-distribution, Normal distribution) assuming the null hypothesis
+
+.content-box-green[**What do we (often) do?**]
+
++ transform (most of the time) a raw random variable (e.g., sample mean in the example above) into a test statistic of which we know the distribution assuming that the null hypothesis is true
+  - e.g., we transformed the sample mean so that it follows the standard Normal distribution.
++ check if the actual number you got from the test statistic is likely to happen or not (formal criteria has not been discussed yet)
+
+---
+class: middle
+
+# Exercise
+
+You have collected data on annual salary for those who graduated from University A and B. You are interested in testing whether the difference in annual salary between the universities (call it $x$) is greater than 10 on average. You know (for unknown reasons) know that the difference is distributed as $N(\theta, 16)$. 
+
+1. What is the Null hypothesis?
+2. Under the null hypothesis, what is the distribution of the difference (test-statistic).
+3. Normalize the test statistic so that the transformed version follows $N(0, 1)$.
+4. The actual difference you observed is 30. What is the probability that you observe a number greater than 30 if the null hypothesis is true? Use `prnom()`.
+
+--
+
+In reality, 
+
++ we need to find out what the distribution of the test statistic is
++ we need to formerly define when we accept or not accept the null hypothesis
 
 ---
 class: inverse, center, middle
@@ -342,70 +393,74 @@ The lower the significance level, you are more sure that the null is indeed wron
 
 ```{r include = F}
 u <- seq(-3.5, 3.5, length = 1000)
-df <- 100-10
-pdf <- dt(u,df=df) # default is mean=0,sd=1
-data <- data.table(x=u,y=pdf)
+df <- 100 - 10
+pdf <- dt(u, df = df) # default is mean=0,sd=1
+data <- data.table(x = u, y = pdf)
 
 g_t <- ggplot() +
-  geom_line(data=data,aes(y=y,x=x)) +
-  geom_hline(yintercept=0) +
-  xlab('') +
-  ylab('') +
+  geom_line(data = data, aes(y = y, x = x)) +
+  geom_hline(yintercept = 0) +
+  xlab("") +
+  ylab("") +
   theme(
-    axis.text.y=element_blank(),
-    axis.ticks.y=element_blank()
-    )
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 
-ggsave(g_t,file='./t_dist.pdf',width=4,height=3)
+ggsave(g_t, file = "./t_dist.pdf", width = 4, height = 3)
 
 alpha <- 0.05
-c_rej <- qt(1-alpha, df = df)
-rej_data <- data[u>=c_rej,]
+c_rej <- qt(1 - alpha, df = df)
+rej_data <- data[u >= c_rej, ]
 
 g_t_005_one <- g_t +
   geom_ribbon(
     data = rej_data,
-    aes(ymax = y,ymin = 0,x = x),
-    fill = 'red',alpha = 0.4
-    ) +
-  annotate('text',x = c_rej,y = -0.02,
-    label = as.character(round(c_rej,digits = 2)),
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "red", alpha = 0.4
+  ) +
+  annotate("text",
+    x = c_rej, y = -0.02,
+    label = as.character(round(c_rej, digits = 2)),
     size = 4,
-    family = 'Times'
-    ) +
-  annotate('text',x = 2.7,y = 0.1,
-    label = paste('area  =  ',round(alpha,digits = 2),sep = ''),
+    family = "Times"
+  ) +
+  annotate("text",
+    x = 2.7, y = 0.1,
+    label = paste("area  =  ", round(alpha, digits = 2), sep = ""),
     size = 4,
-    family = 'Times'
-    )  
+    family = "Times"
+  )
 
 
 alpha <- 0.01
-c_rej <- qt(1-alpha, df = df)
-rej_data_001 <- data[u>=c_rej,]
+c_rej <- qt(1 - alpha, df = df)
+rej_data_001 <- data[u >= c_rej, ]
 
 g_t_001_one <- g_t +
   geom_ribbon(
     data = rej_data_001,
-    aes(ymax = y,ymin = 0,x = x),
-    fill = 'red',alpha = 0.4
-    ) +
-  annotate('text',x = c_rej,y = -0.02,
-    label = as.character(round(c_rej,digits = 2)),
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "red", alpha = 0.4
+  ) +
+  annotate("text",
+    x = c_rej, y = -0.02,
+    label = as.character(round(c_rej, digits = 2)),
     size = 4,
-    family = 'Times'
-    ) +
-  annotate('text',x = 2.7,y = 0.1,
-    label = paste('area  =  ',round(alpha,digits = 2),sep = ''),
+    family = "Times"
+  ) +
+  annotate("text",
+    x = 2.7, y = 0.1,
+    label = paste("area  =  ", round(alpha, digits = 2), sep = ""),
     size = 4,
-    family = 'Times'
-    )
+    family = "Times"
+  )
 ```
 
 This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
 
 ```{r echo = F, out.width = "60%"}
-g_t_005_one   
+g_t_005_one
 ```  
 
 
@@ -432,7 +487,7 @@ This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if
 
 
 ```{r echo = F, out.width = "60%"}
-g_t_001_one   
+g_t_001_one
 ```  
 
 .content-box-red[**Decision rule**]
@@ -492,37 +547,39 @@ data <- data.table(x = u, y = pdf)
 
 alpha <- 0.05
 
-c_rej <- qt(1-alpha/2, df = df)
-rej_data_high <- data[u >= c_rej,]
-rej_data_low <- data[u <= -c_rej,]
+c_rej <- qt(1 - alpha / 2, df = df)
+rej_data_high <- data[u >= c_rej, ]
+rej_data_low <- data[u <= -c_rej, ]
 
 g_t_005_two <- g_t +
   geom_ribbon(
     data = rej_data_high,
     aes(ymax = y, ymin = 0, x = x),
-    fill = 'red', alpha = 0.4
-    ) +
+    fill = "red", alpha = 0.4
+  ) +
   geom_ribbon(
     data = rej_data_low,
-    aes(ymax = y,ymin = 0,x = x),
-    fill = 'red',alpha = 0.4
-    ) +
-  annotate('text',x = c_rej,y = -0.02,
-    label = as.character(round(c_rej,digits = 2)),
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "red", alpha = 0.4
+  ) +
+  annotate("text",
+    x = c_rej, y = -0.02,
+    label = as.character(round(c_rej, digits = 2)),
     size = 4,
-    family = 'Times'
-    ) +
-  annotate('text',x = 0, y = 0.1,
-    label = paste('area  = ',round(alpha/2,digits = 3),sep = ''),
+    family = "Times"
+  ) +
+  annotate("text",
+    x = 0, y = 0.1,
+    label = paste("area  = ", round(alpha / 2, digits = 3), sep = ""),
     size = 4,
-    family = 'Times'
-    )  
+    family = "Times"
+  )
 ```
 
 This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
 
 ```{r echo = F, out.width = "60%", dependson = "t-005-two"}
-g_t_005_two   
+g_t_005_two
 ```  
 
 (Note: irrespective of the type of tests, the distribution of t-statistics is the same.)
@@ -558,41 +615,43 @@ pdf <- dt(u, df = df) # default is mean = 0,sd = 1
 data <- data.table(x = u, y = pdf)
 
 g_t <- ggplot() +
-  geom_line(data=data,aes(y=y,x=x)) +
-  geom_hline(yintercept=0) +
-  xlab('') +
-  ylab('') +
+  geom_line(data = data, aes(y = y, x = x)) +
+  geom_hline(yintercept = 0) +
+  xlab("") +
+  ylab("") +
   theme(
-    axis.text.y=element_blank(),
-    axis.ticks.y=element_blank()
-    )
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 
 alpha <- 0.031
-c_rej <- qt(1-alpha/2, df = df)
+c_rej <- qt(1 - alpha / 2, df = df)
 rej_data_high <- data[u >= c_rej, ]
-rej_data_low <- data[u <=- c_rej, ]
+rej_data_low <- data[u <= -c_rej, ]
 
 g_t_0031 <- g_t +
   geom_ribbon(
     data = rej_data_high,
     aes(ymax = y, ymin = 0, x = x),
-    fill = 'red', alpha = 0.4
-    ) +
+    fill = "red", alpha = 0.4
+  ) +
   geom_ribbon(
     data = rej_data_low,
     aes(ymax = y, ymin = 0, x = x),
-    fill = 'red', alpha = 0.4
-    ) +
-  annotate('text', x = c_rej, y = -0.02,
+    fill = "red", alpha = 0.4
+  ) +
+  annotate("text",
+    x = c_rej, y = -0.02,
     label = as.character(round(c_rej, digits = 2)),
     size = 4,
-    family = 'Times'
-    ) +
-  annotate('text',x = 0, y = 0.1,
-    label = paste('area  =  ',round(alpha, digits = 3), sep = ''),
+    family = "Times"
+  ) +
+  annotate("text",
+    x = 0, y = 0.1,
+    label = paste("area  =  ", round(alpha, digits = 3), sep = ""),
     size = 4,
-    family = 'Times'
-    )  
+    family = "Times"
+  )
 ```
 
 
@@ -601,7 +660,7 @@ Suppose the t-statistic you got is 2.16. Then, there's a 3.1% chance you reject 
 --
 
 ```{r echo = F, out.width = "60%", dependson = "p-dist"}
-g_t_0031 
+g_t_0031
 ```
 
 So, the lower significance level the null hypothesis is rejected is 3.1%, which is the definition of p-value.
@@ -623,7 +682,7 @@ This decision rule of course results in the same test results as the one we saw 
 
 ```{r }
 #--- get the data ---#
-wage <- read_csv('wage1.csv') 
+wage <- read_csv("wage1.csv")
 
 #--- run a regression ---#
 reg_wage <- lm(wage ~ educ + exper + tenure, data = wage)
@@ -637,7 +696,7 @@ First apply the `summary()` to the regression results (`reg_wage`) and extract t
 
 ```{r }
 (
-reg_wage_sum <- summary(reg_wage)$coef
+  reg_wage_sum <- summary(reg_wage)$coef
 )
 ```
 
@@ -660,14 +719,14 @@ The t-value for this test is not available from the summary.
 
 ```{r }
 #--- coefficient estimate on educ ---#
-beta_educ <- reg_wage_sum["educ", "Estimate"] 
+beta_educ <- reg_wage_sum["educ", "Estimate"]
 
 #--- se of the coefficient on educ ---#
 se_beta_educ <- reg_wage_sum["educ", "Std. Error"]
 
 #--- t-value ---#
 (
-t_value <- (beta_educ - 1)/se_beta_educ
+  t_value <- (beta_educ - 1) / se_beta_educ
 )
 ```
 
@@ -677,7 +736,7 @@ The degree of freedom $(n-k-1)$ of the t-distribution is
 
 ```{r }
 (
-df_t <- reg_wage$df.residual 
+  df_t <- reg_wage$df.residual
 )
 ```
 
@@ -687,7 +746,7 @@ You can get the 97.5% quantile of the $t_{522}$ using the `qt()` function:
 
 ```{r }
 (
-critical_value <- qt(0.975, df = df_t)  
+  critical_value <- qt(0.975, df = df_t)
 )
 ```
 
@@ -742,50 +801,52 @@ For the 95% CI (A = 95),
 If $x$ is standard normally distributed $(x \sim N(0, 1))$, then,
 
 ```{r norm-95, include = F}
-u <- seq(-3,3,length=1000)
+u <- seq(-3, 3, length = 1000)
 pdf <- dnorm(u) # default is mean=0,sd=1
-data <- data.table(x = u,y = pdf)
+data <- data.table(x = u, y = pdf)
 
 g_norm <- ggplot() +
-  geom_line(data=data,aes(y=y,x=x)) +
-  geom_hline(yintercept=0) +
-  xlab('') +
-  ylab('') +
+  geom_line(data = data, aes(y = y, x = x)) +
+  geom_hline(yintercept = 0) +
+  xlab("") +
+  ylab("") +
   theme(
-    axis.text.y=element_blank(),
-    axis.ticks.y=element_blank()
-    )
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 
 alpha <- 0.05
-c_rej <- qnorm(1-alpha/2)
-rej_data_high <- data[u>=c_rej,]
-rej_data_low <- data[u<=-c_rej,]
+c_rej <- qnorm(1 - alpha / 2)
+rej_data_high <- data[u >= c_rej, ]
+rej_data_low <- data[u <= -c_rej, ]
 
 g_norm_005 <- g_norm +
   geom_ribbon(
-    data=rej_data_high,
-    aes(ymax=y,ymin=0,x=x),
-    fill='red',alpha=0.4
-    ) +
+    data = rej_data_high,
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "red", alpha = 0.4
+  ) +
   geom_ribbon(
-    data=rej_data_low,
-    aes(ymax=y,ymin=0,x=x),
-    fill='red',alpha=0.4
-    ) +
-  annotate('text',x=c_rej,y=-0.02,
-    label=as.character(round(c_rej,digits=2)),
-    size=4,
-    family='Times'
-    ) +
-  annotate('text',x=2.5,y=0.15,
-    label=paste('area = ',round(alpha/2,digits=3),sep=''),
-    size=4,
-    family='Times'
-    )   
+    data = rej_data_low,
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "red", alpha = 0.4
+  ) +
+  annotate("text",
+    x = c_rej, y = -0.02,
+    label = as.character(round(c_rej, digits = 2)),
+    size = 4,
+    family = "Times"
+  ) +
+  annotate("text",
+    x = 2.5, y = 0.15,
+    label = paste("area = ", round(alpha / 2, digits = 3), sep = ""),
+    size = 4,
+    family = "Times"
+  )
 ```
 
 ```{r echo = F, out.width = "60%"}
-g_norm_005 
+g_norm_005
 ```
 
 The 2.5% and 97.5% quantiles are -1.96 and 1.96, respectively.
@@ -828,33 +889,33 @@ So, to get the A% CI of $\beta_j$, we scale the CI of $\frac{\hat{\beta}_j - \be
 .content-box-green[**Get data**]
 
 ```{r get-wage-data}
-wage <- read_csv("wage1.csv") %>% 
+wage <- read_csv("wage1.csv") %>%
   select(wage, educ, exper, tenure)
 ```
 
 Take a look at the data:
 
 ```{r see-wage-data}
-head(wage) 
+head(wage)
 ```
 
 
 .content-box-green[**Run OLS and get its summary**]
 
 ```{r run-old}
-wage_reg <- lm(wage ~ educ + exper + tenure, data = wage) 
+wage_reg <- lm(wage ~ educ + exper + tenure, data = wage)
 ```
 
 Apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object to gain access to $\hat{\beta}_j$ and $se(\hat{\beta}_j)$
 
 ```{r }
 (
-reg_wage_sum <- summary(reg_wage)$coef
+  reg_wage_sum <- summary(reg_wage)$coef
 )
 ```
 
 ```{r echo = F}
-wage_reg_coef <- tidy(reg_wage) 
+wage_reg_coef <- tidy(reg_wage)
 ```
 
 `df.residual` of the regression object has the degrees of freedom of residual (n-k-1).
@@ -885,7 +946,7 @@ Specifically for this regression,
 
 ```{r }
 #--- coefficient estimate on educ ---#
-beta_educ <- reg_wage_sum["educ", "Estimate"] 
+beta_educ <- reg_wage_sum["educ", "Estimate"]
 
 #--- se of the coefficient on educ ---#
 se_beta_educ <- reg_wage_sum["educ", "Std. Error"]
@@ -901,31 +962,31 @@ pdf <- dt(u, df = df) # default is mean=0,sd=1
 data <- data.table(x = u, y = pdf)
 
 g_t <- ggplot() +
-  geom_line(data = data,aes(y = y,x = x)) +
+  geom_line(data = data, aes(y = y, x = x)) +
   geom_hline(yintercept = 0) +
-  xlab('') +
-  ylab('') +
+  xlab("") +
+  ylab("") +
   theme(
-    axis.text.y=element_blank(),
-    axis.ticks.y=element_blank()
-    )
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 
 alpha <- 0.05
-c_rej <- qt(1-alpha/2, df = df)
+c_rej <- qt(1 - alpha / 2, df = df)
 rej_data_high <- data[u >= c_rej, ]
 rej_data_low <- data[u <= -c_rej, ]
 
 g_t_005 <- g_t +
   geom_ribbon(
-    data=rej_data_high,
-    aes(ymax=y,ymin=0,x=x),
-    fill='red',alpha=0.4
-    ) +
+    data = rej_data_high,
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "red", alpha = 0.4
+  ) +
   geom_ribbon(
-    data=rej_data_low,
-    aes(ymax=y,ymin=0,x=x),
-    fill='red',alpha=0.4
-    )  
+    data = rej_data_low,
+    aes(ymax = y, ymin = 0, x = x),
+    fill = "red", alpha = 0.4
+  )
 ```
 
   
@@ -936,7 +997,7 @@ g_t_005 <- g_t +
 Here is the distribution of $t_{522}$:
 
 ```{r echo = F, out.width = "60%", fig.dim = c(4,2)}
-g_t_005     
+g_t_005
 ```
 
 --
@@ -944,11 +1005,11 @@ g_t_005
 Now, we need to find the 5% ((100-90)/2) and 95% (100-(100-90)/2) quantile of $t_{522}$.
 
 ```{r }
-qt(0.05, df = 522)  
+qt(0.05, df = 522)
 ```
 
 ```{r }
-qt(0.95, df = 522)  
+qt(0.95, df = 522)
 ```
 
 Yes, we could have just gotten one of them and multiply it by -1 to get the other since t distribution is symmetric around 0.
@@ -972,7 +1033,7 @@ By scaling and shifting, the lower and upper bounds of the 90% CI of $\beta_{edu
 You can just use `tidy()` with `conf.int = TRUE`, `conf.level = confidence level` like below:
 
 ```{r }
-tidy(wage_reg, conf.int = TRUE, conf.level = 0.9) %>% 
+tidy(wage_reg, conf.int = TRUE, conf.level = 0.9) %>%
   relocate(term, conf.low, conf.high)
 ```
 
@@ -1096,7 +1157,7 @@ $$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) = \sq
 .content-box-red[**Regression**]
 
 ```{r }
-twoyear <- readRDS('twoyear.rds') # import data
+twoyear <- readRDS("twoyear.rds") # import data
 
 reg_sc <- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
 ```
@@ -1114,7 +1175,7 @@ You can get is by applying `vcov()` to regression results:
 
 ```{r }
 (
-vcov_sc <- vcov(reg_sc) # variance covariance matrix
+  vcov_sc <- vcov(reg_sc) # variance covariance matrix
 )
 ```
 
@@ -1124,11 +1185,11 @@ vcov_sc <- vcov(reg_sc) # variance covariance matrix
 
 
 ```{r }
-numerator <- reg_sc$coef["jc"]-reg_sc$coef["univ"]
+numerator <- reg_sc$coef["jc"] - reg_sc$coef["univ"]
 denomenator <- sqrt(
-  vcov_sc["jc","jc"]-2*vcov_sc["jc","univ"]+vcov_sc["univ","univ"]
-  )
-t_stat <- numerator/denomenator
+  vcov_sc["jc", "jc"] - 2 * vcov_sc["jc", "univ"] + vcov_sc["univ", "univ"]
+)
+t_stat <- numerator / denomenator
 t_stat
 ```
 
@@ -1186,14 +1247,14 @@ How do we test this?
 library(readstata13)
 
 #--- red the data ---#
-mlb_data <- read.dta13('MLB1.dta')
+mlb_data <- read.dta13("MLB1.dta")
 
 #--- run a rergession ---#
-mlb_reg <- lm(log(salary)~years+gamesyr+bavg
-  +hrunsyr+rbisyr,data=mlb_data)
+mlb_reg <- lm(log(salary) ~ years + gamesyr + bavg
+  + hrunsyr + rbisyr, data = mlb_data)
 
 #--- take a look at the results ---#
-tidy(mlb_reg) 
+tidy(mlb_reg)
 ```
 
 --
@@ -1249,10 +1310,10 @@ If the null hypothesis is indeed true, then what do you think is going to happen
 ```{r }
 #--- run OLS ---#
 res_u <- lm(log(salary) ~ years + gamesyr + bavg
-   + hrunsyr + rbisyr, data = mlb_data)
+  + hrunsyr + rbisyr, data = mlb_data)
 
 #--- SSR ---#
-sum(res_u$residuals^2)   
+sum(res_u$residuals^2)
 ```  
 
 .content-box-red[**SSR of the restricted model**]: $SSR_r$.
@@ -1262,7 +1323,7 @@ sum(res_u$residuals^2)
 res_r <- lm(log(salary) ~ years + gamesyr, data = mlb_data)
 
 #--- SSR ---#
-sum(res_r$residuals^2)  
+sum(res_r$residuals^2)
 ```
 
 --
@@ -1348,19 +1409,19 @@ Greater.
 .content-box-red[**F-distribution**]
 
 ```{r echo = F, out.width = "70%"}
-x <- seq(0,4,length=1000)
-y_1 <- df(x,df1=4,df2=200)
-y_2 <- df(x,df1=7,df2=400)
+x <- seq(0, 4, length = 1000)
+y_1 <- df(x, df1 = 4, df2 = 200)
+y_2 <- df(x, df1 = 7, df2 = 400)
 
-f_plot <- data.table(x=x,'F(2,100)'=y_1,'F(4,400)'=y_2) %>%
-  melt(id.var='x')
+f_plot <- data.table(x = x, "F(2,100)" = y_1, "F(4,400)" = y_2) %>%
+  melt(id.var = "x")
 
-ggplot(data=f_plot) +
-  geom_line(aes(x=x,y=value,color=variable)) +
-  scale_color_discrete(name='') +
+ggplot(data = f_plot) +
+  geom_line(aes(x = x, y = value, color = variable)) +
+  scale_color_discrete(name = "") +
   theme(
-    legend.position='bottom'
-    )  
+    legend.position = "bottom"
+  )
 ```
 
 .content-box-red[**F-test steps**]
@@ -1379,13 +1440,13 @@ ggplot(data=f_plot) +
 
 ```{r }
 #--- unrestricted model ---#
-reg_u <- lm(log(salary)~years+gamesyr+
-  bavg+hrunsyr+rbisyr,data=mlb_data)
+reg_u <- lm(log(salary) ~ years + gamesyr +
+  bavg + hrunsyr + rbisyr, data = mlb_data)
 
 SSR_u <- sum(reg_u$residuals^2)
 
 #--- restricted model ---#
-reg_r <- lm(log(salary)~years+gamesyr,data=mlb_data)
+reg_r <- lm(log(salary) ~ years + gamesyr, data = mlb_data)
 
 SSR_r <- sum(reg_r$residuals^2)
 ```
@@ -1397,10 +1458,10 @@ SSR_r <- sum(reg_r$residuals^2)
 ```{r }
 df_q <- 3 # the number of restrictions
 df_ur <- reg_u$df.residual # degrees of freedom for the unrestricted model
-F_stat_num <- (SSR_r-SSR_u)/df_q # numerator of F-stat
-F_stat_denom <- SSR_u/df_ur # denominator of F-stat
-F_sta <- F_stat_num/F_stat_denom # F-stat
-F_sta  
+F_stat_num <- (SSR_r - SSR_u) / df_q # numerator of F-stat
+F_stat_denom <- SSR_u / df_ur # denominator of F-stat
+F_sta <- F_stat_num / F_stat_denom # F-stat
+F_sta
 ```
 
 --
@@ -1409,7 +1470,7 @@ F_sta
 
 ```{r }
 alpha <- 0.05 # 5%  significance level
-c_value <- qf(1-alpha, df1 = df_q, df2 = df_ur)
+c_value <- qf(1 - alpha, df1 = df_q, df2 = df_ur)
 c_value
 ```
 
@@ -1440,12 +1501,12 @@ What happened?
 ```{r }
 N <- 300 # num observations
 mu <- runif(N) # term shared by indep vars 1 and 2
-x1 <- 0.1*runif(N)+2*mu # indep 1
-x2 <- 0.1*runif(N)+2*mu # indep 2
+x1 <- 0.1 * runif(N) + 2 * mu # indep 1
+x2 <- 0.1 * runif(N) + 2 * mu # indep 2
 x3 <- runif(N) # indep 3
 u <- rnorm(N) # error
 y <- 1 + x1 + x2 + x3 + u # generate y
-data <- data.table(y=y,x1=x1,x2=x2) # combine into a data.table
+data <- data.table(y = y, x1 = x1, x2 = x2) # combine into a data.table
 ```
 
 `x1` and `x2` are highly correlated with each other:
@@ -1457,8 +1518,8 @@ cor(x1, x2) # correlation between x1 and x2
 .content-box-red[**Regression**]
 
 ```{r }
-reg_u <- lm(y~x1+x2+x3,data=data) # OLS
-tidy(reg_u) # results  
+reg_u <- lm(y ~ x1 + x2 + x3, data = data) # OLS
+tidy(reg_u) # results
 ```
 
 Both `x1` and `x2` are statistically insignificant individually. 
@@ -1474,15 +1535,15 @@ Both `x1` and `x2` are statistically insignificant individually.
 SSR_u <- sum(reg_u$residuals^2)
 
 #--- restricted ---#
-reg_r <- lm(y ~ x3,data=data)
+reg_r <- lm(y ~ x3, data = data)
 SSR_r <- sum(reg_r$residuals^2)
 
 #--- F ---#
-F_stat <- ((SSR_r-SSR_u)/2)/(SSR_u/reg_u$df.residual)
+F_stat <- ((SSR_r - SSR_u) / 2) / (SSR_u / reg_u$df.residual)
 
 #--- critical value ---#
 alpha <- 0.05
-c_value <- qf(1-alpha,df1=2,df2=reg_u$df.residual)
+c_value <- qf(1 - alpha, df1 = 2, df2 = reg_u$df.residual)
 ```
 
 The F-statistic for the hypothesis testing is:
@@ -1490,7 +1551,7 @@ The F-statistic for the hypothesis testing is:
 ```{r }
 #--- F > critical value? ---#
 F_stat
-F_stat > c_value  
+F_stat > c_value
 ```
 
 The F-statistic is very high, meaning they collectively affect the dependent variable significantly.
@@ -1510,7 +1571,7 @@ But, collectively, they have large impacts. $F$-test was able to detect the stat
 Here is the correlation coefficients between the three variables:
 
 ```{r cor}
-select(mlb_data,bavg,hrunsyr,rbisyr) %>% cor() 
+select(mlb_data, bavg, hrunsyr, rbisyr) %>% cor()
 ```
 
 --
@@ -1551,7 +1612,7 @@ library(car)
 reg_u <- lm(y ~ x1 + x2 + x3, data = data)
 
 #--- F-test ---#
-linearHypothesis(reg_u,c('x1=0','x2=0'))  
+linearHypothesis(reg_u, c("x1=0", "x2=0"))
 ```
 
 ---
@@ -1564,9 +1625,9 @@ We can actually use $F$-test for this type of hypothesis testing because $F_{1,t
 
 ```{r }
 #--- F-test ---#
-F_res <- linearHypothesis(reg_sc,c("jc-univ=0"))
+F_res <- linearHypothesis(reg_sc, c("jc-univ=0"))
 F_res
 
 #--- F-stat ---#
-sqrt(F_res$F)  
+sqrt(F_res$F)
 ```
