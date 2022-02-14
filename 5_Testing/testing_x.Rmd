@@ -34,7 +34,7 @@ opts_chunk$set(
 ```
 
 ```{r include = F}
-# setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Testing/")
+# setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/5_Testing/")
 ```
 
 # Before we start 
@@ -212,6 +212,8 @@ You have collected data on annual salary for those who graduated from University
 
 --
 
+.content-box-green[**Note**]:
+
 In reality, 
 
 + we need to find out what the distribution of the test statistic is
@@ -247,7 +249,7 @@ $$wage = \beta_0 + \beta_1 educ + \beta_2 exper + u$$
 
 --
 
-+ But, the estimate you get is \textcolor{blue}{just one realization} of the range of values $\hat{\beta}_1$ could take because it is a random varaible
++ But, the estimate you get is <span style = "color: blue;"> just one realization </span> of the range of values $\hat{\beta}_1$ could take because it is a random varaible
 
 --
 
@@ -461,7 +463,7 @@ This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if
 
 ```{r echo = F, out.width = "60%"}
 g_t_005_one
-```  
+```
 
 
 .content-box-red[**Decision rule**]
@@ -488,7 +490,7 @@ This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if
 
 ```{r echo = F, out.width = "60%"}
 g_t_001_one
-```  
+```
 
 .content-box-red[**Decision rule**]
 
@@ -580,7 +582,7 @@ This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if
 
 ```{r echo = F, out.width = "60%", dependson = "t-005-two"}
 g_t_005_two
-```  
+```
 
 (Note: irrespective of the type of tests, the distribution of t-statistics is the same.)
 
@@ -655,7 +657,7 @@ g_t_0031 <- g_t +
 ```
 
 
-Suppose the t-statistic you got is 2.16. Then, there's a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
+Suppose the t-statistic you got is 2.16. Then, theres a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
 
 --
 
@@ -685,29 +687,33 @@ This decision rule of course results in the same test results as the one we saw 
 wage <- read_csv("wage1.csv")
 
 #--- run a regression ---#
-reg_wage <- lm(wage ~ educ + exper + tenure, data = wage)
+reg_wage <- feols(wage ~ educ + exper + tenure, data = wage)
 ```
 
 --
 
 .content-box-red[**Obtain t-statistics**]
 
-First apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object.
+You can apply the `tidy()` function from the `broom` package to access the regression results (`reg_wage` here) as a `tibbel` (`data.frame`).
 
 ```{r }
-(
-  reg_wage_sum <- summary(reg_wage)$coef
-)
+library(broom)
+
+#* tidy up the regression results
+reg_results_table <- tidy(reg_wage)
+
+#* display
+reg_results_table
 ```
 
-+ `Estimate`: the coefficient estimates $(\hat{\beta}_j)$
-+ `Std. Error`: $se(\hat{\beta}_j$)
-+ `t value`: t-statistic for the null of $\beta_j = 0$
-+ `Pr(>|t|)`: p-value (for the two sided test with the null of $\beta_j = 0$)
++ `estimate`: coefficient estimates $(\hat{\beta}_j)$
++ `std.error`: $se(\hat{\beta}_j$)
++ `statistic`: t-statistic for the null of $\beta_j = 0$
++ `p.value`: p-value (for the two sided test with the null of $\beta_j = 0$)
 
 So, for the t-test of of $\beta_j = 0$ is already there. You do not need to do anything further.
 
-For the null hypothesis other than $\beta_j = 0$, you need further work beyond just applying `summary()` to the regression results.
+For the null hypothesis other than $\beta_j = 0$, you need further work.
 
 ---
 
@@ -719,12 +725,18 @@ The t-value for this test is not available from the summary.
 
 ```{r }
 #--- coefficient estimate on educ ---#
-beta_educ <- reg_wage_sum["educ", "Estimate"]
+beta_educ <-
+  reg_results_table %>%
+  filter(term == "educ") %>%
+  pull(estimate)
 
 #--- se of the coefficient on educ ---#
-se_beta_educ <- reg_wage_sum["educ", "Std. Error"]
+se_beta_educ <-
+  reg_results_table %>%
+  filter(term == "educ") %>%
+  pull(std.error)
 
-#--- t-value ---#
+#--- get the t-value ---#
 (
   t_value <- (beta_educ - 1) / se_beta_educ
 )
@@ -732,11 +744,11 @@ se_beta_educ <- reg_wage_sum["educ", "Std. Error"]
 
 --
 
-The degree of freedom $(n-k-1)$ of the t-distribution is 
+The degree of freedom $(n-k-1)$ of the t-distribution can be obtained by applying `degrees_freedom(reg_wage, "resid")`:
 
 ```{r }
 (
-  df_t <- reg_wage$df.residual
+  df_t <- degrees_freedom(reg_wage, "resid")
 )
 ```
 
@@ -1120,7 +1132,7 @@ $$\frac{\hat{\alpha}-0}{se(\hat{\alpha})} = \frac{\hat{\beta}_1-\hat{\beta}_2-0}
 
 --
 
-So, all you need to do is to substitute $\hat{\beta}_1$, $1-\hat{\beta}_2$, $se(\hat{\beta}_1 - \hat{\beta}_2)$ into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
+So, all you need to do is to substitute $\hat{\beta}_1$, $\hat{\beta}_2$, $se(\hat{\beta}_1 - \hat{\beta}_2)$ into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
 
 ---
 
@@ -1159,7 +1171,7 @@ $$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) = \sq
 ```{r }
 twoyear <- readRDS("twoyear.rds") # import data
 
-reg_sc <- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
+reg_sc <- feols(lwage ~ jc + univ + exper, data = twoyear) # OLS
 ```
 
 --
@@ -1185,10 +1197,23 @@ You can get is by applying `vcov()` to regression results:
 
 
 ```{r }
-numerator <- reg_sc$coef["jc"] - reg_sc$coef["univ"]
-denomenator <- sqrt(
-  vcov_sc["jc", "jc"] - 2 * vcov_sc["jc", "univ"] + vcov_sc["univ", "univ"]
-)
+reg_sc_td <- tidy(reg_sc)
+
+beta_jc <-
+  reg_sc_td %>%
+  filter(term == "jc") %>%
+  pull(estimate)
+
+beta_univ <-
+  reg_sc_td %>%
+  filter(term == "univ") %>%
+  pull(estimate)
+
+numerator <- beta_jc - beta_univ
+denomenator <-
+  sqrt(
+    vcov_sc["jc", "jc"] - 2 * vcov_sc["jc", "univ"] + vcov_sc["univ", "univ"]
+  )
 t_stat <- numerator / denomenator
 t_stat
 ```
@@ -1250,7 +1275,7 @@ library(readstata13)
 mlb_data <- read.dta13("MLB1.dta")
 
 #--- run a rergession ---#
-mlb_reg <- lm(log(salary) ~ years + gamesyr + bavg
+mlb_reg <- feols(log(salary) ~ years + gamesyr + bavg
   + hrunsyr + rbisyr, data = mlb_data)
 
 #--- take a look at the results ---#
@@ -1279,12 +1304,15 @@ $SSR$ (or $R^2$) turns out to be useful for testing their impacts jointly.
 
 # F-test 
 
-In doing an F-test of the null hypothesis, we compare sum of squared residuals ($SSR$) of two models:
+In doing an F-test of the null hypothesis, we compare sum of squared residuals $(SSR)$ of two models:
+
+<br>
 
 .content-box-red[**Unrestricted Model**]
 
 $$log(salary) = \beta_0 + \beta_1 years + \beta_2 gamesyr + \beta_3 bavg + \beta_4 hrunsyr + \beta_5 rbisyr + u$$
 
+<br>
 
 .content-box-red[**Restricted Model**]
 
@@ -1299,7 +1327,7 @@ The coefficients on $bavg$, $hrunsyr$, and $rbisyr$ are restricted to be 0 follo
 
 .content-box-green[**Question**]
 
-If the null hypothesis is indeed true, then what do you think is going to happen if you compare the SSE of the two models?
+If the null hypothesis is indeed true, then what do you think is going to happen if you compare the $SSR$ of the two models?
 
 ---
 
@@ -1309,18 +1337,18 @@ If the null hypothesis is indeed true, then what do you think is going to happen
 
 ```{r }
 #--- run OLS ---#
-res_u <- lm(log(salary) ~ years + gamesyr + bavg
+res_u <- feols(log(salary) ~ years + gamesyr + bavg
   + hrunsyr + rbisyr, data = mlb_data)
 
 #--- SSR ---#
 sum(res_u$residuals^2)
-```  
+```
 
 .content-box-red[**SSR of the restricted model**]: $SSR_r$.
 
 ```{r }
 #--- run OLS ---#
-res_r <- lm(log(salary) ~ years + gamesyr, data = mlb_data)
+res_r <- feols(log(salary) ~ years + gamesyr, data = mlb_data)
 
 #--- SSR ---#
 sum(res_r$residuals^2)
@@ -1440,13 +1468,13 @@ ggplot(data = f_plot) +
 
 ```{r }
 #--- unrestricted model ---#
-reg_u <- lm(log(salary) ~ years + gamesyr +
+reg_u <- feols(log(salary) ~ years + gamesyr +
   bavg + hrunsyr + rbisyr, data = mlb_data)
 
 SSR_u <- sum(reg_u$residuals^2)
 
 #--- restricted model ---#
-reg_r <- lm(log(salary) ~ years + gamesyr, data = mlb_data)
+reg_r <- feols(log(salary) ~ years + gamesyr, data = mlb_data)
 
 SSR_r <- sum(reg_r$residuals^2)
 ```
@@ -1457,7 +1485,7 @@ SSR_r <- sum(reg_r$residuals^2)
 
 ```{r }
 df_q <- 3 # the number of restrictions
-df_ur <- reg_u$df.residual # degrees of freedom for the unrestricted model
+df_ur <- degrees_freedom(reg_u, "resid") # degrees of freedom for the unrestricted model
 F_stat_num <- (SSR_r - SSR_u) / df_q # numerator of F-stat
 F_stat_denom <- SSR_u / df_ur # denominator of F-stat
 F_sta <- F_stat_num / F_stat_denom # F-stat
@@ -1513,12 +1541,12 @@ data <- data.table(y = y, x1 = x1, x2 = x2) # combine into a data.table
 
 ```{r }
 cor(x1, x2) # correlation between x1 and x2
-```  
+```
 
 .content-box-red[**Regression**]
 
 ```{r }
-reg_u <- lm(y ~ x1 + x2 + x3, data = data) # OLS
+reg_u <- feols(y ~ x1 + x2 + x3, data = data) # OLS
 tidy(reg_u) # results
 ```
 
@@ -1535,15 +1563,20 @@ Both `x1` and `x2` are statistically insignificant individually.
 SSR_u <- sum(reg_u$residuals^2)
 
 #--- restricted ---#
-reg_r <- lm(y ~ x3, data = data)
+reg_r <- feols(y ~ x3, data = data)
 SSR_r <- sum(reg_r$residuals^2)
 
+#--- degrees of freedom of residuals ---#
+df_resid <- degrees_freedom(reg_u, "resid")
+
 #--- F ---#
-F_stat <- ((SSR_r - SSR_u) / 2) / (SSR_u / reg_u$df.residual)
+F_stat <- ((SSR_r - SSR_u) / 2) / (SSR_u / df_resid)
 
 #--- critical value ---#
 alpha <- 0.05
-c_value <- qf(1 - alpha, df1 = 2, df2 = reg_u$df.residual)
+(
+  c_value <- qf(1 - alpha, df1 = 2, df2 = df_resid)
+)
 ```
 
 The F-statistic for the hypothesis testing is:
@@ -1582,9 +1615,9 @@ They are not so highly correlated with `bavg`.
 
 ---
 
-# F-test in practice  
+# F-test (easier way)  
 
-You can use the `linearHypothesis()` function from the `car` package
+You can use the `linearHypothesis()` function from the `car` package. However, `linearHypothesis()` does not accept regression results from the `feols()` function. So, you need to use `lm()` to run regression instead to use this function.
 
 .content-box-red[**Syntax**]
 
@@ -1609,6 +1642,7 @@ linearHypothesis(regression, hypothesis)
 library(car)
 
 #--- unrestricted regression ---#
+#* using lm() instead of feols()
 reg_u <- lm(y ~ x1 + x2 + x3, data = data)
 
 #--- F-test ---#
@@ -1624,6 +1658,9 @@ The test of a linear combination of the parameters we looked at earlier is a spe
 We can actually use $F$-test for this type of hypothesis testing because $F_{1,t-n-k} \sim t_{t-n-k}^2$.
 
 ```{r }
+#--- OLS with lm() ---#
+reg_sc <- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
+
 #--- F-test ---#
 F_res <- linearHypothesis(reg_sc, c("jc-univ=0"))
 F_res

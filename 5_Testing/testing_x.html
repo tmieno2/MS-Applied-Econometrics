@@ -749,6 +749,8 @@ You have collected data on annual salary for those who graduated from University
 
 --
 
+.content-box-green[**Note**]:
+
 In reality, 
 
 + we need to find out what the distribution of the test statistic is
@@ -784,7 +786,7 @@ Consider the following model,
 
 --
 
-+ But, the estimate you get is \textcolor{blue}{just one realization} of the range of values `\(\hat{\beta}_1\)` could take because it is a random varaible
++ But, the estimate you get is &lt;span style = "color: blue;"&gt; just one realization &lt;/span&gt; of the range of values `\(\hat{\beta}_1\)` could take because it is a random varaible
 
 --
 
@@ -1043,7 +1045,7 @@ The smallest significance level at which the null hypothesis would be rejected (
 
 
 
-Suppose the t-statistic you got is 2.16. Then, there's a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
+Suppose the t-statistic you got is 2.16. Then, theres a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
 
 --
 
@@ -1072,38 +1074,45 @@ This decision rule of course results in the same test results as the one we saw 
 wage &lt;- read_csv("wage1.csv")
 
 #--- run a regression ---#
-reg_wage &lt;- lm(wage ~ educ + exper + tenure, data = wage)
+reg_wage &lt;- feols(wage ~ educ + exper + tenure, data = wage)
 ```
 
 --
 
 .content-box-red[**Obtain t-statistics**]
 
-First apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object.
+You can apply the `tidy()` function from the `broom` package to access the regression results (`reg_wage` here) as a `tibbel` (`data.frame`).
 
 
 ```r
-(
-  reg_wage_sum &lt;- summary(reg_wage)$coef
-)
+library(broom)
+
+#* tidy up the regression results
+reg_results_table &lt;- tidy(reg_wage)
+
+#* display
+reg_results_table
 ```
 
 ```
-##                Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept) -2.87273482 0.72896429 -3.940844 9.224742e-05
-## educ         0.59896507 0.05128355 11.679478 3.681353e-28
-## exper        0.02233952 0.01205685  1.852849 6.446818e-02
-## tenure       0.16926865 0.02164461  7.820361 2.934527e-14
+## # A tibble: 4 × 5
+##   term        estimate std.error statistic
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)  -2.87      0.729      -3.94
+## 2 educ          0.599     0.0513     11.7 
+## 3 exper         0.0223    0.0121      1.85
+## 4 tenure        0.169     0.0216      7.82
+## # … with 1 more variable: p.value &lt;dbl&gt;
 ```
 
-+ `Estimate`: the coefficient estimates `\((\hat{\beta}_j)\)`
-+ `Std. Error`: `\(se(\hat{\beta}_j\)`)
-+ `t value`: t-statistic for the null of `\(\beta_j = 0\)`
-+ `Pr(&gt;|t|)`: p-value (for the two sided test with the null of `\(\beta_j = 0\)`)
++ `estimate`: coefficient estimates `\((\hat{\beta}_j)\)`
++ `std.error`: `\(se(\hat{\beta}_j\)`)
++ `statistic`: t-statistic for the null of `\(\beta_j = 0\)`
++ `p.value`: p-value (for the two sided test with the null of `\(\beta_j = 0\)`)
 
 So, for the t-test of of `\(\beta_j = 0\)` is already there. You do not need to do anything further.
 
-For the null hypothesis other than `\(\beta_j = 0\)`, you need further work beyond just applying `summary()` to the regression results.
+For the null hypothesis other than `\(\beta_j = 0\)`, you need further work.
 
 ---
 
@@ -1116,12 +1125,18 @@ The t-value for this test is not available from the summary.
 
 ```r
 #--- coefficient estimate on educ ---#
-beta_educ &lt;- reg_wage_sum["educ", "Estimate"]
+beta_educ &lt;-
+  reg_results_table %&gt;%
+  filter(term == "educ") %&gt;%
+  pull(estimate)
 
 #--- se of the coefficient on educ ---#
-se_beta_educ &lt;- reg_wage_sum["educ", "Std. Error"]
+se_beta_educ &lt;-
+  reg_results_table %&gt;%
+  filter(term == "educ") %&gt;%
+  pull(std.error)
 
-#--- t-value ---#
+#--- get the t-value ---#
 (
   t_value &lt;- (beta_educ - 1) / se_beta_educ
 )
@@ -1129,16 +1144,18 @@ se_beta_educ &lt;- reg_wage_sum["educ", "Std. Error"]
 
 ```
 ## [1] -7.819953
+## attr(,"type")
+## [1] "IID"
 ```
 
 --
 
-The degree of freedom `\((n-k-1)\)` of the t-distribution is 
+The degree of freedom `\((n-k-1)\)` of the t-distribution can be obtained by applying `degrees_freedom(reg_wage, "resid")`:
 
 
 ```r
 (
-  df_t &lt;- reg_wage$df.residual
+  df_t &lt;- degrees_freedom(reg_wage, "resid")
 )
 ```
 
@@ -1505,7 +1522,7 @@ So, .red[If] indeed the null hypothesis is true, then
 
 --
 
-So, all you need to do is to substitute `\(\hat{\beta}_1\)`, `\(1-\hat{\beta}_2\)`, `\(se(\hat{\beta}_1 - \hat{\beta}_2)\)` into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
+So, all you need to do is to substitute `\(\hat{\beta}_1\)`, `\(\hat{\beta}_2\)`, `\(se(\hat{\beta}_1 - \hat{\beta}_2)\)` into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
 
 ---
 
@@ -1545,7 +1562,7 @@ So,
 ```r
 twoyear &lt;- readRDS("twoyear.rds") # import data
 
-reg_sc &lt;- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
+reg_sc &lt;- feols(lwage ~ jc + univ + exper, data = twoyear) # OLS
 ```
 
 --
@@ -1581,17 +1598,31 @@ You can get is by applying `vcov()` to regression results:
 
 
 ```r
-numerator &lt;- reg_sc$coef["jc"] - reg_sc$coef["univ"]
-denomenator &lt;- sqrt(
-  vcov_sc["jc", "jc"] - 2 * vcov_sc["jc", "univ"] + vcov_sc["univ", "univ"]
-)
+reg_sc_td &lt;- tidy(reg_sc)
+
+beta_jc &lt;-
+  reg_sc_td %&gt;%
+  filter(term == "jc") %&gt;%
+  pull(estimate)
+
+beta_univ &lt;-
+  reg_sc_td %&gt;%
+  filter(term == "univ") %&gt;%
+  pull(estimate)
+
+numerator &lt;- beta_jc - beta_univ
+denomenator &lt;-
+  sqrt(
+    vcov_sc["jc", "jc"] - 2 * vcov_sc["jc", "univ"] + vcov_sc["univ", "univ"]
+  )
 t_stat &lt;- numerator / denomenator
 t_stat
 ```
 
 ```
-##        jc 
-## -1.467657
+## [1] -1.467657
+## attr(,"type")
+## [1] "IID"
 ```
 
 ---
@@ -1652,7 +1683,7 @@ library(readstata13)
 mlb_data &lt;- read.dta13("MLB1.dta")
 
 #--- run a rergession ---#
-mlb_reg &lt;- lm(log(salary) ~ years + gamesyr + bavg
+mlb_reg &lt;- feols(log(salary) ~ years + gamesyr + bavg
   + hrunsyr + rbisyr, data = mlb_data)
 
 #--- take a look at the results ---#
@@ -1661,14 +1692,15 @@ tidy(mlb_reg)
 
 ```
 ## # A tibble: 6 × 5
-##   term         estimate std.error statistic   p.value
-##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-## 1 (Intercept) 11.2        0.289      38.8   4.19e-128
-## 2 years        0.0689     0.0121      5.68  2.79e-  8
-## 3 gamesyr      0.0126     0.00265     4.74  3.09e-  6
-## 4 bavg         0.000979   0.00110     0.887 3.76e-  1
-## 5 hrunsyr      0.0144     0.0161      0.899 3.69e-  1
-## 6 rbisyr       0.0108     0.00717     1.50  1.34e-  1
+##   term        estimate std.error statistic
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)  1.12e+1   0.289      38.8  
+## 2 years        6.89e-2   0.0121      5.68 
+## 3 gamesyr      1.26e-2   0.00265     4.74 
+## 4 bavg         9.79e-4   0.00110     0.887
+## 5 hrunsyr      1.44e-2   0.0161      0.899
+## 6 rbisyr       1.08e-2   0.00717     1.50 
+## # … with 1 more variable: p.value &lt;dbl&gt;
 ```
 
 --
@@ -1693,12 +1725,15 @@ If you were to conclude that they do not have statistically significant impact j
 
 # F-test 
 
-In doing an F-test of the null hypothesis, we compare sum of squared residuals ($SSR$) of two models:
+In doing an F-test of the null hypothesis, we compare sum of squared residuals `\((SSR)\)` of two models:
+
+&lt;br&gt;
 
 .content-box-red[**Unrestricted Model**]
 
 `$$log(salary) = \beta_0 + \beta_1 years + \beta_2 gamesyr + \beta_3 bavg + \beta_4 hrunsyr + \beta_5 rbisyr + u$$`
 
+&lt;br&gt;
 
 .content-box-red[**Restricted Model**]
 
@@ -1713,7 +1748,7 @@ The coefficients on `\(bavg\)`, `\(hrunsyr\)`, and `\(rbisyr\)` are restricted t
 
 .content-box-green[**Question**]
 
-If the null hypothesis is indeed true, then what do you think is going to happen if you compare the SSE of the two models?
+If the null hypothesis is indeed true, then what do you think is going to happen if you compare the `\(SSR\)` of the two models?
 
 ---
 
@@ -1724,7 +1759,7 @@ If the null hypothesis is indeed true, then what do you think is going to happen
 
 ```r
 #--- run OLS ---#
-res_u &lt;- lm(log(salary) ~ years + gamesyr + bavg
+res_u &lt;- feols(log(salary) ~ years + gamesyr + bavg
   + hrunsyr + rbisyr, data = mlb_data)
 
 #--- SSR ---#
@@ -1740,7 +1775,7 @@ sum(res_u$residuals^2)
 
 ```r
 #--- run OLS ---#
-res_r &lt;- lm(log(salary) ~ years + gamesyr, data = mlb_data)
+res_r &lt;- feols(log(salary) ~ years + gamesyr, data = mlb_data)
 
 #--- SSR ---#
 sum(res_r$residuals^2)
@@ -1851,13 +1886,13 @@ Greater.
 
 ```r
 #--- unrestricted model ---#
-reg_u &lt;- lm(log(salary) ~ years + gamesyr +
+reg_u &lt;- feols(log(salary) ~ years + gamesyr +
   bavg + hrunsyr + rbisyr, data = mlb_data)
 
 SSR_u &lt;- sum(reg_u$residuals^2)
 
 #--- restricted model ---#
-reg_r &lt;- lm(log(salary) ~ years + gamesyr, data = mlb_data)
+reg_r &lt;- feols(log(salary) ~ years + gamesyr, data = mlb_data)
 
 SSR_r &lt;- sum(reg_r$residuals^2)
 ```
@@ -1869,7 +1904,7 @@ SSR_r &lt;- sum(reg_r$residuals^2)
 
 ```r
 df_q &lt;- 3 # the number of restrictions
-df_ur &lt;- reg_u$df.residual # degrees of freedom for the unrestricted model
+df_ur &lt;- degrees_freedom(reg_u, "resid") # degrees of freedom for the unrestricted model
 F_stat_num &lt;- (SSR_r - SSR_u) / df_q # numerator of F-stat
 F_stat_denom &lt;- SSR_u / df_ur # denominator of F-stat
 F_sta &lt;- F_stat_num / F_stat_denom # F-stat
@@ -1951,18 +1986,19 @@ cor(x1, x2) # correlation between x1 and x2
 
 
 ```r
-reg_u &lt;- lm(y ~ x1 + x2 + x3, data = data) # OLS
+reg_u &lt;- feols(y ~ x1 + x2 + x3, data = data) # OLS
 tidy(reg_u) # results
 ```
 
 ```
 ## # A tibble: 4 × 5
-##   term        estimate std.error statistic      p.value
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
-## 1 (Intercept)    0.839     0.152     5.51  0.0000000799
-## 2 x1             0.633     1.33      0.476 0.634       
-## 3 x2             1.41      1.33      1.06  0.289       
-## 4 x3             1.05      0.189     5.57  0.0000000577
+##   term        estimate std.error statistic
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 "(Intercep…    0.839     0.152     5.51 
+## 2 "x1"           0.633     1.33      0.476
+## 3 "x2"           1.41      1.33      1.06 
+## 4 "c(0.44029…    1.05      0.189     5.57 
+## # … with 1 more variable: p.value &lt;dbl&gt;
 ```
 
 Both `x1` and `x2` are statistically insignificant individually. 
@@ -1979,15 +2015,24 @@ Both `x1` and `x2` are statistically insignificant individually.
 SSR_u &lt;- sum(reg_u$residuals^2)
 
 #--- restricted ---#
-reg_r &lt;- lm(y ~ x3, data = data)
+reg_r &lt;- feols(y ~ x3, data = data)
 SSR_r &lt;- sum(reg_r$residuals^2)
 
+#--- degrees of freedom of residuals ---#
+df_resid &lt;- degrees_freedom(reg_u, "resid")
+
 #--- F ---#
-F_stat &lt;- ((SSR_r - SSR_u) / 2) / (SSR_u / reg_u$df.residual)
+F_stat &lt;- ((SSR_r - SSR_u) / 2) / (SSR_u / df_resid)
 
 #--- critical value ---#
 alpha &lt;- 0.05
-c_value &lt;- qf(1 - alpha, df1 = 2, df2 = reg_u$df.residual)
+(
+  c_value &lt;- qf(1 - alpha, df1 = 2, df2 = df_resid)
+)
+```
+
+```
+## [1] 3.026257
 ```
 
 The F-statistic for the hypothesis testing is:
@@ -2046,9 +2091,9 @@ They are not so highly correlated with `bavg`.
 
 ---
 
-# F-test in practice  
+# F-test (easier way)  
 
-You can use the `linearHypothesis()` function from the `car` package
+You can use the `linearHypothesis()` function from the `car` package. However, `linearHypothesis()` does not accept regression results from the `feols()` function. So, you need to use `lm()` to run regression instead to use this function.
 
 .content-box-red[**Syntax**]
 
@@ -2075,6 +2120,7 @@ linearHypothesis(regression, hypothesis)
 library(car)
 
 #--- unrestricted regression ---#
+#* using lm() instead of feols()
 reg_u &lt;- lm(y ~ x1 + x2 + x3, data = data)
 
 #--- F-test ---#
@@ -2091,11 +2137,16 @@ linearHypothesis(reg_u, c("x1=0", "x2=0"))
 ## Model 1: restricted model
 ## Model 2: y ~ x1 + x2 + x3
 ## 
-##   Res.Df    RSS Df Sum of Sq     F    Pr(&gt;F)    
-## 1    298 684.77                                 
-## 2    296 262.35  2    422.42 238.3 &lt; 2.2e-16 ***
+##   Res.Df    RSS Df Sum of Sq     F
+## 1    298 684.77                   
+## 2    296 262.35  2    422.42 238.3
+##      Pr(&gt;F)    
+## 1              
+## 2 &lt; 2.2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  
+##   0 '***' 0.001 '**' 0.01 '*' 0.05 '.'
+##   0.1 ' ' 1
 ```
 
 ---
@@ -2108,6 +2159,9 @@ We can actually use `\(F\)`-test for this type of hypothesis testing because `\(
 
 
 ```r
+#--- OLS with lm() ---#
+reg_sc &lt;- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
+
 #--- F-test ---#
 F_res &lt;- linearHypothesis(reg_sc, c("jc-univ=0"))
 F_res
