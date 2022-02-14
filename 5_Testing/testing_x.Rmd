@@ -4,8 +4,9 @@ author: "AECN 396/896-002"
 output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
-    # css: xaringan-themer.css 
+    css: xaringan-themer.css 
     lib_dir: libs
+    self-contained: true
     nature:
       ratio: 13:16
       highlightStyle: github
@@ -13,31 +14,16 @@ output:
       countIncrementalSlides: false
 ---
 
-
-```{r, include = F, cache = F}
-opts_chunk$set(
-  fig.align = "center",
-  fig.retina = 5,
-  fig.dim = c(4, 3),
-  out.width = "60%",
-  warning = F,
-  message = F,
-  # fig.path='Figs/',
-  cache = T,
-  root.dir = here(),
-  echo = T
-)
+```{r, child = './../setup.Rmd'}
 ```
 
 
-```{r, child = here("LectureNotes/setup_full.Rmd"), cache = F}
-```
 
 ```{r include = F}
 # setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/5_Testing/")
 ```
 
-# Before we start 
+# Before we start
 
 ## Learning objectives
 
@@ -61,7 +47,7 @@ name: review
 
 ---
 
-# Hypothesis Testing: General Steps 
+# Hypothesis Testing: General Steps
 
 Here is the general step of any hypothesis testing:
 
@@ -77,7 +63,7 @@ Here is the general step of any hypothesis testing:
 
 ---
 
-# Hypothesis testing: An Example 
+# Hypothesis testing: An Example
 
 .content-box-red[**Setup**]
 
@@ -109,7 +95,7 @@ ggplot(data = plot_data) +
 
 ---
 
-# Hypothesis testing: An Example (Cont.) 
+# Hypothesis testing: An Example (Cont.)
 
 ```{r echo = F, out.width = "50%"}
 x <- seq(-4, 4, length = 1000)
@@ -229,7 +215,7 @@ name: coef
 
 ---
 
-# Hypothesis Testing of the Coefficients  
+# Hypothesis Testing of the Coefficients
 
 .content-box-red[**Hypotheses examples**]:
 
@@ -275,7 +261,7 @@ So, let's discuss the distribution of $\beta_j$ now.
 
 ---
 
-# Hypothesis Testing: Additional Assumption 
+# Hypothesis Testing: Additional Assumption
 
 So far, we learned that:
 
@@ -360,7 +346,7 @@ where $n-k-1$ is the degree of freedom of residual.
 
 ---
 
-# Null and alternative hypotheses 
+# Null and alternative hypotheses
 
 
 .content-box-red[**one-sided alternative**]:
@@ -509,7 +495,7 @@ Here,
 
 ---
 
-# One-sided test: an example 
+# One-sided test: an example
 
 
 .content-box-red[**Estimated Model**]
@@ -603,7 +589,7 @@ Here,
 
 ---
 
-# p-value 
+# p-value
 
 
 .content-box-red[**Definition**]
@@ -657,7 +643,7 @@ g_t_0031 <- g_t +
 ```
 
 
-Suppose the t-statistic you got is 2.16. Then, theres a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
+Suppose the t-statistic you got is 2.16. Then, there's a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
 
 --
 
@@ -677,7 +663,7 @@ This decision rule of course results in the same test results as the one we saw 
 
 ---
 
-# R implementation  
+# R implementation
 
 
 .content-box-red[**Get the data and run a regression**]
@@ -717,7 +703,7 @@ For the null hypothesis other than $\beta_j = 0$, you need further work.
 
 ---
 
-# R implementation  (by hand) 
+# R implementation  (by hand)
 
 Suppose you are testing the null hypothesis of $\beta_{educ} = 1$ against the alternative hypothesis of $\beta_{educ} \ne 1$ (so, this is a two-sided test). 
 
@@ -938,7 +924,7 @@ wage_reg$df.residual
 
 ---
 
-# CI: An Example (Cont.) 
+# CI: An Example (Cont.)
 
 We are interested in getting the 90% confidence interval of the coefficient on `educ` $(\beta_{educ})$.
 
@@ -1004,7 +990,7 @@ g_t_005 <- g_t +
   
 ---
 
-# CI: An Example (Cont.)  
+# CI: An Example (Cont.)
 
 Here is the distribution of $t_{522}$:
 
@@ -1100,7 +1086,7 @@ Note that $\alpha$ is a linear combination of $\beta_1$ and  $\beta_2$.
 
 ---
 
-# Linear Combination of Multiple Coefficients  
+# Linear Combination of Multiple Coefficients
 
 .content-box-green[**Important fact**]
 
@@ -1136,7 +1122,7 @@ So, all you need to do is to substitute $\hat{\beta}_1$, $\hat{\beta}_2$, $se(\h
 
 ---
 
-# Linear Combination of Multiple Coefficients  
+# Linear Combination of Multiple Coefficients
 
 But, 
 
@@ -1164,7 +1150,7 @@ $$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) = \sq
 
 ---
 
-# Demonstration using R  
+# Demonstration using R
 
 .content-box-red[**Regression**]
 
@@ -1210,11 +1196,11 @@ beta_univ <-
   pull(estimate)
 
 numerator <- beta_jc - beta_univ
-denomenator <-
+denominator <-
   sqrt(
     vcov_sc["jc", "jc"] - 2 * vcov_sc["jc", "univ"] + vcov_sc["univ", "univ"]
   )
-t_stat <- numerator / denomenator
+t_stat <- numerator / denominator
 t_stat
 ```
 
@@ -1263,7 +1249,7 @@ How do we test this?
 
 ---
 
-# Individual t-test on the coefficients 
+# Individual t-test on the coefficients
 
 
 .content-box-red[**Running a regression**]
@@ -1302,7 +1288,7 @@ $SSR$ (or $R^2$) turns out to be useful for testing their impacts jointly.
 
 ---
 
-# F-test 
+# F-test
 
 In doing an F-test of the null hypothesis, we compare sum of squared residuals $(SSR)$ of two models:
 
@@ -1331,7 +1317,7 @@ If the null hypothesis is indeed true, then what do you think is going to happen
 
 ---
 
-# Sum of Squared Residuals (SSR) for F-test 
+# Sum of Squared Residuals (SSR) for F-test
 
 .content-box-red[**SSR of the unrestricted model**]: $SSR_u$.
 
@@ -1384,7 +1370,7 @@ Cannot tell at this point.
 
 ---
 
-# F-test in general 
+# F-test in general
 
 
 .content-box-red[**Setup**]
@@ -1462,7 +1448,7 @@ ggplot(data = f_plot) +
 
 ---
 
-# F-test by hand 
+# F-test by hand
 
 .content-box-red[**Step 1: estimate the unrestricted and restricted models**]
 
@@ -1522,7 +1508,7 @@ What happened?
 
 ---
 
-# Simulation (multicollinearity, t-test, and F-test) 
+# Simulation (multicollinearity, t-test, and F-test)
 
 .content-box-red[**Data generation**]
 
@@ -1554,7 +1540,7 @@ Both `x1` and `x2` are statistically insignificant individually.
 
 ---
 
-# Simulation (multicollinearity, t-test, and F-test)  
+# Simulation (multicollinearity, t-test, and F-test)
 
 .content-box-red[**F-test**]
 
@@ -1599,7 +1585,7 @@ But, collectively, they have large impacts. $F$-test was able to detect the stat
 
 ---
 
-# MLB example 
+# MLB example
 
 Here is the correlation coefficients between the three variables:
 
@@ -1615,7 +1601,7 @@ They are not so highly correlated with `bavg`.
 
 ---
 
-# F-test (easier way)  
+# F-test (easier way)
 
 You can use the `linearHypothesis()` function from the `car` package. However, `linearHypothesis()` does not accept regression results from the `feols()` function. So, you need to use `lm()` to run regression instead to use this function.
 
@@ -1651,7 +1637,7 @@ linearHypothesis(reg_u, c("x1=0", "x2=0"))
 
 ---
 
-# Multiple coefficients again 
+# Multiple coefficients again
 
 The test of a linear combination of the parameters we looked at earlier is a special case where the number of restriction is 1
 

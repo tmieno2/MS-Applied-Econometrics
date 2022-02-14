@@ -5,8 +5,6 @@
     <meta charset="utf-8" />
     <meta name="author" content="AECN 396/896-002" />
     <script src="libs/header-attrs/header-attrs.js"></script>
-    <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
     <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
@@ -17,6 +15,7 @@
     <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -41,249 +40,9 @@ class: center, middle, inverse, title-slide
 
 
 
+
+
 &lt;style type="text/css"&gt;
-@import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i&amp;display=swap);
-@import url(https://fonts.googleapis.com/css?family=Cabin:600,600i&amp;display=swap);
-@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700&amp;display=swap);
-
-
-:root {
-  /* Fonts */
-  --text-font-family: 'Noto Sans';
-  --text-font-is-google: 1;
-  --text-font-family-fallback: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, Ubuntu, roboto, noto, segoe ui, arial;
-  --text-font-base: sans-serif;
-  --header-font-family: Cabin;
-  --header-font-is-google: 1;
-  --code-font-family: 'Source Code Pro';
-  --code-font-is-google: 1;
-  --base-font-size: 18px;
-  --text-font-size: 1.0rem;
-  --code-font-size: 0.5rem;
-  --code-inline-font-size: 1em;
-  --header-h1-font-size: 1.4rem;
-  --header-h2-font-size: 1.1rem;
-  --header-h3-font-size: 0.9rem;
-
-  /* Colors */
-  --text-color: #000000;
-  --header-color: #035AA6;
-  --background-color: #FFFFFF;
-  --link-color: #ff005a;
-  --text-bold-color: #035AA6;
-  --code-highlight-color: rgba(255,255,0,0.5);
-  --inverse-text-color: #000000;
-  --inverse-background-color: #03A696;
-  --inverse-header-color: #000000;
-  --title-slide-background-color: #035AA6;
-  --title-slide-text-color: #FFFFFF;
-  --header-background-color: #035AA6;
-  --header-background-text-color: #FFFFFF;
-  --primary: #035AA6;
-  --secondary: #03A696;
-  --white: #FFFFFF;
-  --black: #000000;
-}
-
-html {
-  font-size: var(--base-font-size);
-}
-
-body {
-  font-family: var(--text-font-family), var(--text-font-family-fallback), var(--text-font-base);
-  font-weight: normal;
-  color: var(--text-color);
-}
-h1, h2, h3 {
-  font-family: var(--header-font-family);
-  font-weight: 600;
-  color: var(--header-color);
-}
-.remark-slide-content {
-  background-color: var(--background-color);
-  font-size: 0.7rem;
-  padding: 16px 64px 16px 64px;
-  width: 100%;
-  height: 100%;
-}
-.remark-slide-content h1 {
-  font-size: var(--header-h1-font-size);
-}
-.remark-slide-content h2 {
-  font-size: var(--header-h2-font-size);
-}
-.remark-slide-content h3 {
-  font-size: var(--header-h3-font-size);
-}
-.remark-code, .remark-inline-code {
-  font-family: var(--code-font-family), Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
-}
-.remark-code {
-  font-size: var(--code-font-size);
-}
-.remark-inline-code {
-  font-size: var(--code-inline-font-size);
-  color: #035AA6;
-  background-color: #e6e6e6;
-  padding: 2px;
-}
-.remark-slide-number {
-  color: #035AA6;
-  opacity: 1;
-  font-size: 0.9em;
-}
-strong { color: var(--text-bold-color); }
-a, a &gt; code {
-  color: var(--link-color);
-  text-decoration: none;
-}
-.footnote {
-  position: absolute;
-  bottom: 60px;
-  padding-right: 4em;
-  font-size: 0.9em;
-}
-.remark-code-line-highlighted {
-  background-color: var(--code-highlight-color);
-}
-.inverse {
-  background-color: var(--inverse-background-color);
-  color: var(--inverse-text-color);
-  
-}
-.inverse h1, .inverse h2, .inverse h3 {
-  color: var(--inverse-header-color);
-}
-.title-slide, .title-slide h1, .title-slide h2, .title-slide h3 {
-  color: var(--title-slide-text-color);
-}
-.title-slide {
-  background-color: var(--title-slide-background-color);
-}
-.title-slide .remark-slide-number {
-  display: none;
-}
-/* Two-column layout */
-.left-column {
-  width: 20%;
-  height: 92%;
-  float: left;
-}
-.left-column h2, .left-column h3 {
-  color: #035AA699;
-}
-.left-column h2:last-of-type, .left-column h3:last-child {
-  color: #035AA6;
-}
-.right-column {
-  width: 75%;
-  float: right;
-  padding-top: 1em;
-}
-.pull-left {
-  float: left;
-  width: 47%;
-}
-.pull-right {
-  float: right;
-  width: 47%;
-}
-.pull-right ~ * {
-  clear: both;
-}
-img, video, iframe {
-  max-width: 100%;
-}
-blockquote {
-  border-left: solid 5px #03A69680;
-  padding-left: 1em;
-}
-.remark-slide table {
-  margin: auto;
-  border-top: 1px solid #666;
-  border-bottom: 1px solid #666;
-}
-.remark-slide table thead th {
-  border-bottom: 1px solid #ddd;
-}
-th, td {
-  padding: 5px;
-}
-.remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even) {
-  background: #CCEDEA;
-}
-table.dataTable tbody {
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-table.dataTable.display tbody tr.odd {
-  background-color: var(--background-color);
-}
-table.dataTable.display tbody tr.even {
-  background-color: #CCEDEA;
-}
-table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
-  color: var(--text-color);
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-  color: var(--text-color) !important;
-}
-
-/* Slide Header Background for h1 elements */
-.remark-slide-content.header_background &gt; h1 {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: var(--header-background-color);
-  color: var(--header-background-text-color);
-  padding: 2rem 64px 1.5rem 64px;
-  margin-top: 0;
-  box-sizing: border-box;
-}
-.remark-slide-content.header_background {
-  padding-top: 7rem;
-}
-
-@page { margin: 0; }
-@media print {
-  .remark-slide-scaler {
-    width: 100% !important;
-    height: 100% !important;
-    transform: scale(1) !important;
-    top: 0 !important;
-    left: 0 !important;
-  }
-}
-
-.primary {
-  color: var(--primary);
-}
-.bg-primary {
-  background-color: var(--primary);
-}
-.secondary {
-  color: var(--secondary);
-}
-.bg-secondary {
-  background-color: var(--secondary);
-}
-.white {
-  color: var(--white);
-}
-.bg-white {
-  background-color: var(--white);
-}
-.black {
-  color: var(--black);
-}
-.bg-black {
-  background-color: var(--black);
-}
 
 .remark-slide-content.hljs-github h1 {
   margin-top: 5px;  
@@ -588,11 +347,16 @@ slides &gt; slide {
   height: 90%;
   overflow-y: scroll;
 }
+
+ 
 &lt;/style&gt;
 
 
 
-# Before we start 
+
+
+
+# Before we start
 
 ## Learning objectives
 
@@ -616,7 +380,7 @@ name: review
 
 ---
 
-# Hypothesis Testing: General Steps 
+# Hypothesis Testing: General Steps
 
 Here is the general step of any hypothesis testing:
 
@@ -632,7 +396,7 @@ Here is the general step of any hypothesis testing:
 
 ---
 
-# Hypothesis testing: An Example 
+# Hypothesis testing: An Example
 
 .content-box-red[**Setup**]
 
@@ -654,13 +418,13 @@ Suppose `\(\alpha = 1\)` is indeed 1, then `\(\sqrt{J} \times (\theta - 1)/2 \si
 
 So, if the null hypothesis is indeed true, this is the distribution of your test statistic: `\(\sqrt{J} \times (\theta - 1)/2\)`
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-4-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-3-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Hypothesis testing: An Example (Cont.) 
+# Hypothesis testing: An Example (Cont.)
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-5-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-4-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 --
 
@@ -700,7 +464,7 @@ Note that you do not really need to use `\(\sqrt{J} \times (\theta - \alpha)/2\)
 
 You could alternatively use `\(\theta - \alpha\)`. But, in that case, you need to be looking at `\(N(0, 4/J)\)` instead of `\(N(0, 1)\)`. When the number of observations is 100 `\((J = 100)\)`,
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-6-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-5-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 --
 
@@ -766,7 +530,7 @@ name: coef
 
 ---
 
-# Hypothesis Testing of the Coefficients  
+# Hypothesis Testing of the Coefficients
 
 .content-box-red[**Hypotheses examples**]:
 
@@ -812,7 +576,7 @@ So, let's discuss the distribution of `\(\beta_j\)` now.
 
 ---
 
-# Hypothesis Testing: Additional Assumption 
+# Hypothesis Testing: Additional Assumption
 
 So far, we learned that:
 
@@ -897,7 +661,7 @@ where `\(n-k-1\)` is the degree of freedom of residual.
 
 ---
 
-# Null and alternative hypotheses 
+# Null and alternative hypotheses
 
 
 .content-box-red[**one-sided alternative**]:
@@ -934,7 +698,7 @@ The lower the significance level, you are more sure that the null is indeed wron
 
 This is the distribution of `\(\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}\)` if `\(\beta_j = 0\)` (the null hypothesis is true).
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 
 .content-box-red[**Decision rule**]
@@ -959,7 +723,7 @@ Here,
 This is the distribution of `\(\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}\)` if `\(\beta_j = 0\)` (the null hypothesis is true).
 
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 .content-box-red[**Decision rule**]
 
@@ -978,7 +742,7 @@ Here,
 
 ---
 
-# One-sided test: an example 
+# One-sided test: an example
 
 
 .content-box-red[**Estimated Model**]
@@ -1014,7 +778,7 @@ Since `\(2.41 &gt; 2.33\)`, we reject the null in favor of the alternative hypot
 
 This is the distribution of `\(\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}\)` if `\(\beta_j = 0\)` (the null hypothesis is true).
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 (Note: irrespective of the type of tests, the distribution of t-statistics is the same.)
 
@@ -1035,7 +799,7 @@ Here,
 
 ---
 
-# p-value 
+# p-value
 
 
 .content-box-red[**Definition**]
@@ -1045,11 +809,11 @@ The smallest significance level at which the null hypothesis would be rejected (
 
 
 
-Suppose the t-statistic you got is 2.16. Then, theres a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
+Suppose the t-statistic you got is 2.16. Then, there's a 3.1% chance you reject the null when it is actually true, if you use it as the critical value. 
 
 --
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 So, the lower significance level the null hypothesis is rejected is 3.1%, which is the definition of p-value.
 
@@ -1063,7 +827,7 @@ This decision rule of course results in the same test results as the one we saw 
 
 ---
 
-# R implementation  
+# R implementation
 
 
 .content-box-red[**Get the data and run a regression**]
@@ -1096,13 +860,12 @@ reg_results_table
 
 ```
 ## # A tibble: 4 × 5
-##   term        estimate std.error statistic
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-## 1 (Intercept)  -2.87      0.729      -3.94
-## 2 educ          0.599     0.0513     11.7 
-## 3 exper         0.0223    0.0121      1.85
-## 4 tenure        0.169     0.0216      7.82
-## # … with 1 more variable: p.value &lt;dbl&gt;
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  -2.87      0.729      -3.94 9.22e- 5
+## 2 educ          0.599     0.0513     11.7  3.68e-28
+## 3 exper         0.0223    0.0121      1.85 6.45e- 2
+## 4 tenure        0.169     0.0216      7.82 2.93e-14
 ```
 
 + `estimate`: coefficient estimates `\((\hat{\beta}_j)\)`
@@ -1116,7 +879,7 @@ For the null hypothesis other than `\(\beta_j = 0\)`, you need further work.
 
 ---
 
-# R implementation  (by hand) 
+# R implementation  (by hand)
 
 Suppose you are testing the null hypothesis of `\(\beta_{educ} = 1\)` against the alternative hypothesis of `\(\beta_{educ} \ne 1\)` (so, this is a two-sided test). 
 
@@ -1230,7 +993,7 @@ If `\(x\)` is standard normally distributed `\((x \sim N(0, 1))\)`, then,
 
 
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 The 2.5% and 97.5% quantiles are -1.96 and 1.96, respectively.
 
@@ -1314,11 +1077,7 @@ Apply the `summary()` to the regression results (`reg_wage`) and extract the `co
 ```
 
 ```
-##                Estimate Std. Error   t value     Pr(&gt;|t|)
-## (Intercept) -2.87273482 0.72896429 -3.940844 9.224742e-05
-## educ         0.59896507 0.05128355 11.679478 3.681353e-28
-## exper        0.02233952 0.01205685  1.852849 6.446818e-02
-## tenure       0.16926865 0.02164461  7.820361 2.934527e-14
+## NULL
 ```
 
 
@@ -1336,7 +1095,7 @@ wage_reg$df.residual
 
 ---
 
-# CI: An Example (Cont.) 
+# CI: An Example (Cont.)
 
 We are interested in getting the 90% confidence interval of the coefficient on `educ` `\((\beta_{educ})\)`.
 
@@ -1375,11 +1134,11 @@ wage_reg$df.residual
   
 ---
 
-# CI: An Example (Cont.)  
+# CI: An Example (Cont.)
 
 Here is the distribution of `\(t_{522}\)`:
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-22-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-21-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 --
 
@@ -1490,7 +1249,7 @@ Note that `\(\alpha\)` is a linear combination of `\(\beta_1\)` and  `\(\beta_2\
 
 ---
 
-# Linear Combination of Multiple Coefficients  
+# Linear Combination of Multiple Coefficients
 
 .content-box-green[**Important fact**]
 
@@ -1526,7 +1285,7 @@ So, all you need to do is to substitute `\(\hat{\beta}_1\)`, `\(\hat{\beta}_2\)`
 
 ---
 
-# Linear Combination of Multiple Coefficients  
+# Linear Combination of Multiple Coefficients
 
 But, 
 
@@ -1554,7 +1313,7 @@ So,
 
 ---
 
-# Demonstration using R  
+# Demonstration using R
 
 .content-box-red[**Regression**]
 
@@ -1611,11 +1370,11 @@ beta_univ &lt;-
   pull(estimate)
 
 numerator &lt;- beta_jc - beta_univ
-denomenator &lt;-
+denominator &lt;-
   sqrt(
     vcov_sc["jc", "jc"] - 2 * vcov_sc["jc", "univ"] + vcov_sc["univ", "univ"]
   )
-t_stat &lt;- numerator / denomenator
+t_stat &lt;- numerator / denominator
 t_stat
 ```
 
@@ -1670,7 +1429,7 @@ How do we test this?
 
 ---
 
-# Individual t-test on the coefficients 
+# Individual t-test on the coefficients
 
 
 .content-box-red[**Running a regression**]
@@ -1692,15 +1451,14 @@ tidy(mlb_reg)
 
 ```
 ## # A tibble: 6 × 5
-##   term        estimate std.error statistic
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-## 1 (Intercept)  1.12e+1   0.289      38.8  
-## 2 years        6.89e-2   0.0121      5.68 
-## 3 gamesyr      1.26e-2   0.00265     4.74 
-## 4 bavg         9.79e-4   0.00110     0.887
-## 5 hrunsyr      1.44e-2   0.0161      0.899
-## 6 rbisyr       1.08e-2   0.00717     1.50 
-## # … with 1 more variable: p.value &lt;dbl&gt;
+##   term         estimate std.error statistic   p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept) 11.2        0.289      38.8   4.19e-128
+## 2 years        0.0689     0.0121      5.68  2.79e-  8
+## 3 gamesyr      0.0126     0.00265     4.74  3.09e-  6
+## 4 bavg         0.000979   0.00110     0.887 3.76e-  1
+## 5 hrunsyr      0.0144     0.0161      0.899 3.69e-  1
+## 6 rbisyr       0.0108     0.00717     1.50  1.34e-  1
 ```
 
 --
@@ -1723,7 +1481,7 @@ If you were to conclude that they do not have statistically significant impact j
 
 ---
 
-# F-test 
+# F-test
 
 In doing an F-test of the null hypothesis, we compare sum of squared residuals `\((SSR)\)` of two models:
 
@@ -1752,7 +1510,7 @@ If the null hypothesis is indeed true, then what do you think is going to happen
 
 ---
 
-# Sum of Squared Residuals (SSR) for F-test 
+# Sum of Squared Residuals (SSR) for F-test
 
 .content-box-red[**SSR of the unrestricted model**]: `\(SSR_u\)`.
 
@@ -1815,7 +1573,7 @@ Cannot tell at this point.
 
 ---
 
-# F-test in general 
+# F-test in general
 
 
 .content-box-red[**Setup**]
@@ -1867,7 +1625,7 @@ Greater.
 
 .content-box-red[**F-distribution**]
 
-&lt;img src="testing_x_files/figure-html/unnamed-chunk-32-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="testing_x_files/figure-html/unnamed-chunk-31-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 .content-box-red[**F-test steps**]
 
@@ -1879,7 +1637,7 @@ Greater.
 
 ---
 
-# F-test by hand 
+# F-test by hand
 
 .content-box-red[**Step 1: estimate the unrestricted and restricted models**]
 
@@ -1955,7 +1713,7 @@ What happened?
 
 ---
 
-# Simulation (multicollinearity, t-test, and F-test) 
+# Simulation (multicollinearity, t-test, and F-test)
 
 .content-box-red[**Data generation**]
 
@@ -1979,7 +1737,7 @@ cor(x1, x2) # correlation between x1 and x2
 ```
 
 ```
-## [1] 0.9975227
+## [1] 0.9977757
 ```
 
 .content-box-red[**Regression**]
@@ -1992,20 +1750,19 @@ tidy(reg_u) # results
 
 ```
 ## # A tibble: 4 × 5
-##   term        estimate std.error statistic
-##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-## 1 "(Intercep…    0.839     0.152     5.51 
-## 2 "x1"           0.633     1.33      0.476
-## 3 "x2"           1.41      1.33      1.06 
-## 4 "c(0.44029…    1.05      0.189     5.57 
-## # … with 1 more variable: p.value &lt;dbl&gt;
+##   term                                                                                                                                                                                                                                                                                                                                                                 estimate std.error statistic      p.value
+##   &lt;chr&gt;                                                                                                                                                                                                                                                                                                                                                                   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
+## 1 "(Intercept)"                                                                                                                                                                                                                                                                                                                                                           0.799     0.164    4.87        1.81e-6
+## 2 "x1"                                                                                                                                                                                                                                                                                                                                                                    2.19      1.50     1.46        1.44e-1
+## 3 "x2"                                                                                                                                                                                                                                                                                                                                                                   -0.141     1.50    -0.0938      9.25e-1
+## 4 "c(0.998514228500426, 0.0948318992741406, 0.405725868418813, 0.343517401721328, 0.317924188682809, 0.527741123922169, 0.958915456663817, 0.443211349425837, 0.427270934218541, 0.518096238840371, 0.750601168256253, 0.28066196362488, 0.996127344435081, 0.281175310490653, 0.0578666031360626, 0.989764103898779, 0.485873100580648, 0.160254145273939, 0.9351147…    1.25      0.207    6.04        4.67e-9
 ```
 
 Both `x1` and `x2` are statistically insignificant individually. 
 
 ---
 
-# Simulation (multicollinearity, t-test, and F-test)  
+# Simulation (multicollinearity, t-test, and F-test)
 
 .content-box-red[**F-test**]
 
@@ -2044,7 +1801,7 @@ F_stat
 ```
 
 ```
-## [1] 238.2964
+## [1] 214.0875
 ```
 
 ```r
@@ -2067,7 +1824,7 @@ But, collectively, they have large impacts. `\(F\)`-test was able to detect the 
 
 ---
 
-# MLB example 
+# MLB example
 
 Here is the correlation coefficients between the three variables:
 
@@ -2091,7 +1848,7 @@ They are not so highly correlated with `bavg`.
 
 ---
 
-# F-test (easier way)  
+# F-test (easier way)
 
 You can use the `linearHypothesis()` function from the `car` package. However, `linearHypothesis()` does not accept regression results from the `feols()` function. So, you need to use `lm()` to run regression instead to use this function.
 
@@ -2137,21 +1894,16 @@ linearHypothesis(reg_u, c("x1=0", "x2=0"))
 ## Model 1: restricted model
 ## Model 2: y ~ x1 + x2 + x3
 ## 
-##   Res.Df    RSS Df Sum of Sq     F
-## 1    298 684.77                   
-## 2    296 262.35  2    422.42 238.3
-##      Pr(&gt;F)    
-## 1              
-## 2 &lt; 2.2e-16 ***
+##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1    298 758.64                                  
+## 2    296 310.09  2    448.55 214.09 &lt; 2.2e-16 ***
 ## ---
-## Signif. codes:  
-##   0 '***' 0.001 '**' 0.01 '*' 0.05 '.'
-##   0.1 ' ' 1
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 ---
 
-# Multiple coefficients again 
+# Multiple coefficients again
 
 The test of a linear combination of the parameters we looked at earlier is a special case where the number of restriction is 1
 
