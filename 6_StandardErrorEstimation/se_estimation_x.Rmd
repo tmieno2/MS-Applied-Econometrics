@@ -6,24 +6,27 @@ output:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
     lib_dir: libs
+    self-contained: true
     nature:
       ratio: 4:3
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
+class: middle
 
-```{r, child = './../setup.Rmd'}
+```{r, child = './../setup.Rmd', cache = F}
 ```
 
 ```{r echo = F, eval = F}
-setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Heteroskedasticity/")
+setwd(here("LectureNotes/6_StandardErrorEstimation"))
 ```
 
 ```{r libraries, include = F, cache = F}
 #--- load packages ---#
 suppressMessages(library(broom))
 suppressMessages(library(fixest))
+suppressMessages(library(modelsummary))
 suppressMessages(library(lmtest))
 ```
 
@@ -67,6 +70,7 @@ $$Var(u|x) = f(x)$$
 ]
 
 ---
+class: middle
 
 # Visualization 
 
@@ -104,6 +108,7 @@ g_het
 ```
 
 ---
+class: middle
 
 # Central Questions 
 
@@ -114,6 +119,7 @@ What are the consequences of assuming error is homoskedastic when it is heterosk
 + Estimation of the variance of $\hat{\beta}_j$?
 
 ---
+class: middle
 
 # Coefficient estimators
 
@@ -137,9 +143,10 @@ Yes
 
 --
 
-We do not homoskedasticity for the OLS estimators to be unbiased.    
+We do not use the homoskedasticity assumption to prove that the OLS estimator is unbiased.    
 
 ---
+class: middle
 
 # Variance of the coefficient estimators 
 
@@ -162,6 +169,7 @@ $\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}$ where $\hat{\sigma}^2 = \frac{\sum_{i=1}
 .content-box-green[**Note**]: Hereafter, we let $\widehat{Var(\hat{\beta_j})}$ denote the estimator of the variance of $\hat{\beta}_j$.
 
 ---
+class: middle
 
 # Variance of the coefficient estimators  
 
@@ -180,6 +188,7 @@ Is $E[\widehat{Var(\hat{\beta}_j)}]=E\Big[\frac{\hat{\sigma}^2}{SST_x(1-R^2_j)}\
 .content-box-green[**Answer**]: No
 
 ---
+class: middle
 
 # Variance of the coefficient estimators  
 
@@ -193,6 +202,7 @@ So, what are the consequences of using $\widehat{Var(\hat{\beta}_j)}=\frac{\hat{
 Your hypothesis testing is going to be biased.
 
 ---
+class: middle
 
 # Consequence of heteroskedasticity on testing
 
@@ -220,6 +230,7 @@ If you test the null hypothesis at the $5\%$ significance level, what should be 
 $Pr(\mbox{reject} \;\; H_0|H_0 \;\; \mbox{is true})=?$
 
 ---
+class: middle
 
 .content-box-green[**Question**]
 
@@ -277,6 +288,7 @@ g_t +
 Since the null is true (we generate the data that way!), the probability you reject the null should be the same as the significance level, which is $5%$.
 
 ---
+class: middle
 
 # MC simulation: conceptual steps
 
@@ -290,6 +302,7 @@ $$y=\beta_0+\beta_1 x + v$$
 + check how often you reject the null (should be close to 50 times)
 
 ---
+class: middle
 
 # MC simulation: R code 
 
@@ -322,6 +335,7 @@ for (i in 1:B){
 ```
 
 ---
+class: middle
 
 # MC simulation: Results
 
@@ -350,6 +364,7 @@ We rejected the null hypothesis `r mean(reject_or_not)*100`% of the time, instea
 + The direction of bias is ambiguous. 
 
 ---
+class: middle
 
 # How should we address this problem?
 
@@ -395,6 +410,7 @@ What you need is
 + know how to use the heteroskedasticity-robust standard error estimator in $R$ (or some other software)
 
 ---
+class: middle
 
 # In practice 
 
@@ -420,14 +436,15 @@ Here is the well-accepted procedure in econometric analysis:
 + But, we do not replace coefficient estimates (remember, coefficient estimation is still unbiased under heteroskedasticity)
 
 ---
- 
+class: middle
+
 # Implementation in R 
 
 We use
 
-+ the `vcovHC()` function from the `sandwich` package to estimate heteroskedasticity-robust standard errors
++ the `fixest::se()` function from the `fixest` package to estimate heteroskedasticity-robust standard errors
 
-+ the `coeftest()` function from the `lmtest` package to do tests
++ the `summary()` function do tests of $\beta_j = 0$
 
 --
 
@@ -441,85 +458,155 @@ library(readstata13)
 mlb_data <- read.dta13('MLB1.dta')
 
 #--- regression ---#
-reg_mlb <- lm(log(salary)~years+bavg,data=mlb_data) 
-``` 
+reg_mlb <- feols(log(salary) ~ years + bavg, data = mlb_data) 
+```
 
 ---
 class: middle
 
-.content-box-red[**Obtaining Heteroskedasticity-robust SE estimates**]
+# Obtaining Heteroskedasticity-robust SE estimates
 
-```{r }
-library(sandwich)
-```
+.content-box-red[**Syntax**]
 
 ```{r eval = F}
-#--- NOT RUN ---#  
-vcovHC(regression result)
+#* vcov
+vcov(regression result, vcov = "type of vcov")
+
+#* only the standard errors
+se(regression result, vcov = "type of vcov")
+```
+
+.content-box-green[**heteroskedasticity-robust standard error estimation**]
+
+```{r }
+#* vcov
+vcov(reg_mlb, vcov = "hetero")
+
+#* only the standard errors
+se(reg_mlb, vcov = "hetero")
 ```
 
 ---
+class: middle
 
+# Compare with the Default
 
 .content-box-red[**Default**]
 
 ```{r }
-vcov_hom <- vcov(reg_mlb)
-```
-
-```{r echo = F}
-vcov_hom 
+(
+  se_hom <- se(reg_mlb)
+)
 ```
 
 <br>
 
 .content-box-red[**Heteroskedasticity-robust**]
 
-```{r }
-vcov_het <- vcovHC(reg_mlb)
-```
-
 ```{r echo = F}
-vcov_het 
-``` 
+(
+  se_het <- se(reg_mlb, vcov = "hetero")
+)
+```
 
 ---
 class: middle
 
-.content-box-red[**Coefficient tests using `coeftest()`**]
-
-```{r eval = F}
-library(lmtest)
-```
-
-```{r eval = F}
-#--- NOT RUN ---#  
-coeftest(regression result, variance covariance matrix)
-```
-
----
+# Updating the test of coefficients being zero
 
 .content-box-red[**Default**]
 
 ```{r }
-coeftest(reg_mlb, vcov_hom) %>% tidy()
+tidy(reg_mlb)
 ```
-
-<br>
 
 .content-box-red[**Heteroskedasticity-robust**]
 
 ```{r }
-coeftest(reg_mlb, vcov_het) %>% tidy()
+tidy(reg_mlb, vcov = "hetero")
 ```
 
 ---
+class: middle
+
+# Reporting the regression results
+
+In presenting the regression results in a nicely formatted table, we used `modelsummary::msummary()`. 
+
+We can easily swap the defulat se with the heteroskedasticity-robust se using the `statistic_override` option in `msummary()`.
+
+.left5[
+```{r results = "hide"}
+vcov_het <- vcov(reg_mlb, vcov = "hetero")
+vcov_homo <- vcov(reg_mlb)
+
+modelsummary::msummary(
+  list(reg_mlb, reg_mlb),
+  statistic_override = list(vcov_het, vcov_homo),
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+) 
+```
+]
+
+.right5[
+```{r echo = F}
+modelsummary::msummary(
+  list(reg_mlb, reg_mlb),
+  statistic_override = list(vcov_het, vcov_homo),
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+) 
+```
+]
+
+---
+class: middle
+
+# R Demonstration
+
+Or, you could add the `vcov` option like below inside `feols()`. Then, you do not need `statistic_override` option to override the default VCOV estimates.
+
+```{r }
+reg_mlb <- feols(log(salary) ~ years + bavg, vcov = "hetero", data = mlb_data) 
+
+tidy(reg_mlb)
+```
+
+.left5[
+```{r results = "hide"}
+modelsummary::msummary(
+  list(reg_mlb),
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+) 
+```
+]
+
+.right5[
+```{r echo = F}
+modelsummary::msummary(
+  list(reg_mlb),
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+) 
+```
+]
+
+---
+class: middle
 
 # Het-robust SE estimator: validation 
 
 Does the heteroskedasticity-robust se estimator work? Let's see using MC simulations:
 
 ```{r }
+set.seed(478954)
+
 #--- x fixed across iterations ---#
 x <- runif(N,0,1) # x
 
@@ -530,15 +617,16 @@ for (i in 1:B){
   data_temp <- data.frame(y = y, x = x)
 
   #--- regression ---#
-  ols_res <- lm(y~x,data = data_temp)
-  b_hat <- ols_res$coef['x'] # coef estimate on x
+  ols_res <- feols(y ~ x,data = data_temp)
+  b_hat <- ols_res$coefficient['x'] # coef estimate on x
   b_hat_store[i] <- b_hat # save the coef estimate
-  vcov_hc <- vcovHC(ols_res) # get variance covariance matrix #<<
-  t_stat_store[i] <- b_hat/sqrt(vcov_hc['x','x']) # calculate t-stat
+  se_het <- se(ols_res, vcov = "hetero")["x"] # get variance covariance matrix #<<
+  t_stat_store[i] <- b_hat/se_het # calculate t-stat
 }  
 ```
 
 ---
+class: middle
 
 # MC simulation results 
 
@@ -593,6 +681,7 @@ Eduction Impacts on Income: cluster by individual
   * innate ability
 
 ---
+class: middle
 
 # Consequences of clustered error 
 
@@ -609,6 +698,7 @@ Are the OLS estimators of the coefficients biased in the presence of clustered e
 No, the correlation between $x$ and $u$ would hurt you, but not correlation among $u$.
 
 ---
+class: middle
 
 # Consequences of clustered error 
 
@@ -625,6 +715,7 @@ Are $\widehat{Var(\hat{\beta})}_{default}$ unbiased estimators of $Var(\hat{\bet
 No, $\widehat{Var(\hat{\beta})}_{default}$ is unbiased only under homoskedasticity assumption, which assumes no correlation between errors
 
 ---
+class: middle
 
 # Consequences of clustered error 
 
@@ -642,6 +733,7 @@ Which has more information?
 + This would lead to rejecting null hypothesis (more/less) often than you are supposed to
 
 ---
+class: middle
 
 # MC simulations: conceptual steps
 
@@ -654,72 +746,103 @@ Here are the conceptual steps of the MC simulations to see the consequence of cl
 + see how many times out of 1000 times you reject the null hypothesis: $H_0:$ $\beta_x=0$
 
 ---
+class: middle
 
-# R code: steps 1 - 3
-
-Here is the R code for one iteration (Steps 1 ~ 3):
+# R code: Data Genrating Process
 
 ```{r }
 #--- setup ---#
 library(MASS) # to use the mvrnorm() function later
-N <- 200 # number of observations per cluster
 
-#--- error term ---#
-# generating errors that are correlated within each group
-u_1 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
-u_2 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
+N <- 2000 # number of observations per cluster
+G <- 50 # number of groups
+Ng <- N/G # number of observations per group
 
-#--- x ---#
-x_1 <- runif(N); x_2 <- runif(N) 
+#--- error correlated within group ---#
+u <- 
+  mvrnorm(
+    G, mu = rep(0, Ng), 
+    Sigma = matrix(10, nrow = Ng, ncol = Ng) + diag(Ng)
+  ) %>% t() %>% c()
 
-#--- y ---#
-y_1 <- 1 + 0*x_1 + u_1; y_2 <- 1 + 0*x_2 + u_2
+#--- x correlated within group ---#
+x <- 
+  mvrnorm(
+    G, mu = rep(0, Ng), 
+    Sigma = matrix(1, nrow = Ng, ncol = Ng) + diag(Ng) * .2
+  ) %>% t() %>% c()
 
-#--- data ---#
-data <- data.table(y=c(y_1,y_2),x=c(x_1,x_2)) 
+#--- other variables ---#
+y <- 1 + 0 * x + u
 
-#--- OLS ---#
-reg <- lm(y~x,data=data)
-vcov_temp <- vcov(reg) # default #<<
-t_stat <- reg$coef['x']/sqrt(vcov_temp['x','x'])
-t_stat_store[i] <- t_stat
+#--- data.frame ---#
+data <- data.frame(y = y, x = x, group = rep(1:G, each = Ng))
+
 ```
 
 ---
+class: middle
 
-# R code: step 4
+# Visualization of the clustered nature of the data
+
+```{r echo = F}
+ggplot(data) +
+  geom_point(aes(y = y, x = factor(group)), size = 0.2)
+```
+
+---
+class: middle
+
+# R code: MC simualtion
 
 ```{r cluster-MC}
+set.seed(58934)
 B <- 1000
 t_stat_store <- rep(0,B)
+N <- 2000 # number of observations per cluster
+G <- 50 # number of groups
+Ng <- N/G # number of observations per group
+
 for (i in 1:B){
-  #--- generate data ---#
-  u_1 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
-  u_2 <- mvrnorm(N,mu=rep(0,N),Sigma=matrix(.7,nrow=N,ncol=N)+diag(N)*.3)
-  x_1 <- runif(N) # x for group 1
-  x_2 <- runif(N) # x for group 2
-  y_1 <- 1 + 0*x_1 + u_1
-  y_2 <- 1 + 0*x_2 + u_2
-  data <- data.table(y=c(y_1,y_2),x=c(x_1,x_2))
+  #--- error correlated within group ---#
+  u <- 
+  mvrnorm(
+    G, mu = rep(0, Ng), 
+    Sigma = matrix(10, nrow = Ng, ncol = Ng) + diag(Ng)
+  ) %>% t() %>% c()
+
+  #--- x correlated within group ---#
+  x <- 
+    mvrnorm(
+      G, mu = rep(0, Ng), 
+      Sigma = matrix(1, nrow = Ng, ncol = Ng) + diag(Ng) * .2
+    ) %>% t() %>% c()
+
+  #--- other variables ---#
+  y <- 1 + 0 * x + u
+
+  #--- data.frame ---#
+  data <- data.frame(y = y, x = x, group = rep(1:G, each = Ng))
 
   #--- OLS ---#
-  reg <- lm(y~x,data=data)
+  reg <- feols(y ~ x, data = data)
 
   #--- get vcov ---#
-  vcov_temp <- vcov(reg)
+  se_default <- se(reg)["x"]
 
   #--- calculate t-stat ---#
-  t_stat <- reg$coef['x']/sqrt(vcov_temp['x','x'])
+  t_stat <- reg$coefficient['x']/se_default
   t_stat_store[i] <- t_stat
 } 
 ```
 
 ---
+class: middle
 
 # MC simulations: results 
 
 ```{r , dependson = "cluster-MC"}
-c_value <- qt(0.975,400-2)
+c_value <- qt(0.975, N - 2)
 
 #--- how often do you reject the null ---#
 mean(abs(t_stat_store) > c_value) 
@@ -727,14 +850,14 @@ mean(abs(t_stat_store) > c_value)
 
 --
 
-
 .content-box-red[**Important**]: 
 
 + clustered error can severely bias your test results
-+ it is always to make variables more significant than they truly are
++ it tends to make the impact of explanatory variables more significant than they truly are
 
 ---
-  
+class: middle
+
 # What to do? 
 
 
@@ -747,6 +870,7 @@ There exist estimators of $Var(\hat{\beta})$ that take into account the possibil
 + We call estimates from such estimators .blue[cluster-robust variance]
 
 ---
+class: middle
 
 # Cluster-robust standard error estimation 
 
@@ -764,32 +888,16 @@ I neither derive nor show the mathematical expressions of these estimators.
 + know how to use the estimators in $R$ (or some other software)
 
 ---
+class: middle
 
 # R implementation 
 
-We use the `feols()` package from the `fixest` package. 
-
-This is the function we will be using instead of `lm()` for the rest of the course.
-
-<br>
-
-.content-box-red[**feols()**]
-
-```{r eval = F}
-feols(dep var ~ indep var 1 + indep var 2 + ..., data = data) 
-```
-
-So, syntactically, it is identical with `lm()`, but it goes way beyond `lm()` as we will see later when we cover panel data estimation methods.
-
---
-
-<br>
-
 .content-box-red[**Cluster-robust standard error**]
 
-Run a regression, and then apply `vcov()` with the `cluster = ~ ` option.
+Similar with the `vcov` option for White-Huber heteroskedasticity-robust se, we can use the `cluster` option to get clsuter-robust se. 
 
 ---
+class: middle
 
 # Before an R demonstration 
 
@@ -802,6 +910,7 @@ mlb_data[, c("salary", "years", "bavg", "nl")] %>% head()
 `nl` (1 if in the National league, 0 if in the American league) is the group variable we cluster around. 
 
 ---
+class: middle
 
 # R Demonstration 
 
@@ -818,52 +927,48 @@ reg_mlb <- feols(log(salary) ~ years + bavg, data = mlb_data)
 
 .content-box-red[**Step 2**]
 
-Apply `vcov()` with the `cluster =` option.
-
+Apply `vcov()` or `se()` with the `cluster =` option.
 
 ```{r eval = F}
+#* vcov clustered by nl
 vcov(reg_mlb, cluster = ~ nl)
-```
 
-```{r echo = F}
-vcov_cl <- vcov(reg_mlb, cluster = ~ nl)
-attr(vcov_cl, "type") <- NULL
-attr(vcov_cl, "dof.type") <- NULL
-attr(vcov_cl, "dof.K") <- NULL
-vcov_cl
+#* se clustered by nl
+se(reg_mlb, cluster = ~ nl)
 ```
-
-Here, it is clustered around `nl`.
 
 ---
+class: middle
 
 # Compare 
 
-
 .content-box-red[**Default**]
 
-```{r eval = F}
-vcov(reg_mlb) 
-```
-
-```{r echo = F}
-vcov_default <- vcov(reg_mlb)
-attr(vcov_default, "type") <- NULL
-attr(vcov_default, "dof.type") <- NULL
-attr(vcov_default, "dof.K") <- NULL
-vcov_default 
+```{r }
+se(reg_mlb) 
 ```
 
 .content-box-red[**Cluster-robust standard error**]
 
-```{r eval = F}
-vcov(reg_mlb, cluster = ~ nl) 
+```{r }
+se(reg_mlb, cluster = ~ nl) 
 ```
 
-```{r echo = F}
-vcov_cl
-```
 ---
+class: middle
+
+# R Demonstration
+
+Or, you could add the `cluster` option like below inside `feols()`.
+
+```{r }
+reg_mlb <- feols(log(salary) ~ years + bavg, cluster = ~ nl, data = mlb_data) 
+
+tidy(reg_mlb)
+```
+
+---
+class: middle
 
 # In practice 
 
@@ -871,95 +976,80 @@ Just like the heteroskedasticity-present case before,
 
 + Estimate the model using OLS (you do nothing special here)
 
-+ Assume the error term is clustered and/or heteroskedastic, and estimate the variance of the OLS estimators ($Var(\hat{\beta})$) using cluster-robust standard error estimators
++ Assume the error term is clustered and/or heteroskedastic, and estimate the variance of the OLS estimators $(Var(\hat{\beta}))$ using cluster-robust standard error estimators
 
 + Replace the estimates from $\widehat{Var(\hat{\beta})}_{default}$ with those from $\widehat{Var(\hat{\beta})}_{cl}$ for testing
 
 + But, we do not replace coefficient estimates.
-       
 ---
+class: middle
 
 # But does it really work? 
 
-Let's run MC simulations to see if the use of the cluster-robust standard error estimation method works:
+Let's run MC simulations to see if the use of the cluster-robust standard error estimation method works
 
---
+---
+class: middle
 
-Here is the data generating process:
+# MC simulation results: R code 
 
-```{r }
-#--- error correlated within group ---#
-u_1 <- mvrnorm(N, mu=rep(0, N), Sigma=matrix(.7, nrow=N, ncol=N)+diag(N)*.3)
-u_2 <- mvrnorm(N, mu=rep(0, N), Sigma=matrix(.7, nrow=N, ncol=N)+diag(N)*.3)
+```{r cl-MC-robust, cache = TRUE}
+set.seed(58934)
+B <- 1000
+t_stat_store <- rep(0,B)
+N <- 2000 # number of observations per cluster
+G <- 50 # number of groups
+Ng <- N/G # number of observations per group
 
-#--- other variables ---#
-x_1 <- runif(N) # x for group 1
-x_2 <- runif(N) # x for group 2
-y_1 <- 1 + 1*x_1 + u_1 # dep var for group 1
-y_2 <- 1 + 1*x_2 + u_2 # dep var for group 2
-g_1 <- rep('group 1', N) # group 1 #<<
-g_2 <- rep('group 2', N) # group 2 #<<
+for (i in 1:B){
+  #--- error correlated within group ---#
+  u <- 
+  mvrnorm(
+    G, mu = rep(0, Ng), 
+    Sigma = matrix(10, nrow = Ng, ncol = Ng) + diag(Ng)
+  ) %>% t() %>% c()
 
-#--- put together all the variables ---#
-data <- data.frame(y=c(y_1, y_2), x=c(x_1, x_2), group=c(g_1, g_2))  
+  #--- x correlated within group ---#
+  x <- 
+    mvrnorm(
+      G, mu = rep(0, Ng), 
+      Sigma = matrix(1, nrow = Ng, ncol = Ng) + diag(Ng) * .2
+    ) %>% t() %>% c()
 
+  #--- other variables ---#
+  y <- 1 + 0 * x + u
+
+  #--- data.frame ---#
+  data <- data.frame(y = y, x = x, group = rep(1:G, each = Ng))
+
+  #--- OLS with cluster-robust se---#
+  reg <- feols(y ~ x, data = data, cluster = ~ group)
+
+  #--- get vcov ---#
+  se_cl <- se(reg)["x"]
+
+  #--- calculate t-stat ---#
+  t_stat <- reg$coefficient['x']/se_cl
+  t_stat_store[i] <- t_stat
+}
 ```
 
 ---
 class: middle
 
-Take a look at the data:
-
-```{r }
-data %>% head()
-```
-
-We are going to use `group` to cluster standard error estimation.
-
----
-
-# MC simulation results: R code 
-
-```{r cl-MC}
-B <- 1000
-t_stat_store <- rep(0, B)
-for (i in 1:B){
-  #--- generate data ---#
-  u_1 <- mvrnorm(N, mu = rep(0, N), Sigma = matrix(.7, nrow = N, ncol = N)+diag(N)*.3)
-  u_2 <- mvrnorm(N, mu = rep(0, N), Sigma = matrix(.7, nrow = N, ncol = N)+diag(N)*.3)
-  x_1 <- runif(N) # x for group 1
-  x_2 <- runif(N) # x for group 2
-  y_1 <- 1 + 0*x_1 + u_1
-  y_2 <- 1 + 0*x_2 + u_2
-  data <- data.table(y = c(y_1, y_2), x = c(x_1, x_2), group = c(rep(1, N), rep(2, N)))
-
-  #--- OLS ---#
-  reg <- feols(y ~ x,  data = data)
-
-  #--- get cluster-robust vcov ---#
-  vcov_cl <- vcov(reg, cluster = ~ group)
-
-  #--- calculate t-stat ---#
-  t_stat <- reg$coefficients['x']/sqrt(vcov_cl['x', 'x'])
-  t_stat_store[i] <- t_stat
-}  
-```
-
----
-
 # MC simulation results 
 
 ```{r }
 #--- critical value ---#
-c_value <- qt(0.975, 400-2)
+c_value <- qt(0.95, N-2)
 
 #--- how often do you reject the null ---#
-mean(abs(t_stat_store) > c_value) 
+mean(abs(t_stat_store) > c_value)
 ```
 
 --
 
-Well, it is much better than the default VCOV, but there is still a long way to go. 
+Well, we are still rejecting too often than we should, but it is much better than the default VCOV
 
 --
 
@@ -967,8 +1057,64 @@ Well, it is much better than the default VCOV, but there is still a long way to 
 
 + Cluster-robust standard error estimation gets better as the number of groups get larger 
 
-+ The number of groups of 2 is too small (As a rule of thumb, \# of groups larger than 50 is sufficiently large)
++ The number of groups of 2 is too small (the MLB case)
++ As a rule of thumb, \# of groups larger than 50 is sufficiently large, but we just saw we still over-rejecting the null of $\beta = 0$.
 
+---
+class: middle
 
+```{r cl-MC-robust-more-groups}
+set.seed(58934)
+B <- 1000
+t_stat_store <- rep(0,B)
+N <- 20000 # number of observations per cluster
+G <- 1000 # number of groups
+Ng <- N/G # number of observations per group
 
+for (i in 1:B){
+  #--- error correlated within group ---#
+  u <- 
+  mvrnorm(
+    G, mu = rep(0, Ng), 
+    Sigma = matrix(10, nrow = Ng, ncol = Ng) + diag(Ng)
+  ) %>% t() %>% c()
 
+  #--- x correlated within group ---#
+  x <- 
+    mvrnorm(
+      G, mu = rep(0, Ng), 
+      Sigma = matrix(1, nrow = Ng, ncol = Ng) + diag(Ng) * .2
+    ) %>% t() %>% c()
+
+  #--- other variables ---#
+  y <- 1 + 0 * x + u
+
+  #--- data.frame ---#
+  data <- data.frame(y = y, x = x, group = rep(1:G, each = Ng))
+
+  #--- OLS with cluster-robust se---#
+  reg <- feols(y ~ x, data = data, cluster = ~ group)
+
+  #--- get vcov ---#
+  se_cl <- se(reg)["x"]
+
+  #--- calculate t-stat ---#
+  t_stat <- reg$coefficient['x']/se_cl
+  t_stat_store[i] <- t_stat
+}
+```
+
+---
+class: middle
+
+# MC simulation results 
+
+```{r }
+#--- critical value ---#
+c_value <- qt(0.95, N-2)
+
+#--- how often do you reject the null ---#
+mean(abs(t_stat_store) > c_value)
+```
+
+Better. But, we are still over-rejecting. Don't forget it is certianly better than using the default!

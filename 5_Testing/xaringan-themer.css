@@ -33,10 +33,10 @@
   --header-font-is-google: 1;
   --code-font-family: 'Source Code Pro';
   --code-font-is-google: 1;
-  --base-font-size: 18px;
-  --text-font-size: 1.0rem;
-  --code-font-size: 0.5rem;
-  --code-inline-font-size: 1em;
+  --base-font-size: 16px;
+  --text-font-size: 0.8rem;
+  --code-font-size: 0.3rem;
+  --code-inline-font-size: 0.8em;
   --header-h1-font-size: 1.4rem;
   --header-h2-font-size: 1.1rem;
   --header-h3-font-size: 0.9rem;

@@ -3,6 +3,8 @@
 /Labs/*
 /*/*_cache/*
 /*/cache/*
+/*/*files/*
+/*/*libs/*
 /*/figure/*
 *.csv
 *.rds

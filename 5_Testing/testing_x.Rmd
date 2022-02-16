@@ -322,7 +322,7 @@ $\hat{\beta}_j \sim Normal(\beta_j,Var(\hat{\beta}_j))$
 
 which means,
 
-$\frac{\hat{\beta}_j-\beta_j}{sd(\hat{\beta}_j)} \sim Normal(0,1)$
+$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim Normal(0,1)$
 
 --
 
@@ -336,18 +336,75 @@ No.
 
 .content-box-red[**t-statistic and t-distribution**]
 
-But, in practice, we need to estimate $sd(\beta_j)$. If we use $se(\hat{\beta}_j)$ instead of $sd(\hat{\beta}_j)$, then,
+But, in practice, we need to estimate $sd(\beta_j)$. If we use $\widehat{se(\hat{\beta}_j)}$ instead of $se(\hat{\beta}_j)$, then,
 
-$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}$
+$\frac{\hat{\beta}_j-\beta_j}{\widehat{se(\hat{\beta}_j)}} \sim t_{n-k-1}$
 
 where $n-k-1$ is the degree of freedom of residual.
 
-(Note: $se(\hat{\beta}_j) = \hat{\sigma}^2/\big[SST_X\cdot (1-R_j^2)\big]$)
+(Note: $\widehat{se(\hat{\beta}_j)} = \hat{\sigma}^2/\big[SST_X\cdot (1-R_j^2)\big]$)
 
 ---
+class: middle
+
+# Recap on notations
+
++ $k$: the number of explanatory variables included except the intercept
++ $\sigma^2$: the <span style = "color: blue;"> true </span> variance of the error term
++ $\hat{\sigma^2}$: the estimator (estimate) of the variance of the error term
+  - $\hat{\sigma^2} = \frac{\sum \hat{u}_i^2}{n-k-1}$
++ $SST_X = \sum (x_i - \bar{x})^2$ 
++ $\hat{\beta}_j$: OLS estimator (estimate) on explanatory variable $x_j$
+  - $\hat{\beta} = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{SST_X}$ (for simple univariate regression)
++ $var(\hat{\beta}_j)$: the <span style = "color: blue;"> true </span> variance of $\hat{\beta}_j$
++ $R^2_j$: $R^2$ when you regres $x_j$ on all the other covariates (mathematical expression omitted)
++ $\widehat{var(\hat{\beta}_j)}$: Estimator (estimate) of $var(\hat{\beta}_j)$
+  - $\widehat{var(\hat{\beta}_j)} = \frac{\hat{\sigma^2}}{SST_X\cdot(1-R^2_j)}$
++ $se(\hat{\beta}_j)$: square root of $var(\hat{\beta}_j)$
++ $\widehat{se(\hat{\beta}_j)}$: square root of $\widehat{var(\hat{\beta}_j)}$
+
+---
+class: middle
+
+For a univariate regression case, 
+
+.content-box-green[**Normalized version of**] $\hat{\beta}$
+
+$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim N(0, 1)$
+
+So, $[\frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{SST_X} - \beta_j]\cdot \frac{SST_X}{\sigma^2}\sim N(0, 1)$ 
+
+<br>
+
+.content-box-green[**Estimated version**]
+
+$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}$
+
+So, $[\frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{SST_X} - \beta_j]\cdot SST_X\cdot \frac{n-k-1}{\sum \hat{u}_i^2} \sim t_{n-k-1}$ 
+
+
+---
+class: middle
 
 # Null and alternative hypotheses
 
+Statistical hypothesis testing involves two hypotheses: Null and Alternative hypotheses. 
+
+Pretend that you are an attorney who indicted a defendent who you think commited a crime. 
+
+.content-box-green[**Null Hypothesis**]
+
+Hypothesis that you would like to reject (defendent is not guilty)
+
+.content-box-green[**Alternative Hypothesis**]
+
+Hypothesis you are in support of (defendent is guilty) 
+
+
+---
+class: middle
+
+# One-sided and Two-sided Alternatives Hypotheses
 
 .content-box-red[**one-sided alternative**]:
 
@@ -360,6 +417,8 @@ You look at the positive end of the t-distribution to see if the t-statistic you
 
 --
 
+<br>
+
 .content-box-red[**two-sided alternative**]:
 
 $H_0:$ $\beta_j = 0$ 
@@ -367,15 +426,19 @@ $H_1:$ $\beta_j \ne 0$
 
 You look at the both ends of the t-distribution to see if the t-statistic you obtained is more extreme than the level of error you accept (significance level). 
 
---
+---
+class: middle
 
-.content-box-red[**significance level**]
+# Significance level
 
-Definition: The probability of rejecting the null when the null is actually true (The probability that you wrongly claim that the null hypothesis is wrong even though it's true in reality: Type I error)
+.content-box-red[**Definition:**]
+
+The probability of rejecting the null when the null is actually true (The probability that you wrongly claim that the null hypothesis is wrong even though it's true in reality: Type I error)
 
 The lower the significance level, you are more sure that the null is indeed wrong when you reject the null hypothesis
 
 ---
+class: middle
 
 # One-sided test: 5% significance level
 
@@ -468,6 +531,7 @@ Here,
 + 1.66 is the .red[critical value] above which you will reject the null
 
 ---
+class: middle
 
 # One-sided test: 1% significance level
 
@@ -494,6 +558,7 @@ Here,
 + 2.37 is the .red[critical value] above which you will reject the null
 
 ---
+class: middle
 
 # One-sided test: an example
 
@@ -524,6 +589,7 @@ The 99% quantile of $t_{526-3-1}$ is $2.33$
 Since $2.41 > 2.33$, we reject the null in favor of the alternative hypothesis at the 1% level.
 
 ---
+class: middle
 
 # Two-sided test: 5% significance level
 
@@ -588,6 +654,7 @@ Here,
 + 1.96 is the .red[critical value] above which you will reject the null
 
 ---
+class: middle
 
 # p-value
 
@@ -662,6 +729,7 @@ If the p-value is lower than your choice of significance level, then you reject 
 This decision rule of course results in the same test results as the one we saw that uses a t-value and critical value.
 
 ---
+class: middle
 
 # R implementation
 
@@ -680,7 +748,7 @@ reg_wage <- feols(wage ~ educ + exper + tenure, data = wage)
 
 .content-box-red[**Obtain t-statistics**]
 
-You can apply the `tidy()` function from the `broom` package to access the regression results (`reg_wage` here) as a `tibbel` (`data.frame`).
+You can apply the `tidy()` function from the `broom` package to access the regression results (`reg_wage` here) as a `tibble` (`data.frame`).
 
 ```{r }
 library(broom)
@@ -702,6 +770,7 @@ So, for the t-test of of $\beta_j = 0$ is already there. You do not need to do a
 For the null hypothesis other than $\beta_j = 0$, you need further work.
 
 ---
+class: middle
 
 # R implementation  (by hand)
 
@@ -1177,11 +1246,19 @@ You can get is by applying `vcov()` to regression results:
 )
 ```
 
---
+For example, $vcov_{sc}[2, 2]$ is the variance of $\hat{\beta}_{jc}$, and $vcov_{sc}[2, 3]$ is the covariance between $\hat{\beta}_{jc}$ and $\hat{\beta}_{univ}$.
+
+
+---
+class: middle
+
+# Demonstration using R
 
 .content-box-red[**Calculate the t-statistic**]
 
-
+```{r }
+vcov_sc
+```
 ```{r }
 reg_sc_td <- tidy(reg_sc)
 
@@ -1520,7 +1597,7 @@ x2 <- 0.1 * runif(N) + 2 * mu # indep 2
 x3 <- runif(N) # indep 3
 u <- rnorm(N) # error
 y <- 1 + x1 + x2 + x3 + u # generate y
-data <- data.table(y = y, x1 = x1, x2 = x2) # combine into a data.table
+data <- data.table(y = y, x1 = x1, x2 = x2, x3 = x3) # combine into a data.table
 ```
 
 `x1` and `x2` are highly correlated with each other:
@@ -1531,7 +1608,7 @@ cor(x1, x2) # correlation between x1 and x2
 
 .content-box-red[**Regression**]
 
-```{r }
+```{r cache = F}
 reg_u <- feols(y ~ x1 + x2 + x3, data = data) # OLS
 tidy(reg_u) # results
 ```

@@ -38,3 +38,9 @@ build_pdf(here("LectureNotes/4_OmittedVariableMulticollinear/OmittedMulticolline
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/5_Testing/testing_x.rmd"))
 build_pdf(here("LectureNotes/5_Testing/testing_x.html"))
+
+# /*===========================================================
+#' # 6. Hypothesis Testing
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/6_StandardErrorEstimation/se_estimation_x.rmd"))
+build_pdf(here("LectureNotes/6_StandardErrorEstimation/se_estimation_x.html"))

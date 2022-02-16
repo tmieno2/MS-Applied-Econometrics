@@ -21,7 +21,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 5: Hypothesis Testing ([html](https://tmieno2.github.io/MS-Applied-Econometrics/5_Testing/testing_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/5_Testing/testing_x.pdf))
 
-+ Lecture 6: Standard Error Estimation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/StandardErrorEstimation/se_estimation_x.html))
++ Lecture 6: Standard Error Estimation ([html](https://tmieno2.github.io/MS-Applied-Econometrics/6_StandardErrorEstimation/se_estimation_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/6_StandardErrorEstimation/se_estimation_x.pdf))
 
 + Lecture 7: More on Econometric Modeling ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/EconometricModel/modeling_x.html))
 
