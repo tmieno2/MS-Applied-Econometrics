@@ -4,6 +4,7 @@
 /*/*_cache/*
 /*/cache/*
 /*/*files/*
+/*/*libs/*
 # /*/*libs/*
 /*/figure/*
 *.csv
