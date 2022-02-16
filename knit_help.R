@@ -44,3 +44,4 @@ build_pdf(here("LectureNotes/5_Testing/testing_x.html"))
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/6_StandardErrorEstimation/se_estimation_x.rmd"))
 build_pdf(here("LectureNotes/6_StandardErrorEstimation/se_estimation_x.html"))
+
