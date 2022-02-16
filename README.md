@@ -23,8 +23,6 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 6: Standard Error Estimation ([html](https://tmieno2.github.io/MS-Applied-Econometrics/6_StandardErrorEstimation/se_estimation_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/6_StandardErrorEstimation/se_estimation_x.pdf))
 
-[html](https://tmieno2.github.io/MS-Applied-Econometrics/6_StandardErrorEstimation/se_estimation_x.html)
-
 + Lecture 7: More on Econometric Modeling ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/EconometricModel/modeling_x.html))
 
 + Lecture 8: OLS Asymptotics ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Asymptotics/asymptotics_x.html))
