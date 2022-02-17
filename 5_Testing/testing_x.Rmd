@@ -5,8 +5,7 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
-    self-contained: true
+    self_contained: true
     nature:
       ratio: 13:16
       highlightStyle: github
@@ -62,28 +61,82 @@ Here is the general step of any hypothesis testing:
 + Step 5: check how unlikely that you get the actual test statistic (found at Step 3) .red[if indeed the null hypothesis is true]
 
 ---
+class: middle
 
 # Hypothesis testing: An Example
 
-.content-box-red[**Setup**]
+.content-box-green[**Goal**]
 
-Suppose you want to test if the expected value of a normally distributed random variable (`x`) is 1 or not.
+Suppose you want to test if the expected value of a normally distributed random variable $(x)$ is 1 or not.
 
-We do know the variance of `x` is 4 for some reason.
+<br>
+
+.content-box-green[**State of Knowledge**]
+
+We do know $x$ follows a normal distribution and its variance is 4 for some reason.
+
+<br>
+
+.content-box-green[**Your Estimator**]
 
 Your estimator is the sample mean: $\theta = \sum_{i=1}^J x_i/J$
 
-We know that $\theta \sim N(\alpha, 4/J)$ (of course $\alpha$ is not known).
+---
+class: middle
 
-This means that $\sqrt{J} \times (\theta - \alpha)/2 \sim N(0, 1)$.
+# Math Asides
+
+.content-box-red[**Math Aside 1**]
+
+$Var(ax) = a^2 Var(X)$
+
+So, we know that $\theta \sim N(\alpha, 4/J)$ (of course $\alpha$ is not known).
+
+<br>
+
+.content-box-red[**Math Aside 2**]
+
+If $x \sim N(a, b)$, then, 
+
+$x-a \sim N(0, b)$ (shift) 
+
+Further,
+
+$\frac{x-a}{\sqrt{b}} \sim N(0, 1)$ (see Math Aside 1)
+
+---
+class: middle
+
+.content-box-red[**Math Aside 1**]
+
+$Var(ax) = a^2 Var(X)$
+
+<br>
+
+.content-box-red[**Math Aside 2**]
+
+If $x \sim N(a, b)$, then, $\frac{x-a}{\sqrt{b}} \sim N(0, 1)$ (see Math Aside 1)
+
+.content-box-green[**Therefore,**]
+
+Since $\theta = \sum_{i=1}^J x_i/J$ and $x_i \sim N(\alpha, 4)$,
+
+$Var(\theta) = J \times \frac{1}{J^2}Var(x) = 4/J$
+
+$\frac{\sqrt{J}}{2} \cdot (\theta - \alpha)\sim N(0, 1)$.
+
+---
+class: middle
 
 .content-box-red[**Test statistic and its distribution under the null hypothesis**]
 
+We established that $\frac{\sqrt{J}}{2} \cdot (\theta - \alpha)\sim N(0, 1)$.
+
 The null hypothesis is $\alpha = 1$. 
 
-Suppose $\alpha = 1$ is indeed 1, then $\sqrt{J} \times (\theta - 1)/2 \sim N(0, 1)$.
+If $\alpha = 1$ is indeed true, then $\sqrt{J} \times (\theta - 1)/2 \sim N(0, 1)$.
 
-So, if the null hypothesis is indeed true, this is the distribution of your test statistic: $\sqrt{J} \times (\theta - 1)/2$
+In other words, if you multiply the sample mean by the square root of the number of observations and divide it by 2, then it follows the standard normal distribution like below.
 
 ```{r echo = F, out.width = "50%"}
 x <- seq(-4, 4, length = 1000)
@@ -94,6 +147,7 @@ ggplot(data = plot_data) +
 ```
 
 ---
+class: middle
 
 # Hypothesis testing: An Example (Cont.)
 
@@ -141,7 +195,9 @@ Note that you do not really need to use $\sqrt{J} \times (\theta - \alpha)/2$ as
 
 --
 
-You could alternatively use $\theta - \alpha$. But, in that case, you need to be looking at $N(0, 4/J)$ instead of $N(0, 1)$. When the number of observations is 100 $(J = 100)$,
+You could alternatively use $\theta - \alpha$. But, in that case, you need to be looking at $N(0, 4/J)$ instead of $N(0, 1)$. 
+
+For example, when the number of observations is 100 $(J = 100)$,
 
 ```{r echo = F, out.width = "50%"}
 x <- seq(-4, 4, length = 1000)
@@ -189,9 +245,9 @@ class: middle
 
 # Exercise
 
-You have collected data on annual salary for those who graduated from University A and B. You are interested in testing whether the difference in annual salary between the universities (call it $x$) is greater than 10 on average. You know (for unknown reasons) know that the difference is distributed as $N(\theta, 16)$. 
+You have collected data on annual salary for those who graduated from University A and B. You are interested in testing whether the difference in annual salary between the universities (call it $x$) is not equal 10 on average. You know (for unknown reasons) know that the difference is distributed as $N(\theta, 16)$. 
 
-1. What is the Null hypothesis?
+1. What is the null hypothesis?
 2. Under the null hypothesis, what is the distribution of the difference (test-statistic).
 3. Normalize the test statistic so that the transformed version follows $N(0, 1)$.
 4. The actual difference you observed is 30. What is the probability that you observe a number greater than 30 if the null hypothesis is true? Use `prnom()`.
@@ -282,7 +338,7 @@ In order to perform hypothesis testing, we need to make assumptions about the di
 
 The population error $u$ is .red[independent] of the explanatory variables $x_1,\dots,x_k$ and is .red[normally] distributed with zero mean and variance $\sigma^2$:
 
-$$u\sim Normal(0,\sigma^2)$$
+$$u\sim N(0,\sigma^2)$$
 
 --
 
@@ -307,10 +363,10 @@ So, we are necessarily assuming MLR.4 and MLR.5 hold by the independence assumpt
 
 The distribution of $y$ conditional on $x$ is a Normal distribution
 
-$y|x \sim Normal(\beta_0+\beta_1 x_1+\dots+\beta_k x_k,\sigma^2)$
+$y|x \sim N(\beta_0+\beta_1 x_1+\dots+\beta_k x_k,\sigma^2)$
 
 + $E[y|x]$ is $\beta_0+\beta_1 x_1+\dots+\beta_k x_k$
-+ $u|x$ is $Normal(0,\sigma^2)$
++ $u|x$ is $N(0,\sigma^2)$
 
 --
 
@@ -318,11 +374,11 @@ $y|x \sim Normal(\beta_0+\beta_1 x_1+\dots+\beta_k x_k,\sigma^2)$
 
 If the MLR.1 through MLR.6 are satisfied, $OLS$ estimators are also Normally distributed!
 
-$\hat{\beta}_j \sim Normal(\beta_j,Var(\hat{\beta}_j))$
+$\hat{\beta}_j \sim N(\beta_j,Var(\hat{\beta}_j))$
 
 which means,
 
-$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim Normal(0,1)$
+$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim N(0,1)$
 
 --
 
@@ -378,7 +434,7 @@ So, $[\frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{SST_X} - \beta_j]\cdot \frac{SS
 
 .content-box-green[**Estimated version**]
 
-$\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}$
+$\frac{\hat{\beta}_j-\beta_j}{\widehat{se(\hat{\beta}_j)}} \sim t_{n-k-1}$
 
 So, $[\frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{SST_X} - \beta_j]\cdot SST_X\cdot \frac{n-k-1}{\sum \hat{u}_i^2} \sim t_{n-k-1}$ 
 
@@ -392,9 +448,13 @@ Statistical hypothesis testing involves two hypotheses: Null and Alternative hyp
 
 Pretend that you are an attorney who indicted a defendent who you think commited a crime. 
 
+<br>  
+
 .content-box-green[**Null Hypothesis**]
 
 Hypothesis that you would like to reject (defendent is not guilty)
+
+<br>
 
 .content-box-green[**Alternative Hypothesis**]
 
@@ -508,12 +568,13 @@ g_t_001_one <- g_t +
   )
 ```
 
-This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
+This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{\widehat{se(\hat{\beta}_j)}}$ if $\beta_j = 0$ (the null hypothesis is true).
 
 ```{r echo = F, out.width = "60%"}
 g_t_005_one
 ```
 
+The probability that you get a value larger than 1.66 is 5% (0.05 in area).
 
 .content-box-red[**Decision rule**]
 
@@ -535,12 +596,14 @@ class: middle
 
 # One-sided test: 1% significance level
 
-This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
+This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{\widehat{se(\hat{\beta}_j)}}$ if $\beta_j = 0$ (the null hypothesis is true).
 
 
 ```{r echo = F, out.width = "60%"}
 g_t_001_one
 ```
+
+The probability that you get a value larger than 2.37 is 1% (0.01 in area).
 
 .content-box-red[**Decision rule**]
 
@@ -568,9 +631,10 @@ class: middle
 The impact of experience on wage:
 
 + $log(wage) = 0.284+0.092\times educ+0.0041\times exper + 0.022 \times tenure$
-+ $se(\hat{\beta}_{exper}) = 0.0017$ 
++ $\widehat{se(\hat{\beta}_{exper})} = 0.0017$ 
 + $n = 526$
 
+<br>
 --
 
 .content-box-red[**Hypothesis**]
@@ -578,13 +642,14 @@ The impact of experience on wage:
 + $H_0$: $\beta_{exper}=0$
 + $H_1$: $\beta_{exper}>0$
 
+<br>
 --
 
 .content-box-red[**Test**]
 
 t-statistic $= 0.0041/0.0017 = 2.41$
 
-The 99% quantile of $t_{526-3-1}$ is $2.33$
+The critical value is the 99% quantile of $t_{526-3-1}$, which is $2.33$ (it can be obtained by `qt(0.95, 522)`)
 
 Since $2.41 > 2.33$, we reject the null in favor of the alternative hypothesis at the 1% level.
 
@@ -630,11 +695,13 @@ g_t_005_two <- g_t +
   )
 ```
 
-This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}$ if $\beta_j = 0$ (the null hypothesis is true).
+This is the distribution of $\frac{\hat{\beta}_j-\beta_j}{\widehat{se(\hat{\beta}_j)}}$ if $\beta_j = 0$ (the null hypothesis is true).
 
 ```{r echo = F, out.width = "60%", dependson = "t-005-two"}
 g_t_005_two
 ```
+
+The probability that you get a value more extreme than 1.96 or -1.96 is 5% (0.05 in area cobining the two area at the edges).
 
 (Note: irrespective of the type of tests, the distribution of t-statistics is the same.)
 
@@ -657,7 +724,6 @@ Here,
 class: middle
 
 # p-value
-
 
 .content-box-red[**Definition**]
 
@@ -732,7 +798,6 @@ This decision rule of course results in the same test results as the one we saw 
 class: middle
 
 # R implementation
-
 
 .content-box-red[**Get the data and run a regression**]
 
@@ -831,6 +896,7 @@ name: conf
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
 ---
+class: middle
 
 # Confidence Interval (CI): Definition
 
@@ -838,7 +904,7 @@ name: conf
 
 If you calculate 95% CI on multiple different samples, 95% of the time, the calculated CI includes the true parameter
 
---
+<br>
 
 .content-box-green[**What confidence interval is not**]
 
@@ -865,7 +931,7 @@ For the 95% CI (A = 95),
 + lower bound: 2.5 (100 − 95/2) percent quantile of $x$
 + upper bound: 97.5 (100-(100 − 95)/2) percent quantile of $x$
 
-If $x$ is standard normally distributed $(x \sim N(0, 1))$, then,
+If $x$ follos the standard normal distribution $(x \sim N(0, 1))$, then,
 
 ```{r norm-95, include = F}
 u <- seq(-3, 3, length = 1000)
@@ -926,11 +992,11 @@ So, the 95% CI of $x$ is [-1.96, 1.96].
 
 Under the assumption of MLR.1 through MLR.6 (which includes the normality assumption of the error), we learned that
 
-$\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)} \sim t_{n-k-1}$
+$\frac{\hat{\beta}_j - \beta_j}{\widehat{se(\hat{\beta}_j)}} \sim t_{n-k-1}$
 
 --
 
-So, following the general procedure we discussed in the previous slide, the A% confidence interval of $\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}$ is 
+So, following the general procedure we discussed in the previous slide, the A% confidence interval of $\frac{\hat{\beta}_j - \beta_j}{\widehat{se(\hat{\beta}_j)}}$ is 
 
 + lower bound: $(100 − A)/2$% quantile of the $t_{n-k-1}$ distribution (let's call this $Q_l$)
 + upper bound: $100 - (100 − A)/2$% quantile of the $t_{n-k-1}$ distribution (let's call this $Q_h$)  
@@ -967,28 +1033,26 @@ head(wage)
 ```
 
 
-.content-box-green[**Run OLS and get its summary**]
+.content-box-green[**Run OLS and extract necessary information**]
 
 ```{r run-old}
-wage_reg <- lm(wage ~ educ + exper + tenure, data = wage)
+wage_reg <- feols(wage ~ educ + exper + tenure, data = wage)
 ```
 
-Apply the `summary()` to the regression results (`reg_wage`) and extract the `coef` component of the resulting object to gain access to $\hat{\beta}_j$ and $se(\hat{\beta}_j)$
+Applying `tidy()` to `wage_reg`,
 
 ```{r }
-(
-  reg_wage_sum <- summary(reg_wage)$coef
-)
+tidy(wage_reg)
 ```
 
 ```{r echo = F}
 wage_reg_coef <- tidy(reg_wage)
 ```
 
-`df.residual` of the regression object has the degrees of freedom of residual (n-k-1).
+The degrees of freedom of residual (n-k-1) is
 
 ```{r df}
-wage_reg$df.residual
+df <- degrees_freedom(reg_wage, "resid")
 ```
 
 ---
@@ -999,7 +1063,7 @@ We are interested in getting the 90% confidence interval of the coefficient on `
 
 Under all the assumptions (MLR.1 through MLR.6), we know that in general,
 
-$\frac{\hat{\beta}_{educ} - \beta_{educ}}{se(\hat{\beta}_{educ})} \sim t_{n-k-1}$
+$\frac{\hat{\beta}_{educ} - \beta_{educ}}{\widehat{se(\hat{\beta}_{educ})}} \sim t_{n-k-1}$
 
 --
 
@@ -1007,24 +1071,13 @@ Specifically for this regression,
 
 + $\hat{\beta}_{educ}$ = `r wage_reg_coef %>% filter(term == 'educ') %>% pull(estimate)`
 
-+ $se(\hat{\beta}_{educ})$ = `r wage_reg_coef %>% filter(term == 'educ') %>% pull(std.error)`
++ $\widehat{se(\hat{\beta}_{educ})}$ = `r wage_reg_coef %>% filter(term == 'educ') %>% pull(std.error)`
 
-+ n-k-1 = `r wage_reg$df.residual`
-
-```{r }
-#--- coefficient estimate on educ ---#
-beta_educ <- reg_wage_sum["educ", "Estimate"]
-
-#--- se of the coefficient on educ ---#
-se_beta_educ <- reg_wage_sum["educ", "Std. Error"]
-
-#--- n-k-1 ---#
-wage_reg$df.residual
-```
++ $n - k - 1 = `r df`$
 
 ```{r include = F}
 u <- seq(-3, 3, length = 1000)
-df <- wage_reg$df
+df <- degrees_freedom(wage_reg, "resid")
 pdf <- dt(u, df = df) # default is mean=0,sd=1
 data <- data.table(x = u, y = pdf)
 
@@ -1056,7 +1109,6 @@ g_t_005 <- g_t +
   )
 ```
 
-  
 ---
 
 # CI: An Example (Cont.)
@@ -1094,6 +1146,7 @@ By scaling and shifting, the lower and upper bounds of the 90% CI of $\beta_{edu
 + upper bound: 0.599 + 0.051 $\times$ `r qt(0.95, df = 522)` = `r 0.599 + 0.051 * qt(0.95, df = 522)`
 
 ---
+class: middle
 
 # In practice ...
 
