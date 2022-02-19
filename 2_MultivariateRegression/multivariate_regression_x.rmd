@@ -465,7 +465,7 @@ Var(u|x_1,\dots,x_k)=\sigma^2 \;\;\mbox{(Assumption MLR.5)}
 
 <br>
 
-.content-box-green[**Variance**]
+.content-box-green[**Variance of the OLS estimator**]
 
 Under conditions $MLR.1$ through $MLR.5$, conditional on the sample values of the independent variables,
 
@@ -496,3 +496,14 @@ A model with $k$ independent variables with intercept.
 \end{aligned}
 
 You solved $k+1$ simultaneous equations to get $\hat{\beta}_j$ $(j=0,\dots,k)$. So, once you know the value of $n-k-1$ of the residuals, you know the rest.
+
+---
+class: middle
+
+The <span style = "color: red;"> estimator </span> of the variance of the OLS estimator is therefore
+
+$$
+\begin{aligned}
+\widehat{Var{\hat{\beta}_j}} = \frac{\hat{\sigma}^2}{SST_j(1-R^2_j)}
+\end{aligned}
+$$

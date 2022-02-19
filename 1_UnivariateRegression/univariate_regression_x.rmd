@@ -5,7 +5,7 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
+    self_contained: true
     nature:
       ratio: 12:8
       highlightStyle: github
@@ -1419,16 +1419,26 @@ g_var
 ---
 class: middle
 
-# Variance of OLS estimators
+# Variance of OLS estimator
 
-.content-box-green[**Variance of OLS estimators**]
+.content-box-green[** (True) Variance of the OLS Estimator**]
 
-If $Var(u|x)=\sigma^2$ and the four conditions (we used to prove unbiasedness of OLS estimators) are satisfied,
+If $Var(u|x)=\sigma^2$ and the four conditions (we used to prove unbiasedness of the OLS estimator) are satisfied,
 
 $$
 \begin{align}
   Var(\hat{\beta}_1) = \frac{\sigma^2}{\sumn (x_i-\bar{x})^2}=\frac{\sigma^2}{SST_x} 
 \end{align}
+$$
+
+.content-box-green[**(TRUE) Standard Error of the OLS Estimator**]
+
+The standard error of the the OLS estimator is just a square root of the variance of the OLS estimator. We use $se(\hat{\beta}_1)$ to denote it.
+
+$$
+\begin{aligned}
+  se(\hat{\beta}_1) = \sqrt{Var(\hat{\beta}_1)} = \frac{\sigma}{\sqrt{SST_x}} 
+\end{aligned}
 $$
 
 ---
@@ -1606,18 +1616,22 @@ class: middle
 
 We use $\hat{\sigma}^2=\frac{1}{n-2}\sum_{i=1}^n \hat{u}_i^2$, which satisfies $E[\frac{1}{n-2}\sum_{i=1}^n \hat{u}_i^2]=\sigma^2$
 
+We use $\widehat{Var(\hat{\beta}_1)}$ to denote the variance of the OLS estimator $\hat{\beta}_j$, and it is defined as
+
+$\widehat{Var(\hat{\beta}_1)} = \hat{\sigma}^2/SST_x$
+
 ---
 class: middle
 
-Since $sd(\hat{\beta_1})=\sigma/\sqrt{SST_x}$, the natural estimator of $sd(\hat{\beta_1})$ is
+Since $se(\hat{\beta_1})=\sigma/\sqrt{SST_x}$, the natural estimator of $se(\hat{\beta_1})$ is
 
 \begin{aligned}
-  se(\hat{\beta_1}) =\sqrt{\hat{\sigma}^2}/\sqrt{SST_x},
+  \widehat{se(\hat{\beta_1})} =\sqrt{\hat{\sigma}^2}/\sqrt{SST_x},
 \end{aligned}
 
 which is called <span style = "color: red;"> standard error of $\hat{\beta_1}$ </span>. 
 
-Later, we use $se(\hat{\beta_1})$ for testing.
+Later, we use $\widehat{se(\hat{\beta_1})}$ for testing.
 
 ---
 class: middle

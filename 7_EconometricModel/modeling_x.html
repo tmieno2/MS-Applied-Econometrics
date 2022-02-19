@@ -4781,7 +4781,7 @@ slides &gt; slide {
 
 
 
-# Before we start 
+# Before we start
 
 ## Learning objectives
 
@@ -4790,14 +4790,14 @@ slides &gt; slide {
 
 ## Table of contents
 
-1. [](#review)
+1. [Expanding on Simple Models](#various-models)
 2. [](#linear)
 3. [](#conf)
 
 ---
 
 class: inverse, center, middle
-name: review
+name: various-models
 
 # More on functional forms
 
@@ -4805,15 +4805,19 @@ name: review
 
 ---
 
-# Various econometric models  
+# Various econometric models
 
 .content-box-red[**log-linear**]
 
 `\(log(y_i)= \beta_0+\beta_1 x_i + u_i\)` 
 
+&lt;br&gt;
+
 .content-box-red[**linear-log**]
 
 `\(y_i= \beta_0+\beta_1 log(x_i) + u_i\)` 
+
+&lt;br&gt;
 
 .content-box-red[**log-log**]
 
@@ -4821,13 +4825,15 @@ name: review
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**quadratic**]
 
 `\(y_i= \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i\)` 
 
 ---
 
-# Quadratic 
+# Quadratic
 
 
 .content-box-red[**Model**]
@@ -4836,12 +4842,15 @@ name: review
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Calculus**]
 
 Differentiating the both sides wrt `\(x_i\)`,
 
 `\(\frac{\partial y_i}{\partial x_i} = \beta_1 + 2*\beta_2 x_i\Rightarrow  \Delta y_i = (\beta_1 + 2*\beta_2 x_i)\Delta x_i\)`
 
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -4849,7 +4858,7 @@ When `\(x\)` increases by 1 unit `\((\Delta x_i=1)\)`, `\(y\)` increases by `\(\
 
 ---
 
-# Visualizarion 
+# Visualization
 
 Quadratic functional form is quite flexible.
 
@@ -4879,11 +4888,13 @@ The marginal impact of education (the impact of a small change in education on i
 
 + How much does it help to have two more years of education when you have had education until elementary school?
 
-+ How much does it help to have two more years of education when you have have graduated a college?
++ How much does it help to have two more years of education when you have graduated a college?
 
 + How much does it help to spend two more years as a Ph.D student if you have already spent six years in a Ph.D program
 
 --
+
+&lt;br&gt;
 
 .content-box-green[**Observation**]
 
@@ -4898,7 +4909,7 @@ When you include a variable that is a transformation of an existing variable, us
 
 ```r
 #--- prepare a dataset ---#
-wage &lt;- readRDS(&#39;wage1.rds&#39;) 
+wage &lt;- readRDS(&quot;wage1.rds&quot;)
 
 #--- run a regression ---#
 quad_reg &lt;- feols(wage ~ female + educ + I(educ^2), data = wage)
@@ -4943,6 +4954,8 @@ What is the marginal impact of `\(educ\)`?
 
 --
 
+&lt;br&gt;
+
 .content-box-green[**Answer**]
 
 `\(\frac{\partial wage}{\partial educ} = -0.416+0.039\times 2\times educ\)`
@@ -4957,7 +4970,7 @@ What is the marginal impact of `\(educ\)`?
 
 ---
 
-# Statistical significance of the marginal impact 
+# Statistical significance of the marginal impact
 
 The marginal impact of `\(educ\)` is:
 
@@ -4976,12 +4989,12 @@ So, is the marginal impact of `\(educ\)` statistically significantly different f
 
 ---
 
-# In the linear case 
+# In the linear case
 
 
 ```r
 linear_reg &lt;- feols(wage ~ female + educ, data = wage)
-tidy(linear_reg) 
+tidy(linear_reg)
 ```
 
 ```
@@ -4995,6 +5008,8 @@ tidy(linear_reg)
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Estimated model**]
 
 `\(wage = 0.62+0.51 \times educ\)`
@@ -5007,6 +5022,8 @@ class: middle
 `\(wage = 0.62+0.51 \times educ\)`
 
 --
+
+&lt;br&gt;
 
 .content-box-green[**Question**]
 
@@ -5026,13 +5043,15 @@ No, the model we estimated assumed that the marginal impact of education is cons
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Testing**]
 
 You can just test if `\(\hat{\beta}_{educ}\)` (the marginal impact of education) is statistically significantly different from `\(0\)`, which is just a t-test.
 
 ---
 
-# Going back to the quadratic case 
+# Going back to the quadratic case
 
 With the quadratic specification  
 
@@ -5057,6 +5076,8 @@ With the quadratic specification
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Hypothesis testing**]
 
 Does additional year of education has a statistically significant impact (positive or negative) if your current education level is 4?    
@@ -5065,7 +5086,9 @@ Does additional year of education has a statistically significant impact (positi
 + `\(H_1\)`: `\(\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 4 \ne 0\)`
 
 --
-    
+
+&lt;br&gt;
+
 .content-box-green[**Question**]
 
 Is this
@@ -5082,13 +5105,15 @@ Is this
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**R implementation**]
 
 Remember, a trick to do this test using R is take advantage of the fact that `\(F_{1, n-k-1} \sim t_{n-k-1}\)`.
 
 
 ```r
-linearHypothesis(quad_reg, &quot;educ + 8*I(educ^2)=0&quot;)  
+linearHypothesis(quad_reg, &quot;educ + 8*I(educ^2)=0&quot;)
 ```
 
 ```
@@ -5109,6 +5134,8 @@ linearHypothesis(quad_reg, &quot;educ + 8*I(educ^2)=0&quot;)
 
 Since the p-value is 0.529, we do not reject the null.
 
+---
+class: middle
 
 # Example 2
 
@@ -5118,6 +5145,8 @@ Since the p-value is 0.529, we do not reject the null.
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Hypothesis testing**]
 
 Does additional year of education has a statistically significant impact (positive or negative) if your current education level is 4?    
@@ -5126,7 +5155,9 @@ Does additional year of education has a statistically significant impact (positi
 + `\(H_1\)`: `\(\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 10 \ne 0\)`
 
 --
-    
+
+&lt;br&gt;
+
 .content-box-green[**Question**]
 
 Is this
@@ -5143,11 +5174,13 @@ Is this
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**R implementation**]
 
 
 ```r
-linearHypothesis(quad_reg, &quot;educ + 20*I(educ^2)=0&quot;)  
+linearHypothesis(quad_reg, &quot;educ + 20*I(educ^2)=0&quot;)
 ```
 
 ```
@@ -5188,11 +5221,15 @@ A variable that is a multiplication of two variables
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Example**]
 
 `\(educ\times exper\)`
 
 ---
+
+&lt;br&gt;
 
 .content-box-red[**A model with an interaction term**]
 
@@ -5200,11 +5237,15 @@ A variable that is a multiplication of two variables
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Marginal impact of experience**]
 
 `\(\frac{\partial wage}{\partial exper} = \beta_1+\beta_2\times educ\)` 
 
 --
+
+&lt;br&gt;
 
 .content-box-red[**Implications**]
   
@@ -5216,13 +5257,13 @@ The marginal impact of experience depends on education
 
 ---
 
-# Regression with interaction terms 
+# Regression with interaction terms
 
 Just like the quadratic case with `\(educ^2\)`, you can use `I()`.
 
 
 ```r
-reg_int &lt;- feols(wage ~ female + exper + I(exper*educ), data = wage) 
+reg_int &lt;- feols(wage ~ female + exper + I(exper * educ), data = wage)
 ```
 
 --
@@ -5304,12 +5345,12 @@ class: middle
 
 Marginal impact of `\(exper\)`:
 
-&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-14-1.png&quot; width=&quot;60%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-14-1.png&quot; width=&quot;90%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .right5[
 Histogram of education:
-&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-15-1.png&quot; width=&quot;60%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-15-1.png&quot; width=&quot;90%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -5330,7 +5371,9 @@ class: middle
 
 .content-box-red[**Question**]
 
-Does additional year of experience has a statistically significant impact (positive or negative) if your current education level is 10?
+Does additional year of experience has a statistically significant impact (positive or negative) if your current education level is 10
+
+&lt;br&gt;
 
 .content-box-red[**Hypothesis**]
       
@@ -5345,7 +5388,7 @@ class: middle
 
 
 ```r
-linearHypothesis(reg_int,&#39;exper+10*I(exper * educ)=0&#39;) 
+linearHypothesis(reg_int, &quot;exper+10*I(exper * educ)=0&quot;)
 ```
 
 ```
@@ -5373,13 +5416,15 @@ name: review
 
 ---
 
-# Qualitative information  
+# Qualitative information
 
 .content-box-green[**Issue**]
 
 How do we include qualitative information as an independent variable?
 
 --
+
+&lt;br&gt;
 
 .content-box-green[**Examples**]
 
@@ -5391,7 +5436,7 @@ How do we include qualitative information as an independent variable?
 
 ---
 
-# Binary variables 
+# Binary variables
 
 
 .content-box-red[**Dummy variable**]
@@ -5400,14 +5445,16 @@ How do we include qualitative information as an independent variable?
 
 + We use &quot;dummy variable&quot; to refer to a binary (zero-one) variable
 
+&lt;br&gt;
+
 .content-box-red[**Example**]
 
 
 ```r
-wage &lt;- readRDS(&#39;wage1.rds&#39;) 
+wage &lt;- readRDS(&quot;wage1.rds&quot;)
 
-dplyr::select(wage, wage, educ, exper, female, married) %&gt;% 
-    head() 
+dplyr::select(wage, wage, educ, exper, female, married) %&gt;%
+  head()
 ```
 
 ```
@@ -5427,6 +5474,7 @@ class: middle
 
 `\(wage = \beta_0 +\sigma_f female +\beta_2 educ + u\)`
 
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -5459,7 +5507,7 @@ class: middle
 
 
 ```r
-reg_df &lt;- feols(wage ~ female + educ, data = wage) 
+reg_df &lt;- feols(wage ~ female + educ, data = wage)
 
 reg_df
 ```
@@ -5477,6 +5525,7 @@ reg_df
 ## RMSE: 3.17642   Adj. R2: 0.255985
 ```
 
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -5495,6 +5544,8 @@ class: middle
 .content-box-red[**Model with dummy a variable**]
 
 `\(wage = \beta_0 +\sigma_m male +\beta_2 educ + u\)`
+
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -5529,9 +5580,9 @@ class: middle
 
 
 ```r
-wage &lt;- mutate(wage, male = 1- female)
+wage &lt;- mutate(wage, male = 1 - female)
 
-reg_df &lt;- feols(wage ~ male + educ, data = wage) 
+reg_df &lt;- feols(wage ~ male + educ, data = wage)
 
 reg_df
 ```
@@ -5549,6 +5600,7 @@ reg_df
 ## RMSE: 3.17642   Adj. R2: 0.255985
 ```
 
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -5564,6 +5616,8 @@ Why do you think will happen if  we include both male and female dummy variables
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Answer**]
 
 + They contain redundant information
@@ -5573,6 +5627,8 @@ Why do you think will happen if  we include both male and female dummy variables
 + So, you .blue[need to] drop either one of them
 
 --
+
+&lt;br&gt;
 
 .content-box-red[**Perfect Collinearity**]
 
@@ -5585,9 +5641,9 @@ Here is what happens if you include both:
 
 
 ```r
-reg_dmf &lt;- feols(wage ~ male + female + educ, data = wage) 
+reg_dmf &lt;- feols(wage ~ male + female + educ, data = wage)
 
-reg_dmf 
+reg_dmf
 ```
 
 ```
@@ -5607,7 +5663,7 @@ reg_dmf
 ---
 class: middle
 
-# Interactions with a dummy variable 
+# Interactions with a dummy variable
 
 
 .content-box-green[**Issue**]
@@ -5626,6 +5682,7 @@ class: middle
 + [female]: `\(E[wage|female=1,educ] = \beta_0 + \sigma_f +(\beta_2+\gamma) educ\)`
 + [male]: `\(E[wage|female=0,educ] = \beta_0 + \beta_2 educ\)`
 
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -5638,8 +5695,8 @@ For female, education is more effective by `\(\gamma\)` than it is for male.
 
 
 ```r
-reg_di &lt;- lm(wage ~ female + educ + `I(female * educ)`, data = wage) 
-reg_di 
+reg_di &lt;- lm(wage ~ female + educ + `I(female * educ)`, data = wage)
+reg_di
 ```
 
 
@@ -5654,6 +5711,8 @@ reg_di
 ```
 
 --
+
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -5710,6 +5769,8 @@ You then include two (the number of status values - 1) of the three dummy variab
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**Interpretation**]
 
 `\(\sigma_m\)`: the impact of having a MS degree .red[relative to] having a .red[college degree] 
@@ -5717,6 +5778,8 @@ You then include two (the number of status values - 1) of the three dummy variab
 `\(\sigma_d\)`: the impact of having a Ph.D. degree .red[relative to] having a .red[college degree]
 
 --
+
+&lt;br&gt;
 
 .content-box-red[**Important**]
 
@@ -5748,6 +5811,8 @@ Structural difference refers to the fundamental differences in the model of a ph
 
 --
 
+&lt;br&gt;
+
 .content-box-red[**In this example,**]
 
 `\(cumgpa\)` are determined in a fundamentally different manner between female and male students.
@@ -5760,6 +5825,8 @@ You do not want to run a single regression that fits a single model for both fem
 
 If you suspect that the underlying process of how the dependent variable is determined vary across groups, then you should test that hypothesis!
 
+&lt;br&gt;
+
 .content-box-red[**To do so,**]
 
 You estimate the model that allows to estimate separate models across groups within a single regression analysis.     
@@ -5770,7 +5837,6 @@ You estimate the model that allows to estimate separate models across groups wit
 
 ---
 
-
 .content-box-red[**The flexible model**]
 
 `$$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female)$$`
@@ -5778,14 +5844,19 @@ You estimate the model that allows to estimate separate models across groups wit
           `$$\qquad + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u$$`
 
 
+&lt;br&gt;
+
 .content-box-green[**Male**]
 
 `\(E[cumgpa] = \beta_0 + \beta_1 sat + \beta_2 hsperc + \beta_3 tothrs\)`
+
+&lt;br&gt;
 
 .content-box-green[**Feale**]
 
 `\(E[cumgpa] = (\beta_0 +\sigma_0) + (\beta_1+\sigma_1) sat + (\beta_2+\sigma_2) hsperc + (\beta_3+\sigma_3) tothrs\)`
 
+&lt;br&gt;
 
 .content-box-red[**Interpretation**]
 
@@ -5794,13 +5865,17 @@ You estimate the model that allows to estimate separate models across groups wit
 
 ---
 
-.content-box-red[**Hypothesis (verbal)**]
+.content-box-red[**Null Hypothesis (verbal)**]
+
 The model of GPA for male and female students are not structurally different.
+
+&lt;br&gt;
 
 .content-box-red[**Null Hypothesis**]
 
 `\(H_0: \;\; \sigma_0=0,\;\; \sigma_1=0, \;\; \sigma_2=0, \;\; \mbox{and} \;\; \sigma_3=0\)`
 
+&lt;br&gt;
 
 .content-box-green[**Question**]
 
@@ -5815,22 +5890,24 @@ Run the unrestricted model with all the interaction terms:
 
 
 ```r
-gpa &lt;- read.dta13(&quot;GPA3.dta&quot;) %&gt;% 
-    filter(!is.na(ctothrs)) %&gt;%
-    #--- create interaction terms ---#
-    mutate(
-      female_sat:=female*sat,
-      female_hsperc:=female*hsperc,
-      female_tothrs:=female*tothrs
-      )
+gpa &lt;-
+  read.dta13(&quot;GPA3.dta&quot;) %&gt;%
+  filter(!is.na(ctothrs)) %&gt;%
+  #--- create interaction terms ---#
+  mutate(
+    female_sat := female * sat,
+    female_hsperc := female * hsperc,
+    female_tothrs := female * tothrs
+  )
 
 #--- regression with female dummy ---#
-reg_full &lt;- feols(cumgpa~female
-  +sat+female_sat
-  +hsperc+female_hsperc
-  +tothrs+female_tothrs,
-  data=gpa
-)   
+reg_full &lt;-
+  feols(
+    cumgpa ~
+    female + sat + female_sat + hsperc + female_hsperc +
+      tothrs + female_tothrs,
+    data = gpa
+  )
 ```
 
 ---
@@ -5934,14 +6011,15 @@ reg_full &lt;- feols(cumgpa~female
 
 
 ```r
-linearHypothesis(reg_full, 
+linearHypothesis(
+  reg_full,
   c(
-    &quot;female = 0&quot;, 
-    &quot;female_hsperc = 0&quot;, 
-    &quot;female_sat = 0&quot;, 
+    &quot;female = 0&quot;,
+    &quot;female_hsperc = 0&quot;,
+    &quot;female_sat = 0&quot;,
     &quot;female_tothrs = 0&quot;
   )
-)  
+)
 ```
 
 ```
@@ -5969,13 +6047,13 @@ linearHypothesis(reg_full,
 class: inverse, center, middle
 name: review
 
-# More on `\(R^2\)` 
+# More on `\(R^2\)`
 
 &lt;html&gt;&lt;div style=&#39;float:left&#39;&gt;&lt;/div&gt;&lt;hr color=&#39;#EB811B&#39; size=1px width=1000px&gt;&lt;/html&gt;
 
 ---
 
-# Goodness of fit: `\(R^2\)` 
+# Goodness of fit: `\(R^2\)`
 
 .content-box-red[**Important**]
 
@@ -5991,9 +6069,11 @@ Small value of `\(R^2\)` does not mean the end of the world (In fact, we could n
 + `\(regprc\)`: prices of regular apples 
 + `\(ecoprc\)`: prices of the hypothetical ecolabled apples
 
+&lt;br&gt;
+
 .content-box-red[**Key**]
-+ The data was obtained via survey and `\(ecoprc\)` was set randomly (So, we know `\(E[u|x] = 0\)`).
-+ The objective of the study is to understand the impact of the price of ecolabled apple on the demand for ecolabled apples.
++ The data was obtained via survey and `\(ecoprc\)` was set randomly (So, we know `\(E[u|x] = 0\)`) by the researcher.
++ The (only) objective of the study is to understand the impact of the price of ecolabled apple on the demand for ecolabled apples.
 
 
 ---
@@ -6021,7 +6101,7 @@ Suppose you are challenged by somebody who claim that your regression is not .bl
 class: inverse, center, middle
 name: review
 
-# Scaling 
+# Scaling
 
 &lt;html&gt;&lt;div style=&#39;float:left&#39;&gt;&lt;/div&gt;&lt;hr color=&#39;#EB811B&#39; size=1px width=1000px&gt;&lt;/html&gt;
 
@@ -6042,15 +6122,15 @@ What happens if you scale up/down variables used in regression?
 
 ```r
 #--- regression with female dummy ---#
-reg_no_scale &lt;- lm(wage ~ female + educ, data = wage) 
-reg_scale &lt;- lm(wage ~ female + I(educ * 12), data = wage)  
+reg_no_scale &lt;- lm(wage ~ female + educ, data = wage)
+reg_scale &lt;- lm(wage ~ female + I(educ * 12), data = wage)
 ```
   
 ---
 
 
 ```r
-tidy(reg_no_scale) 
+tidy(reg_no_scale)
 ```
 
 ```
@@ -6064,7 +6144,7 @@ tidy(reg_no_scale)
 
 
 ```r
-tidy(reg_scale) 
+tidy(reg_scale)
 ```
 
 ```
@@ -6099,14 +6179,15 @@ hourly wage increases by `\(0.0422\)` if education increases by a .blue[month]
 
 --
 
+&lt;br&gt;
+
 .content-box-green[**Note**]
 
 According to the scaled model, hourly wage increases by `\(0.0422 * 12\)` if education increases by a year (12 months).
 
-That is, the estimated marginal impact of education on wage from the scaled model is the same as that from the unscaled model.
+That is, the estimated marginal impact of education on wage from the scaled model is the same as that from the non-scaled model.
 
 ---
-
 
 .content-box-red[**Summary**]
 

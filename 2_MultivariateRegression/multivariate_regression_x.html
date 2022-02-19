@@ -572,12 +572,12 @@ reg
 ## Observations: 100 
 ## Standard-errors: IID 
 ##             Estimate Std. Error  t value   Pr(&gt;|t|)    
-## (Intercept) 0.813314   0.108173  7.51865 2.7875e-11 ***
-## x1          1.067599   0.100276 10.64664  &lt; 2.2e-16 ***
-## x2          1.029790   0.112995  9.11362 1.1000e-14 ***
+## (Intercept) 1.006640   0.096153 10.46911  &lt; 2.2e-16 ***
+## x1          0.931657   0.095026  9.80420 3.5494e-16 ***
+## x2          1.177465   0.097780 12.04197  &lt; 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## RMSE: 1.06391   Adj. R2: 0.67687
+## RMSE: 0.946416   Adj. R2: 0.713892
 ```
 
 ---
@@ -832,7 +832,7 @@ Var(u|x_1,\dots,x_k)=\sigma^2 \;\;\mbox{(Assumption MLR.5)}
 
 &lt;br&gt;
 
-.content-box-green[**Variance**]
+.content-box-green[**Variance of the OLS estimator**]
 
 Under conditions `\(MLR.1\)` through `\(MLR.5\)`, conditional on the sample values of the independent variables,
 
@@ -863,6 +863,17 @@ A model with `\(k\)` independent variables with intercept.
 \end{aligned}`
 
 You solved `\(k+1\)` simultaneous equations to get `\(\hat{\beta}_j\)` `\((j=0,\dots,k)\)`. So, once you know the value of `\(n-k-1\)` of the residuals, you know the rest.
+
+---
+class: middle
+
+The &lt;span style = "color: red;"&gt; estimator &lt;/span&gt; of the variance of the OLS estimator is therefore
+
+$$
+`\begin{aligned}
+\widehat{Var{\hat{\beta}_j}} = \frac{\hat{\sigma}^2}{SST_j(1-R^2_j)}
+\end{aligned}`
+$$
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

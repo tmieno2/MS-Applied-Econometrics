@@ -1733,7 +1733,7 @@ They are not so highly correlated with `bavg`.
 
 # F-test (easier way)
 
-You can use the `linearHypothesis()` function from the `car` package. However, `linearHypothesis()` does not accept regression results from the `feols()` function. So, you need to use `lm()` to run regression instead to use this function.
+You can use the `linearHypothesis()` function from the `car` package. 
 
 .content-box-red[**Syntax**]
 
@@ -1758,8 +1758,7 @@ linearHypothesis(regression, hypothesis)
 library(car)
 
 #--- unrestricted regression ---#
-#* using lm() instead of feols()
-reg_u <- lm(y ~ x1 + x2 + x3, data = data)
+reg_u <- feols(y ~ x1 + x2 + x3, data = data)
 
 #--- F-test ---#
 linearHypothesis(reg_u, c("x1=0", "x2=0"))
@@ -1769,18 +1768,21 @@ linearHypothesis(reg_u, c("x1=0", "x2=0"))
 
 # Multiple coefficients again
 
-The test of a linear combination of the parameters we looked at earlier is a special case where the number of restriction is 1
++ The test of a linear combination of the parameters we looked at earlier is a special case where the number of restriction is 1. 
 
-We can actually use $F$-test for this type of hypothesis testing because $F_{1,t-n-k} \sim t_{t-n-k}^2$.
++ It can be shown that square root of $F_{1, df}$ follows the $t_{df}$ distribution.
+
++ So, we can actually use $F$-test for this type of hypothesis testing because $F_{1,t-n-k} \sim t_{t-n-k}^2$.
 
 ```{r }
 #--- OLS with lm() ---#
-reg_sc <- lm(lwage ~ jc + univ + exper, data = twoyear) # OLS
+reg_sc <- feols(lwage ~ jc + univ + exper, data = twoyear) # OLS
 
 #--- F-test ---#
-F_res <- linearHypothesis(reg_sc, c("jc-univ=0"))
-F_res
+F_test <- linearHypothesis(reg_sc, c("jc-univ=0"))
 
-#--- F-stat ---#
-sqrt(F_res$F)
+#--- t-statistic ---#
+sqrt(F_test$Chisq[2])
 ```
+
+Check with the previous slide of the same t-test and confirm that the t-statistics we got there and here are the same.

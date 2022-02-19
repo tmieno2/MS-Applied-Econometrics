@@ -36,7 +36,7 @@ suppressMessages(library(stargazer))
 suppressMessages(library(lmtest))
 ```
 
-# Before we start 
+# Before we start
 
 ## Learning objectives
 
@@ -45,14 +45,14 @@ suppressMessages(library(lmtest))
 
 ## Table of contents
 
-1. [](#review)
+1. [Expanding on Simple Models](#various-models)
 2. [](#linear)
 3. [](#conf)
 
 ---
 
 class: inverse, center, middle
-name: review
+name: various-models
 
 # More on functional forms
 
@@ -60,15 +60,19 @@ name: review
 
 ---
 
-# Various econometric models  
+# Various econometric models
 
 .content-box-red[**log-linear**]
 
 $log(y_i)= \beta_0+\beta_1 x_i + u_i$ 
 
+<br>
+
 .content-box-red[**linear-log**]
 
 $y_i= \beta_0+\beta_1 log(x_i) + u_i$ 
+
+<br>
 
 .content-box-red[**log-log**]
 
@@ -76,13 +80,15 @@ $log(y_i)= \beta_0+\beta_1 log(x_i) + u_i$
 
 --
 
+<br>
+
 .content-box-red[**quadratic**]
 
 $y_i= \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i$ 
 
 ---
 
-# Quadratic 
+# Quadratic
 
 
 .content-box-red[**Model**]
@@ -91,12 +97,15 @@ $y_i= \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i$
 
 --
 
+<br>
+
 .content-box-red[**Calculus**]
 
 Differentiating the both sides wrt $x_i$,
 
 $\frac{\partial y_i}{\partial x_i} = \beta_1 + 2*\beta_2 x_i\Rightarrow  \Delta y_i = (\beta_1 + 2*\beta_2 x_i)\Delta x_i$
 
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -104,30 +113,29 @@ When $x$ increases by 1 unit $(\Delta x_i=1)$, $y$ increases by $\beta_1 + 2*\be
 
 ---
 
-# Visualizarion 
+# Visualization
 
 Quadratic functional form is quite flexible.
 
 ```{r echo = F}
 N <- 1000
-x <- seq(0,2,length=N)
-y_1 <- x+x^2
-y_2 <- 3*x-2*x^2
+x <- seq(0, 2, length = N)
+y_1 <- x + x^2
+y_2 <- 3 * x - 2 * x^2
 y_1_data <- data.table(
   y = y_1,
-  x=x
-  )
+  x = x
+)
 y_2_data <- data.table(
   y = y_2,
-  x=x
-  )
+  x = x
+)
 
 g_quad_1 <- ggplot(data = y_1_data) +
   geom_line(aes(y = y, x = x), color = "red")
 
 g_quad_2 <- ggplot(data = y_2_data) +
   geom_line(aes(y = y, x = x), color = "red")
-
 ```
 
 .left5[
@@ -158,11 +166,13 @@ The marginal impact of education (the impact of a small change in education on i
 
 + How much does it help to have two more years of education when you have had education until elementary school?
 
-+ How much does it help to have two more years of education when you have have graduated a college?
++ How much does it help to have two more years of education when you have graduated a college?
 
 + How much does it help to spend two more years as a Ph.D student if you have already spent six years in a Ph.D program
 
 --
+
+<br>
 
 .content-box-green[**Observation**]
 
@@ -176,7 +186,7 @@ When you include a variable that is a transformation of an existing variable, us
 
 ```{r }
 #--- prepare a dataset ---#
-wage <- readRDS('wage1.rds') 
+wage <- readRDS("wage1.rds")
 
 #--- run a regression ---#
 quad_reg <- feols(wage ~ female + educ + I(educ^2), data = wage)
@@ -194,14 +204,14 @@ $wage = 5.60 - 2.12\times female -0.416\times educ + 0.039\times educ^2$
 ```{r echo = F, out.width = "60%"}
 N <- 1000
 x <- seq(min(wage$educ), max(wage$educ), length = N)
-data <- data.table(educ = x, female = 1) %>% 
+data <- data.table(educ = x, female = 1) %>%
   mutate(y = predict(quad_reg, newdata = .))
 
 g_quad_ex <- ggplot() +
   geom_point(data = wage, aes(y = wage, x = educ), size = 0.4) +
-  geom_line(data = data, aes(y = y, x = x)) 
+  geom_line(data = data, aes(y = y, x = x))
 
-g_quad_ex 
+g_quad_ex
 ```
 
 ---
@@ -222,6 +232,8 @@ $\frac{\partial wage}{\partial educ} = ?$
 
 --
 
+<br>
+
 .content-box-green[**Answer**]
 
 $\frac{\partial wage}{\partial educ} = -0.416+0.039\times 2\times educ$
@@ -236,7 +248,7 @@ $\frac{\partial wage}{\partial educ} = -0.416+0.039\times 2\times educ$
 
 ---
 
-# Statistical significance of the marginal impact 
+# Statistical significance of the marginal impact
 
 The marginal impact of $educ$ is:
 
@@ -255,14 +267,16 @@ So, is the marginal impact of $educ$ statistically significantly different from 
 
 ---
 
-# In the linear case 
+# In the linear case
 
 ```{r }
 linear_reg <- feols(wage ~ female + educ, data = wage)
-tidy(linear_reg) 
+tidy(linear_reg)
 ```
 
 --
+
+<br>
 
 .content-box-red[**Estimated model**]
 
@@ -276,6 +290,8 @@ class: middle
 $wage = 0.62+0.51 \times educ$
 
 --
+
+<br>
 
 .content-box-green[**Question**]
 
@@ -295,13 +311,15 @@ No, the model we estimated assumed that the marginal impact of education is cons
 
 --
 
+<br>
+
 .content-box-red[**Testing**]
 
 You can just test if $\hat{\beta}_{educ}$ (the marginal impact of education) is statistically significantly different from $0$, which is just a t-test.
 
 ---
 
-# Going back to the quadratic case 
+# Going back to the quadratic case
 
 With the quadratic specification  
 
@@ -326,6 +344,8 @@ $\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times educ$
 
 --
 
+<br>
+
 .content-box-red[**Hypothesis testing**]
 
 Does additional year of education has a statistically significant impact (positive or negative) if your current education level is 4?    
@@ -334,7 +354,9 @@ Does additional year of education has a statistically significant impact (positi
 + $H_1$: $\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 4 \ne 0$
 
 --
-    
+
+<br>
+
 .content-box-green[**Question**]
 
 Is this
@@ -351,18 +373,22 @@ $t = \frac{\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 4}{se(\hat{
 
 --
 
+<br>
+
 .content-box-red[**R implementation**]
 
 Remember, a trick to do this test using R is take advantage of the fact that $F_{1, n-k-1} \sim t_{n-k-1}$.
 
 ```{r }
-linearHypothesis(quad_reg, "educ + 8*I(educ^2)=0")  
+linearHypothesis(quad_reg, "educ + 8*I(educ^2)=0")
 ```
 
 --
 
 Since the p-value is 0.529, we do not reject the null.
 
+---
+class: middle
 
 # Example 2
 
@@ -372,6 +398,8 @@ $\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times educ$
 
 --
 
+<br>
+
 .content-box-red[**Hypothesis testing**]
 
 Does additional year of education has a statistically significant impact (positive or negative) if your current education level is 4?    
@@ -380,7 +408,9 @@ Does additional year of education has a statistically significant impact (positi
 + $H_1$: $\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 10 \ne 0$
 
 --
-    
+
+<br>
+
 .content-box-green[**Question**]
 
 Is this
@@ -397,10 +427,12 @@ $t = \frac{\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 10}{se(\hat
 
 --
 
+<br>
+
 .content-box-red[**R implementation**]
 
 ```{r }
-linearHypothesis(quad_reg, "educ + 20*I(educ^2)=0")  
+linearHypothesis(quad_reg, "educ + 20*I(educ^2)=0")
 ```
 
 --
@@ -425,11 +457,15 @@ A variable that is a multiplication of two variables
 
 --
 
+<br>
+
 .content-box-red[**Example**]
 
 $educ\times exper$
 
 ---
+
+<br>
 
 .content-box-red[**A model with an interaction term**]
 
@@ -437,11 +473,15 @@ $wage = \beta_0 + \beta_1 exper + \beta_2 educ \times exper + u$
 
 --
 
+<br>
+
 .content-box-red[**Marginal impact of experience**]
 
 $\frac{\partial wage}{\partial exper} = \beta_1+\beta_2\times educ$ 
 
 --
+
+<br>
 
 .content-box-red[**Implications**]
   
@@ -453,12 +493,12 @@ The marginal impact of experience depends on education
 
 ---
 
-# Regression with interaction terms 
+# Regression with interaction terms
 
 Just like the quadratic case with $educ^2$, you can use `I()`.
 
 ```{r }
-reg_int <- feols(wage ~ female + exper + I(exper*educ), data = wage) 
+reg_int <- feols(wage ~ female + exper + I(exper * educ), data = wage)
 ```
 
 --
@@ -487,37 +527,37 @@ class: middle
 
 ```{r echo = F}
 N <- 1000
-educ_temp <- seq(min(wage$educ),max(wage$educ),length=N) 
-min_exper <- reg_int$coefficients['exper'] + reg_int$coefficients['I(exper * educ)']*educ_temp
+educ_temp <- seq(min(wage$educ), max(wage$educ), length = N)
+min_exper <- reg_int$coefficients["exper"] + reg_int$coefficients["I(exper * educ)"] * educ_temp
 data_exper <- data.table(
   x = educ_temp,
   y = min_exper
-  )
+)
 
-g_marginal <- ggplot(data=data_exper) +
-  geom_line(aes(x=x,y=y)) +
-  ylab('marginal impact of experience') +
-  xlab('education') +
-  geom_hline(yintercept=0)
+g_marginal <- ggplot(data = data_exper) +
+  geom_line(aes(x = x, y = y)) +
+  ylab("marginal impact of experience") +
+  xlab("education") +
+  geom_hline(yintercept = 0)
 
-g_hist <- ggplot(data=wage) +
+g_hist <- ggplot(data = wage) +
   geom_histogram(aes(educ)) +
-  xlab('education')   
+  xlab("education")
 ```
 
 .left5[
 
 Marginal impact of $exper$:
 
-```{r echo = F}
-g_marginal 
+```{r echo = F, out.width="90%"}
+g_marginal
 ```
 ]
 
 .right5[
 Histogram of education:
-```{r echo = F}
-g_hist 
+```{r echo = F, out.width="90%"}
+g_hist
 ```
 ]
 
@@ -539,7 +579,9 @@ class: middle
 
 .content-box-red[**Question**]
 
-Does additional year of experience has a statistically significant impact (positive or negative) if your current education level is 10?
+Does additional year of experience has a statistically significant impact (positive or negative) if your current education level is 10
+
+<br>
 
 .content-box-red[**Hypothesis**]
       
@@ -553,7 +595,7 @@ class: middle
 .content-box-red[**R implementation**]
 
 ```{r }
-linearHypothesis(reg_int,'exper+10*I(exper * educ)=0') 
+linearHypothesis(reg_int, "exper+10*I(exper * educ)=0")
 ```
 
 ---
@@ -567,13 +609,15 @@ name: review
 
 ---
 
-# Qualitative information  
+# Qualitative information
 
 .content-box-green[**Issue**]
 
 How do we include qualitative information as an independent variable?
 
 --
+
+<br>
 
 .content-box-green[**Examples**]
 
@@ -585,7 +629,7 @@ How do we include qualitative information as an independent variable?
 
 ---
 
-# Binary variables 
+# Binary variables
 
 
 .content-box-red[**Dummy variable**]
@@ -594,13 +638,15 @@ How do we include qualitative information as an independent variable?
 
 + We use "dummy variable" to refer to a binary (zero-one) variable
 
+<br>
+
 .content-box-red[**Example**]
 
 ```{r }
-wage <- readRDS('wage1.rds') 
+wage <- readRDS("wage1.rds")
 
-dplyr::select(wage, wage, educ, exper, female, married) %>% 
-    head() 
+dplyr::select(wage, wage, educ, exper, female, married) %>%
+  head()
 ```
 
 ---
@@ -610,6 +656,7 @@ class: middle
 
 $wage = \beta_0 +\sigma_f female +\beta_2 educ + u$
 
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -641,11 +688,12 @@ class: middle
 .content-box-red[**Regression with a dummy variable**]
 
 ```{r }
-reg_df <- feols(wage ~ female + educ, data = wage) 
+reg_df <- feols(wage ~ female + educ, data = wage)
 
 reg_df
 ```
 
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -658,33 +706,36 @@ Female workers make `r reg_df$coefficients["female"]` ($/hour) less than male wo
 
 ```{r echo = F, fig.dim = c(6, 4)}
 beta_0 <- reg_df$coefficients[1] # intercept
-sigma_0 <- reg_df$coefficients['female'] # coef on female
-beta_1 <- reg_df$coefficients['educ'] # coef on educ
-x <- seq(0,20,length=1000)
-fe_data <- data.table(x=x,y=beta_1*x+beta_0+sigma_0,type='female')
-ma_data <- data.table(x=x,y=beta_1*x+beta_0,type='male')
-plot_data <- rbind(fe_data,ma_data)
+sigma_0 <- reg_df$coefficients["female"] # coef on female
+beta_1 <- reg_df$coefficients["educ"] # coef on educ
+x <- seq(0, 20, length = 1000)
+fe_data <- data.table(x = x, y = beta_1 * x + beta_0 + sigma_0, type = "female")
+ma_data <- data.table(x = x, y = beta_1 * x + beta_0, type = "male")
+plot_data <- rbind(fe_data, ma_data)
 
 text_data <- data.table(
-  x=c(5,12),y=c(6,1),
-  label=c(
-    'wage == beta[0]+beta[2]*educ','wage == beta[0]+sigma[f]+beta[2]*educ')
+  x = c(5, 12), y = c(6, 1),
+  label = c(
+    "wage == beta[0]+beta[2]*educ", "wage == beta[0]+sigma[f]+beta[2]*educ"
   )
+)
 
-g_comp <- ggplot(data=plot_data) + 
-  geom_line(aes(x=x,y=y,color=type)) +
-  geom_text(data=text_data,aes(x,y,label=label),
-    size=6,parse=TRUE,family='Times')+
-  geom_vline(xintercept=0) +
-  geom_hline(yintercept=0) +
-  ylab('Hourly Wage ($/hour)') +
-  xlab('Education (years)') +
-  scale_color_discrete(name='') +
+g_comp <- ggplot(data = plot_data) +
+  geom_line(aes(x = x, y = y, color = type)) +
+  geom_text(
+    data = text_data, aes(x, y, label = label),
+    size = 6, parse = TRUE, family = "Times"
+  ) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  ylab("Hourly Wage ($/hour)") +
+  xlab("Education (years)") +
+  scale_color_discrete(name = "") +
   theme(
-    legend.position='bottom',
+    legend.position = "bottom",
     text = element_text(size = 16)
-    )
-g_comp 
+  )
+g_comp
 ```
 
 ---
@@ -693,6 +744,8 @@ class: middle
 .content-box-red[**Model with dummy a variable**]
 
 $wage = \beta_0 +\sigma_m male +\beta_2 educ + u$
+
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -726,13 +779,14 @@ class: middle
 .content-box-red[**Regression with a dummy variable**]
 
 ```{r }
-wage <- mutate(wage, male = 1- female)
+wage <- mutate(wage, male = 1 - female)
 
-reg_df <- feols(wage ~ male + educ, data = wage) 
+reg_df <- feols(wage ~ male + educ, data = wage)
 
 reg_df
 ```
 
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -748,6 +802,8 @@ Why do you think will happen if  we include both male and female dummy variables
 
 --
 
+<br>
+
 .content-box-red[**Answer**]
 
 + They contain redundant information
@@ -757,6 +813,8 @@ Why do you think will happen if  we include both male and female dummy variables
 + So, you .blue[need to] drop either one of them
 
 --
+
+<br>
 
 .content-box-red[**Perfect Collinearity**]
 
@@ -768,15 +826,15 @@ class: middle
 Here is what happens if you include both:
 
 ```{r highlight.output = c(8)}
-reg_dmf <- feols(wage ~ male + female + educ, data = wage) 
+reg_dmf <- feols(wage ~ male + female + educ, data = wage)
 
-reg_dmf 
+reg_dmf
 ```
 
 ---
 class: middle
 
-# Interactions with a dummy variable 
+# Interactions with a dummy variable
 
 
 .content-box-green[**Issue**]
@@ -795,6 +853,7 @@ $wage = \beta_0 + \sigma_f female +\beta_2 educ + \gamma female\times educ + u$
 + [female]: $E[wage|female=1,educ] = \beta_0 + \sigma_f +(\beta_2+\gamma) educ$
 + [male]: $E[wage|female=0,educ] = \beta_0 + \beta_2 educ$
 
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -806,16 +865,18 @@ For female, education is more effective by $\gamma$ than it is for male.
 .content-box-red[**Example using R**]
 
 ```{r eval = F}
-reg_di <- lm(wage ~ female + educ + `I(female * educ)`, data = wage) 
-reg_di 
+reg_di <- lm(wage ~ female + educ + `I(female * educ)`, data = wage)
+reg_di
 ```
 
 ```{r echo = F}
-reg_di <- lm(wage ~ female + educ + I(female * educ), data = wage) 
-reg_di 
+reg_di <- lm(wage ~ female + educ + I(female * educ), data = wage)
+reg_di
 ```
 
 --
+
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -825,34 +886,37 @@ The marginal benefit of education is 0.086 ($/hour) less for females workers tha
 
 ```{r echo = F, fig.dim = c(6, 4.5), out.width = "80%"}
 beta_0 <- reg_di$coefficients[1] # intercept
-sigma_0 <- reg_di$coefficients['female'] # coef on female
-beta_1 <- reg_di$coefficients['educ'] # coef on educ
-gamma <- reg_di$coefficients['I(female * educ)']
-x <- seq(0,20,length=1000)
-fe_data <- data.table(x=x,y=(beta_1+gamma)*x+beta_0+sigma_0,type='female')
-ma_data <- data.table(x=x,y=beta_1*x+beta_0,type='male')
-plot_data <- rbind(fe_data,ma_data)
+sigma_0 <- reg_di$coefficients["female"] # coef on female
+beta_1 <- reg_di$coefficients["educ"] # coef on educ
+gamma <- reg_di$coefficients["I(female * educ)"]
+x <- seq(0, 20, length = 1000)
+fe_data <- data.table(x = x, y = (beta_1 + gamma) * x + beta_0 + sigma_0, type = "female")
+ma_data <- data.table(x = x, y = beta_1 * x + beta_0, type = "male")
+plot_data <- rbind(fe_data, ma_data)
 
 text_data <- data.table(
-  x=c(5,12),y=c(6,1),
-  label=c(
-    'wage == beta[0]+beta[2]*educ','wage == beta[0]+sigma[f]+(beta[2]+gamma)*educ')
+  x = c(5, 12), y = c(6, 1),
+  label = c(
+    "wage == beta[0]+beta[2]*educ", "wage == beta[0]+sigma[f]+(beta[2]+gamma)*educ"
+  )
+)
+
+g_comp_i <- ggplot(data = plot_data) +
+  geom_line(aes(x = x, y = y, color = type)) +
+  geom_text(
+    data = text_data, aes(x, y, label = label),
+    size = 6, parse = TRUE, family = "Times"
+  ) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  ylab("hourly wage") +
+  xlab("education") +
+  scale_color_discrete(name = "") +
+  theme(
+    legend.position = "bottom"
   )
 
-g_comp_i <- ggplot(data=plot_data) + 
-  geom_line(aes(x=x,y=y,color=type)) +
-  geom_text(data=text_data,aes(x,y,label=label),
-    size=6,parse=TRUE,family='Times')+
-  geom_vline(xintercept=0) +
-  geom_hline(yintercept=0) +
-  ylab('hourly wage') +
-  xlab('education') +
-  scale_color_discrete(name='') +
-  theme(
-    legend.position='bottom'
-    )
-
-g_comp_i 
+g_comp_i
 ```
 
 ---
@@ -902,6 +966,8 @@ $wage = \beta_0 + \sigma_m master +\sigma_d doctor + \beta_1 educ + u$
 
 --
 
+<br>
+
 .content-box-red[**Interpretation**]
 
 $\sigma_m$: the impact of having a MS degree .red[relative to] having a .red[college degree] 
@@ -909,6 +975,8 @@ $\sigma_m$: the impact of having a MS degree .red[relative to] having a .red[col
 $\sigma_d$: the impact of having a Ph.D. degree .red[relative to] having a .red[college degree]
 
 --
+
+<br>
 
 .content-box-red[**Important**]
 
@@ -940,6 +1008,8 @@ Structural difference refers to the fundamental differences in the model of a ph
 
 --
 
+<br>
+
 .content-box-red[**In this example,**]
 
 $cumgpa$ are determined in a fundamentally different manner between female and male students.
@@ -952,6 +1022,8 @@ You do not want to run a single regression that fits a single model for both fem
 
 If you suspect that the underlying process of how the dependent variable is determined vary across groups, then you should test that hypothesis!
 
+<br>
+
 .content-box-red[**To do so,**]
 
 You estimate the model that allows to estimate separate models across groups within a single regression analysis.     
@@ -962,7 +1034,6 @@ $$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female
 
 ---
 
-
 .content-box-red[**The flexible model**]
 
 $$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female)$$
@@ -970,14 +1041,19 @@ $$cumgpa = \beta_0 + \sigma_0 female + \beta_1 sat + \sigma_1 (sat \times female
           $$\qquad + \beta_3 tothrs + \sigma_3 (tothrs \times female) + u$$
 
 
+<br>
+
 .content-box-green[**Male**]
 
 $E[cumgpa] = \beta_0 + \beta_1 sat + \beta_2 hsperc + \beta_3 tothrs$
+
+<br>
 
 .content-box-green[**Feale**]
 
 $E[cumgpa] = (\beta_0 +\sigma_0) + (\beta_1+\sigma_1) sat + (\beta_2+\sigma_2) hsperc + (\beta_3+\sigma_3) tothrs$
 
+<br>
 
 .content-box-red[**Interpretation**]
 
@@ -986,13 +1062,17 @@ $E[cumgpa] = (\beta_0 +\sigma_0) + (\beta_1+\sigma_1) sat + (\beta_2+\sigma_2) h
 
 ---
 
-.content-box-red[**Hypothesis (verbal)**]
+.content-box-red[**Null Hypothesis (verbal)**]
+
 The model of GPA for male and female students are not structurally different.
+
+<br>
 
 .content-box-red[**Null Hypothesis**]
 
 $H_0: \;\; \sigma_0=0,\;\; \sigma_1=0, \;\; \sigma_2=0, \;\; \mbox{and} \;\; \sigma_3=0$
 
+<br>
 
 .content-box-green[**Question**]
 
@@ -1006,22 +1086,24 @@ What test do we do? t-test or F-test?
 Run the unrestricted model with all the interaction terms:
 
 ```{r }
-gpa <- read.dta13("GPA3.dta") %>% 
-    filter(!is.na(ctothrs)) %>%
-    #--- create interaction terms ---#
-    mutate(
-      female_sat:=female*sat,
-      female_hsperc:=female*hsperc,
-      female_tothrs:=female*tothrs
-      )
+gpa <-
+  read.dta13("GPA3.dta") %>%
+  filter(!is.na(ctothrs)) %>%
+  #--- create interaction terms ---#
+  mutate(
+    female_sat := female * sat,
+    female_hsperc := female * hsperc,
+    female_tothrs := female * tothrs
+  )
 
 #--- regression with female dummy ---#
-reg_full <- feols(cumgpa~female
-  +sat+female_sat
-  +hsperc+female_hsperc
-  +tothrs+female_tothrs,
-  data=gpa
-)   
+reg_full <-
+  feols(
+    cumgpa ~
+    female + sat + female_sat + hsperc + female_hsperc +
+      tothrs + female_tothrs,
+    data = gpa
+  )
 ```
 
 ---
@@ -1047,14 +1129,15 @@ modelsummary(reg_full, gof_omit = "Obs|R|Log|IC|Std", stars = TRUE)
 ---
 
 ```{r }
-linearHypothesis(reg_full, 
+linearHypothesis(
+  reg_full,
   c(
-    "female = 0", 
-    "female_hsperc = 0", 
-    "female_sat = 0", 
+    "female = 0",
+    "female_hsperc = 0",
+    "female_sat = 0",
     "female_tothrs = 0"
   )
-)  
+)
 ```
 
 ---
@@ -1062,13 +1145,13 @@ linearHypothesis(reg_full,
 class: inverse, center, middle
 name: review
 
-# More on $R^2$ 
+# More on $R^2$
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
 ---
 
-# Goodness of fit: $R^2$ 
+# Goodness of fit: $R^2$
 
 .content-box-red[**Important**]
 
@@ -1084,17 +1167,19 @@ $$ecolabs = \beta_0 + \beta_1 regprc + \beta_2 ecoprc$$
 + $regprc$: prices of regular apples 
 + $ecoprc$: prices of the hypothetical ecolabled apples
 
+<br>
+
 .content-box-red[**Key**]
-+ The data was obtained via survey and $ecoprc$ was set randomly (So, we know $E[u|x] = 0$).
-+ The objective of the study is to understand the impact of the price of ecolabled apple on the demand for ecolabled apples.
++ The data was obtained via survey and $ecoprc$ was set randomly (So, we know $E[u|x] = 0$) by the researcher.
++ The (only) objective of the study is to understand the impact of the price of ecolabled apple on the demand for ecolabled apples.
 
 
 ---
 
 ```{r echo = F, results = "asis"}
-apple <- read.dta13('APPLE.dta') 
-reg_apple <- lm(ecolbs~regprc+ecoprc,data=apple)
-stargazer(reg_apple,type='html',no.space = TRUE,omit.stat=c('adj.rsq','ser','f'),table.layout='-ld#-t-s-') 
+apple <- read.dta13("APPLE.dta")
+reg_apple <- lm(ecolbs ~ regprc + ecoprc, data = apple)
+stargazer(reg_apple, type = "html", no.space = TRUE, omit.stat = c("adj.rsq", "ser", "f"), table.layout = "-ld#-t-s-")
 ```
  
 ---
@@ -1106,7 +1191,7 @@ Suppose you are challenged by somebody who claim that your regression is not .bl
 class: inverse, center, middle
 name: review
 
-# Scaling 
+# Scaling
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
@@ -1126,18 +1211,18 @@ What happens if you scale up/down variables used in regression?
 
 ```{r }
 #--- regression with female dummy ---#
-reg_no_scale <- lm(wage ~ female + educ, data = wage) 
-reg_scale <- lm(wage ~ female + I(educ * 12), data = wage)  
+reg_no_scale <- lm(wage ~ female + educ, data = wage)
+reg_scale <- lm(wage ~ female + I(educ * 12), data = wage)
 ```
   
 ---
 
 ```{r }
-tidy(reg_no_scale) 
+tidy(reg_no_scale)
 ```
 
 ```{r }
-tidy(reg_scale) 
+tidy(reg_scale)
 ```
 
 --
@@ -1163,14 +1248,15 @@ hourly wage increases by $0.0422$ if education increases by a .blue[month]
 
 --
 
+<br>
+
 .content-box-green[**Note**]
 
 According to the scaled model, hourly wage increases by $0.0422 * 12$ if education increases by a year (12 months).
 
-That is, the estimated marginal impact of education on wage from the scaled model is the same as that from the unscaled model.
+That is, the estimated marginal impact of education on wage from the scaled model is the same as that from the non-scaled model.
 
 ---
-
 
 .content-box-red[**Summary**]
 

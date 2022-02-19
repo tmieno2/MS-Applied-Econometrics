@@ -40,7 +40,7 @@ rmarkdown::render(here("LectureNotes/5_Testing/testing_x.rmd"))
 build_pdf(here("LectureNotes/5_Testing/testing_x.html"))
 
 # /*===========================================================
-#' # 6. Hypothesis Testing
+#' # 6. Standard Error Estimation
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/6_StandardErrorEstimation/se_estimation_x.rmd"))
 build_pdf(here("LectureNotes/6_StandardErrorEstimation/se_estimation_x.html"))
