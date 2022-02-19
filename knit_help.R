@@ -51,3 +51,9 @@ build_pdf(here("LectureNotes/6_StandardErrorEstimation/se_estimation_x.html"))
 rmarkdown::render(here("LectureNotes/7_EconometricModel/modeling_x.rmd"))
 build_pdf(here("LectureNotes/7_EconometricModel/modeling_x.html"))
 
+# /*===========================================================
+#' # 8. Asymptotics
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/8_Asymptotics/asymptotics_x.rmd"))
+build_pdf(here("LectureNotes/8_Asymptotics/asymptotics_x.html"))
+

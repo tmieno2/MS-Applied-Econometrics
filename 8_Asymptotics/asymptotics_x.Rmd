@@ -5,13 +5,14 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
+    self_contained: true
     nature:
       ratio: 4:3
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
+class: middle
 
 ```{r, child = './../setup.Rmd'}
 ```
@@ -49,6 +50,8 @@ class: middle
 + Properties of OLS that hold only when the sample size is infinite .blue[very] large 
 
 + (loosely put) How OLS estimators behave when the number of observations goes .blue[infinite (really large)]
+
+<br>
 
 .content-box-red[**Small Sample Properties of OLS**]
 
@@ -93,13 +96,14 @@ class: middle
 
 # Conceptual steps of the MC simulations
 
-+ generate data according to $y_i = \beta_0 + \beta_1 x_i + u_i$
-+ run on the generated data
-+ store the coefficient estimate
-+ repeat the above experiment 1000 times
-+ examine how the coefficient estimates are distributed
++ Generate data according to $y_i = \beta_0 + \beta_1 x_i + u_i$
++ Estimate the coefficients and store them
++ Repeat the above experiment 1000 times
++ Examine how the coefficient estimates are distributed
 
 --
+
+<br>
 
 .content-box-green[**What you should see is**]
 
@@ -113,15 +117,15 @@ class: middle
 #--- Preparation ---#
 B <- 1000 # the number of iterations
 N_list <- c(100, 1000, 10000) # sample size
-N_len <- length(N_list) 
-estimate_storage <- matrix(0,B,3) # estimates storage
+N_len <- length(N_list)
+estimate_storage <- matrix(0, B, 3) # estimates storage
 
-for (j in 1:N_len){
+for (j in 1:N_len) {
   temp_N <- N_list[j]
-  for (i in 1:B){
+  for (i in 1:B) {
     #--- generate data ---#
     x <- rnorm(temp_N) # indep var 1
-    u <- rnorm(temp_N)*0.2 # error
+    u <- rnorm(temp_N) * 0.2 # error
     y <- 1 + x + u # dependent variable 1
     data <- data.frame(y = y, x = x)
 
@@ -129,7 +133,7 @@ for (j in 1:N_len){
     reg <- lm(y ~ x, data = data) # OLS
 
     #--- store coef estimates ---#
-    estimate_storage[i,j] <- reg$coef[2] 
+    estimate_storage[i, j] <- reg$coef[2]
   }
 }
 ```
@@ -141,23 +145,24 @@ class: middle
 plot_data <- melt(data.frame(estimate_storage))
 
 #--- create a figure ---#
-g_co_ex <- ggplot(data=plot_data) +
-  geom_density(aes(x=value,fill=variable),alpha=0.4) +
-  geom_vline(xintercept=1) +
+g_co_ex <- ggplot(data = plot_data) +
+  geom_density(aes(x = value, fill = variable), alpha = 0.4) +
+  geom_vline(xintercept = 1) +
+  xlim(0.9, 1.1) +
   scale_fill_discrete(
-    name='Sample Size',
-    labels = c('N=100 ', 'N=1,000 ','N=10,000')
-    ) +
+    name = "Sample Size",
+    labels = c("N=100 ", "N=1,000 ", "N=10,000")
+  ) +
   theme(
-    legend.position='bottom'
-    )  
+    legend.position = "bottom"
+  )
 ```
 
 ---
 class: middle
 
 ```{r echo = F, out.width = "80%"}
-g_co_ex 
+g_co_ex
 ```
 
 
@@ -169,14 +174,14 @@ class: middle
 Under $MLR.1$ through $MLR.4$, OLS estimators are consistent
 
 ---
+class: middle
 
 # MC simulations: Inconsistency of OLS estimators
 
 .content-box-red[**Conceptual steps of MC simulations**]
   
 + generate data ($N$ observations) according to $y_i = \beta_0 + \beta_1 x_i + u_i$ with $E[u_i|x_i]\ne 0$
-+ run on the generated data
-+ store the coefficient estimate
++ Estimate the coefficients and store them
 + repeat the above experiment 1000 times
 + examine how the coefficient estimates are distributed
 
@@ -191,27 +196,27 @@ class: middle
 
 ```{r }
 #--- Preparation ---#
-N_list <- c(100,1000,10000) # sample size
-N_len <- length(N_list) 
-estimate_storage <- matrix(0,B,3) # estimates storage
+N_list <- c(100, 1000, 10000) # sample size
+N_len <- length(N_list)
+estimate_storage <- matrix(0, B, 3) # estimates storage
 
-for (j in 1:N_len){
+for (j in 1:N_len) {
   temp_N <- N_list[j]
-  for (i in 1:B){
+  for (i in 1:B) {
     #--- generate data ---#
     mu <- rnorm(temp_N) # shared term between x and u #<<
-    x <- rnorm(temp_N) + 0.5*mu #<<
-    u <- rnorm(temp_N) + 0.5*mu #<<
-    y <- 1 + x + u # dependent variable 
-    data <- data.frame(y=y,x=x)
+    x <- rnorm(temp_N) + 0.5 * mu # <<
+    u <- rnorm(temp_N) + 0.5 * mu # <<
+    y <- 1 + x + u # dependent variable
+    data <- data.frame(y = y, x = x)
 
     #--- OLS ---# 
-    reg <- lm(y~x,data=data) # OLS
+    reg <- lm(y ~ x, data = data) # OLS
 
     #--- store coef estimates ---#
-    estimate_storage[i,j] <- reg$coef[2] 
+    estimate_storage[i, j] <- reg$coef[2]
   }
-} 
+}
 ```
 
 ---
@@ -222,23 +227,23 @@ class: middle
 plot_data <- melt(data.frame(estimate_storage))
 
 #--- create a figure ---#
-g_inco_ex <- ggplot(data=plot_data) +
-  geom_density(aes(x=value,fill=variable),alpha=0.4) +
-  geom_vline(xintercept=1) +
+g_inco_ex <- ggplot(data = plot_data) +
+  geom_density(aes(x = value, fill = variable), alpha = 0.4) +
+  geom_vline(xintercept = 1) +
   scale_fill_discrete(
-    name='Sample Size',
-    labels = c('N=100 ', 'N=1,000 ','N=10,000')
-    ) +
+    name = "Sample Size",
+    labels = c("N=100 ", "N=1,000 ", "N=10,000")
+  ) +
   theme(
-    legend.position='bottom'
-    ) 
+    legend.position = "bottom"
+  )
 ```
 
 ---
 class: middle
 
 ```{r echo = F, out.width = "80%"}
-g_inco_ex 
+g_inco_ex
 ```
 
 ---
@@ -255,6 +260,8 @@ class: middle
 
 # Testing 
 
+When we talked about hypothesis testing, we made the following assumption:
+
 .content-box-red[**Normality assumption**]
 
 The population error $u$ is .blue[independent] of the explanatory variables $x_1,\dots,x_k$ and is .blue[normally] distributed with zero mean and variance $\sigma^2$: 
@@ -262,6 +269,8 @@ The population error $u$ is .blue[independent] of the explanatory variables $x_1
 $u\sim Normal(0,\sigma^2)$ 
 
 --
+
+<br>
 
 .content-box-green[**Remember**]
 
@@ -289,7 +298,7 @@ $$\sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-\mu)\xrightarrow[]{d} N(0,\sigma^2)$$
 
 .content-box-green[**Verbally**]
  
-Sample mean less its expected value multiplied by $\sqrt{n}$ is going to be distributed as Normal distribution as $n$ goes infinity where its expected value is 0 and variance is the variance of $x$.
+Sample mean less its expected value multiplied by $\sqrt{n}$ (square root of the sample size) is going to be distributed as Normal distribution as $n$ goes infinity where its expected value is 0 and variance is the variance of $x$.
 
 
 ---
@@ -305,6 +314,8 @@ $x_i \sim Bern[p=0.3]$
 + $Var[x_i] (\sigma^2) = p(1-p) = 0.21$
 
 --
+
+<br>
 
 .content-box-green[**According to CLT**]
 
@@ -331,11 +342,14 @@ class: middle
 
 --
 
+<br>
+
 .content-box-green[**What you should see is**]
 
 As $N$ gets larger (more observations), the distribution of $\sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-0.3$) looks more and more like $N(0,0.21)$
 
 ---
+class: middle
 
 .content-box-red[**MC simulations (N = 10)**]
 
@@ -346,51 +360,55 @@ set.seed(893269)
 N <- 10 # number of observations #<<
 B <- 1000 # number of iterations
 p <- 0.3 # mean of the Bernoulli distribution
-storage <- rep(0,B)
+storage <- rep(0, B)
 
-for (i in 1:B){
+for (i in 1:B) {
   #--- draw from Bern[0.3] (x distributed as Bern[0.3]) ---#
-  x_seq <- runif(N)<=p
+  x_seq <- runif(N) <= p
 
   #--- sample mean ---#
-  x_mean <- mean(x_seq) 
+  x_mean <- mean(x_seq)
 
   #--- normalize ---#
-  lhs <- sqrt(N)*(x_mean-p)
+  lhs <- sqrt(N) * (x_mean - p)
 
   #--- save lhs to storage ---#
   storage[i] <- lhs
-} 
+}
 ```
 
 ---
+class: middle
 
 .content-box-red[**Visualization**]
 
 ```{r }
 data_pdf <- data.frame(
-    x = seq(-2,2,length=1000),
-    y = dnorm(seq(-2,2,length=1000),sd=sqrt(p*(1-p))) 
-    )
+  x = seq(-2, 2, length = 1000),
+  y = dnorm(seq(-2, 2, length = 1000), sd = sqrt(p * (1 - p)))
+)
 
-g_N_10 <- ggplot() +
+g_N_10 <-
+  ggplot() +
   geom_density(
-    data=data.frame(x=storage),
-    aes(x=x,color='sample distribution')
-    ) +
+    data = data.frame(x = storage),
+    aes(x = x, color = "sample distribution")
+  ) +
   geom_line(
-    data=data_pdf,
-    aes(y=y,x=x,color='pdf of N(0,0.21)')
-    ) +
+    data = data_pdf,
+    aes(y = y, x = x, color = "pdf of N(0,0.21)")
+  ) +
   scale_color_manual(
-    values=c('sample distribution'='blue','pdf of N(0,0.21)'='red'),
-    name='') +
+    values = c("sample distribution" = "blue", "pdf of N(0,0.21)" = "red"),
+    name = ""
+  ) +
   theme(
-    legend.position='bottom' 
-    )  
+    legend.position = "bottom"
+  )
 ```
 
 ---
+class: middle
 
 .content-box-red[**MC simulations (N = 10)**]
 
@@ -399,6 +417,7 @@ g_N_10
 ```
 
 ---
+class: middle
 
 .content-box-red[**MC simulations (N = 100)**]
 
@@ -407,42 +426,43 @@ set.seed(893269)
 N <- 100 # the number of observations
 B <- 1000
 p <- 0.3
-storage <- rep(0,B)
+storage <- rep(0, B)
 
-for (i in 1:B){
+for (i in 1:B) {
   #--- draw from U[0,1] (x distributed as U[0,1]) ---#
-  x_seq <- runif(N)<=0.3
+  x_seq <- runif(N) <= 0.3
 
   #--- sample mean ---#
-  x_mean <- mean(x_seq) 
+  x_mean <- mean(x_seq)
 
   #--- normalize ---#
-  lhs <- sqrt(N)*(x_mean-0.3)
+  lhs <- sqrt(N) * (x_mean - 0.3)
 
   #--- save lhs to storage ---#
   storage[i] <- lhs
 }
 
 data_pdf <- data.frame(
-    x = seq(-2,2,length=1000),
-    y = dnorm(seq(-2,2,length=1000),sd=sqrt(p*(1-p))) 
-    )
+  x = seq(-2, 2, length = 1000),
+  y = dnorm(seq(-2, 2, length = 1000), sd = sqrt(p * (1 - p)))
+)
 
 g_N_100 <- ggplot() +
   geom_density(
-    data=data.frame(x=storage),
-    aes(x=x,color='sample distribution')
-    ) +
+    data = data.frame(x = storage),
+    aes(x = x, color = "sample distribution")
+  ) +
   geom_line(
-    data=data_pdf,
-    aes(y=y,x=x,color='pdf of N(0,0.21)')
-    ) +
+    data = data_pdf,
+    aes(y = y, x = x, color = "pdf of N(0,0.21)")
+  ) +
   scale_color_manual(
-    values=c('sample distribution'='blue','pdf of N(0,0.21)'='red'),
-    name='') +
+    values = c("sample distribution" = "blue", "pdf of N(0,0.21)" = "red"),
+    name = ""
+  ) +
   theme(
-    legend.position='bottom' 
-    )  
+    legend.position = "bottom"
+  )
 ```
 
 ```{r echo = F, out.width = "80%"}
@@ -450,6 +470,7 @@ g_N_100
 ```
 
 ---
+class: middle
 
 .content-box-red[**MC simulations (N = 10000)**]
 
@@ -458,42 +479,43 @@ set.seed(893269)
 N <- 10000 # the number of observations
 B <- 1000
 p <- 0.3
-storage <- rep(0,B)
+storage <- rep(0, B)
 
-for (i in 1:B){
+for (i in 1:B) {
   #--- draw from U[0,1] (x distributed as U[0,1]) ---#
-  x_seq <- runif(N)<=0.3
+  x_seq <- runif(N) <= 0.3
 
   #--- sample mean ---#
-  x_mean <- mean(x_seq) 
+  x_mean <- mean(x_seq)
 
   #--- normalize ---#
-  lhs <- sqrt(N)*(x_mean-0.3)
+  lhs <- sqrt(N) * (x_mean - 0.3)
 
   #--- save lhs to storage ---#
   storage[i] <- lhs
 }
 
 data_pdf <- data.frame(
-    x = seq(-2,2,length=1000),
-    y = dnorm(seq(-2,2,length=1000),sd=sqrt(p*(1-p))) 
-    )
+  x = seq(-2, 2, length = 1000),
+  y = dnorm(seq(-2, 2, length = 1000), sd = sqrt(p * (1 - p)))
+)
 
 g_N_10000 <- ggplot() +
   geom_density(
-    data=data.frame(x=storage),
-    aes(x=x,color='sample distribution')
+    data = data.frame(x = storage),
+    aes(x = x, color = "sample distribution")
   ) +
   geom_line(
-    data=data_pdf,
-    aes(y=y,x=x,color='pdf of N(0,0.21)')
+    data = data_pdf,
+    aes(y = y, x = x, color = "pdf of N(0,0.21)")
   ) +
   scale_color_manual(
-    values=c('sample distribution'='blue','pdf of N(0,0.21)'='red'),
-    name='') +
+    values = c("sample distribution" = "blue", "pdf of N(0,0.21)" = "red"),
+    name = ""
+  ) +
   theme(
-    legend.position='bottom' 
-    )  
+    legend.position = "bottom"
+  )
 ```
 
 ```{r echo = F, out.width = "80%"}
@@ -510,7 +532,7 @@ CLT holds for .blue[any] distribution of $x_i$ .blue[as long as it has a finite 
 ---
 class: middle
 
-Under assumptions $MLR.1$ through $MLR.5$ ($MLR.6$ not necessary!!),
+Under assumptions $MLR.1$ through $MLR.5$ (MLR.6 not necessary!!),
 
 .content-box-red[**Asymptotic Normality of OLS**]
 
@@ -518,18 +540,20 @@ $\sqrt{n}(\hat{\beta}_j-\beta_j)\xrightarrow[]{a} N(0,\sigma^2/\alpha_j^2)$
 
 where $\alpha_j^2=plim(\frac{1}{n}\sum_{i=1}^n r^2_{i,j})$, where $r^2_{i,j}$ are the residuals from regressing $x_j$ on the other independent variables.
 
+<br>
+
 .content-box-red[**Consistency**]
 
-$\hat{\sigma}^2\equiv \frac{1}{n-k-1}\sum_{i=1}^n \hat{u}_i^2$} is a consistent estimator of of $\sigma^2$ $(Var(u))$
+$\hat{\sigma}^2\equiv \frac{1}{n-k-1}\sum_{i=1}^n \hat{u}_i^2$ is a consistent estimator of of $\sigma^2$ $(Var(u))$
 
 ---
 class: middle
 
 .content-box-red[**Further**]
 
-+ $(\hat{\beta}_j-\beta_j)/sd(\hat{\beta}_j) \xrightarrow[]{a} N(0,1)$
++ $(\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j) \xrightarrow[]{a} N(0,1)$
 
-+ $(\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j) \xrightarrow[]{a} N(0,1)$, where $se(\hat{\beta}_j)=\sqrt{\frac{\hat{\sigma}^2}{SST_j(1-R_j^2)}}$
++ $(\hat{\beta}_j-\beta_j)/\widehat{se(\hat{\beta}_j)} \xrightarrow[]{a} N(0,1)$, where $\widehat{se(\hat{\beta}_j)}=\sqrt{\frac{\hat{\sigma}^2}{SST_j(1-R_j^2)}}$
 
 ---
 class: middle
@@ -540,6 +564,8 @@ Under $MLR.1$ through $MLR.5$ .blue[and] $MLR.6$ $(u_i\sim N(0,\sigma^2))$,
 
 + $(\hat{\beta}_j-\beta_j)/sd(\hat{\beta}_j) \sim N(0,1)$
 + $(\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j) \sim t_{n-k-1}$
+
+<br>
 
 .content-box-red[**Large sample (when $n$ goes infinity)**]
 
@@ -557,7 +583,7 @@ class: middle
 
 You can proceed exactly the same way as you did before (practically speaking)!!
 
-+ calculate $(\hat{\beta}_j-\beta_j)/se(\hat{\beta}_j)$
++ calculate $(\hat{\beta}_j-\beta_j)/\widehat{se(\hat{\beta}_j)}$
 
 + check if the obtained value is greater than (in magnitude) the critical value for the specified significance level under $t_{n-k-1}$
 
@@ -571,30 +597,29 @@ Shouldn't we use $N(0,1)$ when you find the critical value?
 class: middle
 
 ```{r echo = F, out.width = "80%"}
-x <- seq(-3,3,length=1000)
+x <- seq(-3, 3, length = 1000)
 y_norm <- dnorm(x) # pdf of N(0,1)
-y_t_2 <- dt(x,df=2) # pdf of t_{2}
-y_t_10 <- dt(x,df=10) # pdf of t_{10}
-y_t_30 <- dt(x,df=30) # pdf of t_{30}
-y_t_50 <- dt(x,df=50) # pdf of t_{50}
+y_t_2 <- dt(x, df = 2) # pdf of t_{2}
+y_t_10 <- dt(x, df = 10) # pdf of t_{10}
+y_t_30 <- dt(x, df = 30) # pdf of t_{30}
+y_t_50 <- dt(x, df = 50) # pdf of t_{50}
 
 plot_data <- data.table(
-  x=x,
-  'N(0,1)'=y_norm,
-  't (df=2)'=y_t_2,
-  't (df=10)'=y_t_10,
-  't (df=30)'=y_t_30,
-  't (df=50)'=y_t_50
-  ) %>% 
-  melt(id.var='x')
+  x = x,
+  "N(0,1)" = y_norm,
+  "t (df=2)" = y_t_2,
+  "t (df=10)" = y_t_10,
+  "t (df=30)" = y_t_30,
+  "t (df=50)" = y_t_50
+) %>%
+  melt(id.var = "x")
 
-ggplot(data=plot_data) +
-  geom_line(aes(y=value,x=x,color=variable)) +
-  scale_color_discrete(name='', guide = guide_legend(nrow = 2)) +
+ggplot(data = plot_data) +
+  geom_line(aes(y = value, x = x, color = variable)) +
+  scale_color_discrete(name = "", guide = guide_legend(nrow = 2)) +
   theme(
-    legend.position = 'bottom'
-    )
-  
+    legend.position = "bottom"
+  )
 ```
 
 ---
@@ -606,12 +631,13 @@ Since $t_{n-k-1}$ and $N(0,1)$ are almost identical when $n$ is large, there is 
 
 
 ---
+class: middle
 
-# Homoskedasticity
+# When the homoskedasticity is violated (as almost always the case)
 
 .content-box-red[**Important**]
 
-The consistency of the estimation of $\widehat{Var(\hat{\beta})}$ [DOES] require the homoskedasticity assumption ($MLR.5$)!!
+The consistency of the estimation of $\widehat{Var(\hat{\beta})}$ <span style = "color: red;"> DOES </span> require the homoskedasticity assumption (MLR.5)!!
 
 + the usual t-statistics and confidence intervals are invalid no matter how large the sample size is if error is heteroskedastic
 
