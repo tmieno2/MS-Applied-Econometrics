@@ -57,3 +57,9 @@ build_pdf(here("LectureNotes/7_EconometricModel/modeling_x.html"))
 rmarkdown::render(here("LectureNotes/8_Asymptotics/asymptotics_x.rmd"))
 build_pdf(here("LectureNotes/8_Asymptotics/asymptotics_x.html"))
 
+# /*===========================================================
+#' # 9. Endogeneity
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/9_Endogeneity/endogeneity_x.rmd"))
+build_pdf(here("LectureNotes/9_Endogeneity/endogeneity_x.html"))
+

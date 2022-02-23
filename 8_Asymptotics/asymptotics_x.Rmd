@@ -290,7 +290,7 @@ class: middle
 
 # Central Limit Theorem (CLT)
 
-Suppose $\{x_1,x_2,\dots\}$ is a sequence of idetically independently distributed} random variables with $E[x_i]=\mu$ and $Var[x_i]=\sigma^2<\infty$. Then, as $n$ approaches infinity, 
+Suppose $\{x_1,x_2,\dots\}$ is a sequence of idetically independently distributed random variables with $E[x_i]=\mu$ and $Var[x_i]=\sigma^2<\infty$. Then, as $n$ approaches infinity, 
 
 $$\sqrt{n}(\frac{1}{n} \sum_{i=1}^n x_i-\mu)\xrightarrow[]{d} N(0,\sigma^2)$$
 

@@ -32,6 +32,7 @@ suppressMessages(library(fixest))
 suppressMessages(library(patchwork))
 suppressMessages(library(readstata13))
 suppressMessages(library(modelsummary))
+suppressMessages(library(car))
 suppressMessages(library(stargazer))
 suppressMessages(library(lmtest))
 ```
@@ -46,11 +47,12 @@ suppressMessages(library(lmtest))
 ## Table of contents
 
 1. [Expanding on Simple Models](#various-models)
-2. [](#linear)
-3. [](#conf)
+2. [Interaction terms](#interaction)
+3. [Categorical variable](#qualitative)
+4. [R coding tips: categorical variables and interaction terms](#use-i)
+5. [Other miscellaneous topics](#misc)
 
 ---
-
 class: inverse, center, middle
 name: various-models
 
@@ -142,7 +144,7 @@ g_quad_2 <- ggplot(data = y_2_data) +
 
 $y = x + x^2$ $(\beta_1 = 1, \beta_2 = 1)$
 
-```{r echo = F}
+```{r echo = F, out.width = "90%", out.height = "80%"}
 g_quad_1
 ```
 ]
@@ -151,7 +153,7 @@ g_quad_1
 
 $y = 3x-2x^2$ $(\beta_1 = 3, \beta_2 = -2)$
 
-```{r echo = F}
+```{r echo = F, out.width = "90%", out.height = "80%"}
 g_quad_2
 ```
 ]
@@ -377,7 +379,7 @@ $t = \frac{\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 4}{se(\hat{
 
 .content-box-red[**R implementation**]
 
-Remember, a trick to do this test using R is take advantage of the fact that $F_{1, n-k-1} \sim t_{n-k-1}$.
+Remember, a trick to do this test using R is take advantage of the fact that $F_{1, n-k-1} \sim t_{n-k-1}^2$.
 
 ```{r }
 linearHypothesis(quad_reg, "educ + 8*I(educ^2)=0")
@@ -440,9 +442,8 @@ linearHypothesis(quad_reg, "educ + 20*I(educ^2)=0")
 Since the much lower than is 0.01, we can reject the null at the 1% level.
 
 ---
-
 class: inverse, center, middle
-name: review
+name: interaction
 
 # Interaction terms
 
@@ -555,7 +556,9 @@ g_marginal
 ]
 
 .right5[
+
 Histogram of education:
+
 ```{r echo = F, out.width="90%"}
 g_hist
 ```
@@ -601,7 +604,7 @@ linearHypothesis(reg_int, "exper+10*I(exper * educ)=0")
 ---
 
 class: inverse, center, middle
-name: review
+name: qualitative
 
 # Including qualitative information
 
@@ -798,7 +801,7 @@ class: middle
 
 .content-box-red[**Question**]
 
-Why do you think will happen if  we include both male and female dummy variables?   
+What do you think will happen if  we include both male and female dummy variables?   
 
 --
 
@@ -1079,7 +1082,7 @@ $H_0: \;\; \sigma_0=0,\;\; \sigma_1=0, \;\; \sigma_2=0, \;\; \mbox{and} \;\; \si
 What test do we do? t-test or F-test?
 
 ---
-
+class: middle
 
 .content-box-red[**R code**]
 
@@ -1107,6 +1110,7 @@ reg_full <-
 ```
 
 ---
+class: middle
 
 .left5[
 
@@ -1122,7 +1126,11 @@ reg_full <-
 
 .right5[
 ```{r echo = F}
-modelsummary(reg_full, gof_omit = "Obs|R|Log|IC|Std", stars = TRUE)
+msummary(
+  reg_full,
+  gof_omit = "Obs|R|Log|IC|Std",
+  stars = TRUE
+)
 ```
 ]
 
@@ -1141,11 +1149,108 @@ linearHypothesis(
 ```
 
 ---
+class: inverse, center, middle
+name: use-i
+
+# R coding tips: categorical variables and interactio terms
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# R coding tips: categorical variables and interactio terms
+
+```{r }
+#* load the package to access the data we want
+library(wooldridge)
+
+#* get big9salary
+data("big9salary")
+
+#* creat a variable that indicates university
+#* this is how the data would like most of the time (instead of having bunch of dummy variables)
+big9salary_c <-
+  as_tibble(big9salary) %>%
+  mutate(
+    university =
+      case_when(
+        osu == 1 ~ "Ohio State U",
+        iowa == 1 ~ "U of Iowa",
+        indiana == 1 ~ "Indiana U",
+        purdue == 1 ~ "Purdue U",
+        msu == 1 ~ "Michigan State U",
+        mich == 1 ~ "Michigan U",
+        wisc == 1 ~ "U of Wisconsin",
+        illinois == 1 ~ "U of Illinois"
+      )
+  ) %>%
+  relocate(id, year, salary, pubindx, university)
+```
+
+---
+class: middle
+
+Take a look at the data,
+
+```{r }
+head(big9salary_c)
+
+tail(big9salary_c)
+```
+
+---
+class: middle
+
+You can use the `i()` function inside `feols()` like below:
+
+```{r eval = F}
+feols(salary ~ pubindx + female + `i(university, ref = "Indiana U")`, data = big9salary_c) %>%
+  tidy()
+```
+
+```{r echo = F, highlight.output = c(7)}
+feols(salary ~ pubindx + female + i(university, ref = "Indiana U"), data = big9salary_c) %>%
+  tidy()
+```
+
+`ref = "Indiana U"` sets the base category to `"Indiana U"`. 
+
+So, for example, the highlighted line means that faculty memebers at Michigan State U make $9,118$ USD less annually than those at Indiana U.
+
+<br>
+
+.content-box-green[**Key**]
+
+You do not have to make bunch of dummy variables like the original dataset. Just use `i(catergory_variable)`.
+
+---
+class: middle
+
+# Interactions terms 
+
+You can use `i()` for creating interactions of a categorical variable and a continuous variable.
+
+Suppose you are interested in understanding the impact of `pubindx` (continuous) by `university` (categorical), then
+
+```{r eval = F}
+feols(salary ~ female + pubindx + i(university, ref = "Indiana U") + `i(university, totpge, ref = "Indiana U")`, data = big9salary_c) %>%
+  tidy()
+```
+
+```{r echo = F, highlight.output = c(14)}
+feols(salary ~ female + pubindx + i(university, ref = "Indiana U") + i(university, pubindx, ref = "Indiana U"), data = big9salary_c) %>%
+  tidy()
+```
+
+So, the marginal impact of `pubindex` is $436$ greater for those at Michigan State U than those at Indiana U.
+
+---
 
 class: inverse, center, middle
-name: review
+name: misc
 
-# More on $R^2$
+# Other miscellaneous topic
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 

@@ -4791,11 +4791,12 @@ slides &gt; slide {
 ## Table of contents
 
 1. [Expanding on Simple Models](#various-models)
-2. [](#linear)
-3. [](#conf)
+2. [Interaction terms](#interaction)
+3. [Categorical variable](#qualitative)
+4. [R coding tips: categorical variables and interaction terms](#use-i)
+5. [Other miscellaneous topics](#misc)
 
 ---
-
 class: inverse, center, middle
 name: various-models
 
@@ -4868,14 +4869,14 @@ Quadratic functional form is quite flexible.
 
 `\(y = x + x^2\)` `\((\beta_1 = 1, \beta_2 = 1)\)`
 
-&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-4-1.png&quot; width=&quot;60%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-4-1.png&quot; width=&quot;90%&quot; height=&quot;80%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 .right5[
 
 `\(y = 3x-2x^2\)` `\((\beta_1 = 3, \beta_2 = -2)\)`
 
-&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-5-1.png&quot; width=&quot;60%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
+&lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-5-1.png&quot; width=&quot;90%&quot; height=&quot;80%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
 ---
@@ -5109,7 +5110,7 @@ Is this
 
 .content-box-red[**R implementation**]
 
-Remember, a trick to do this test using R is take advantage of the fact that `\(F_{1, n-k-1} \sim t_{n-k-1}\)`.
+Remember, a trick to do this test using R is take advantage of the fact that `\(F_{1, n-k-1} \sim t_{n-k-1}^2\)`.
 
 
 ```r
@@ -5204,9 +5205,8 @@ linearHypothesis(quad_reg, &quot;educ + 20*I(educ^2)=0&quot;)
 Since the much lower than is 0.01, we can reject the null at the 1% level.
 
 ---
-
 class: inverse, center, middle
-name: review
+name: interaction
 
 # Interaction terms
 
@@ -5349,7 +5349,9 @@ Marginal impact of `\(exper\)`:
 ]
 
 .right5[
+
 Histogram of education:
+
 &lt;img src=&quot;data:image/png;base64,#modeling_x_files/figure-html/unnamed-chunk-15-1.png&quot; width=&quot;90%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
 ]
 
@@ -5408,7 +5410,7 @@ linearHypothesis(reg_int, &quot;exper+10*I(exper * educ)=0&quot;)
 ---
 
 class: inverse, center, middle
-name: review
+name: qualitative
 
 # Including qualitative information
 
@@ -5612,7 +5614,7 @@ class: middle
 
 .content-box-red[**Question**]
 
-Why do you think will happen if  we include both male and female dummy variables?   
+What do you think will happen if  we include both male and female dummy variables?   
 
 --
 
@@ -5882,7 +5884,7 @@ The model of GPA for male and female students are not structurally different.
 What test do we do? t-test or F-test?
 
 ---
-
+class: middle
 
 .content-box-red[**R code**]
 
@@ -5911,6 +5913,7 @@ reg_full &lt;-
 ```
 
 ---
+class: middle
 
 .left5[
 
@@ -6043,11 +6046,169 @@ linearHypothesis(
 ```
 
 ---
+class: inverse, center, middle
+name: use-i
+
+# R coding tips: categorical variables and interactio terms
+
+&lt;html&gt;&lt;div style=&#39;float:left&#39;&gt;&lt;/div&gt;&lt;hr color=&#39;#EB811B&#39; size=1px width=1000px&gt;&lt;/html&gt;
+
+---
+class: middle
+
+# R coding tips: categorical variables and interactio terms
+
+
+```r
+#* load the package to access the data we want
+library(wooldridge)
+
+#* get big9salary
+data(&quot;big9salary&quot;)
+
+#* creat a variable that indicates university
+#* this is how the data would like most of the time (instead of having bunch of dummy variables)
+big9salary_c &lt;-
+  as_tibble(big9salary) %&gt;%
+  mutate(
+    university =
+      case_when(
+        osu == 1 ~ &quot;Ohio State U&quot;,
+        iowa == 1 ~ &quot;U of Iowa&quot;,
+        indiana == 1 ~ &quot;Indiana U&quot;,
+        purdue == 1 ~ &quot;Purdue U&quot;,
+        msu == 1 ~ &quot;Michigan State U&quot;,
+        mich == 1 ~ &quot;Michigan U&quot;,
+        wisc == 1 ~ &quot;U of Wisconsin&quot;,
+        illinois == 1 ~ &quot;U of Illinois&quot;
+      )
+  ) %&gt;%
+  relocate(id, year, salary, pubindx, university)
+```
+
+---
+class: middle
+
+Take a look at the data,
+
+
+```r
+head(big9salary_c)
+```
+
+```
+## # A tibble: 6 × 31
+##      id  year salary pubindx university totpge assist assoc  prof chair top20phd yearphd female   osu  iowa indiana purdue   msu  minn  mich  wisc illinois   y92   y95   y99 lsalary exper expersq pubindxsq pubindx0 lpubindx
+##   &lt;int&gt; &lt;int&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;dbl&gt; &lt;int&gt;   &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1   101    92     NA    30.5 Indiana U    92.7      0     0     1     0        0      73      0     0     0       1      0     0     0     0     0        0     1     0     0    NA      19     361      933.        0     3.42
+## 2   101    95     NA    31.0 Indiana U   107.       0     0     1     0        0      73      0     0     0       1      0     0     0     0     0        0     0     1     0    NA      22     484      959.        0     3.43
+## 3   101    99 107100    40.5 Indiana U   186.       0     0     1     0        0      73      0     0     0       1      0     0     0     0     0        0     0     0     1    11.6    26     676     1636.        0     3.70
+## 4   102    92  79420    33.5 Indiana U   128.       0     0     1     0        0      76      0     0     0       1      0     0     0     0     0        0     1     0     0    11.3    16     256     1125.        0     3.51
+## 5   102    95  88239    33.9 Indiana U   133        0     0     1     0        0      76      0     0     0       1      0     0     0     0     0        0     0     1     0    11.4    19     361     1149.        0     3.52
+## 6   102    99 100450    36.2 Indiana U   192.       0     0     1     0        0      76      0     0     0       1      0     0     0     0     0        0     0     0     1    11.5    23     529     1313.        0     3.59
+```
+
+```r
+tail(big9salary_c)
+```
+
+```
+## # A tibble: 6 × 31
+##      id  year salary pubindx university     totpge assist assoc  prof chair top20phd yearphd female   osu  iowa indiana purdue   msu  minn  mich  wisc illinois   y92   y95   y99 lsalary exper expersq pubindxsq pubindx0 lpubindx
+##   &lt;int&gt; &lt;int&gt;  &lt;int&gt;   &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;dbl&gt; &lt;int&gt;   &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1   932    92  90856   72.7  U of Wisconsin  269.       0     0     1     0        1      73      1     0     0       0      0     0     0     0     1        0     1     0     0    11.4    19     361   5287.          0    4.29 
+## 2   932    95 110090   73.5  U of Wisconsin  294        0     0     1     0        1      73      1     0     0       0      0     0     0     0     1        0     0     1     0    11.6    22     484   5396.          0    4.30 
+## 3   932    99 122397   75.2  U of Wisconsin  315        0     0     1     0        1      73      1     0     0       0      0     0     0     0     1        0     0     0     1    11.7    26     676   5649.          0    4.32 
+## 4   933    92  45755    2.19 U of Wisconsin    9.5      1     0     0     0        1      91      0     0     0       0      0     0     0     0     1        0     1     0     0    10.7     1       1      4.80        0    0.784
+## 5   933    95  51846    8.11 U of Wisconsin   88        1     0     0     0        1      92      0     0     0       0      0     0     0     0     1        0     0     1     0    10.9     3       9     65.8         0    2.09 
+## 6   933    99  69630   59.5  U of Wisconsin  208.       0     1     0     0        1      93      0     0     0       0      0     0     0     0     1        0     0     0     1    11.2     6      36   3534.          0    4.09
+```
+
+---
+class: middle
+
+You can use the `i()` function inside `feols()` like below:
+
+
+```r
+feols(salary ~ pubindx + female + `i(university, ref = &quot;Indiana U&quot;)`, data = big9salary_c) %&gt;%
+  tidy()
+```
+
+
+```
+## # A tibble: 10 × 5
+##    term                         estimate std.error statistic  p.value
+##    &lt;chr&gt;                           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)                    74544.    3001.     24.8   9.34e-94
+##  2 pubindx                          346.      26.6    13.0   3.18e-34
+##  3 female                         -5877.    3067.     -1.92  5.59e- 2
+*##  4 university::Michigan State U   -9188.    3631.     -2.53  1.17e- 2
+##  5 university::Michigan U        -11561.    3833.     -3.02  2.67e- 3
+##  6 university::Ohio State U       -4707.    3790.     -1.24  2.15e- 1
+##  7 university::Purdue U          -10517.    4310.     -2.44  1.50e- 2
+##  8 university::U of Illinois      -1809.    3686.     -0.491 6.24e- 1
+##  9 university::U of Iowa           -519.    3951.     -0.131 8.95e- 1
+## 10 university::U of Wisconsin     -6840.    4186.     -1.63  1.03e- 1
+```
+
+`ref = &quot;Indiana U&quot;` sets the base category to `&quot;Indiana U&quot;`. 
+
+So, for example, the highlighted line means that faculty memebers at Michigan State U make `\(9,118\)` USD less annually than those at Indiana U.
+
+&lt;br&gt;
+
+.content-box-green[**Key**]
+
+You do not have to make bunch of dummy variables like the original dataset. Just use `i(catergory_variable)`.
+
+---
+class: middle
+
+# Interactions terms 
+
+You can use `i()` for creating interactions of a categorical variable and a continuous variable.
+
+Suppose you are interested in understanding the impact of `pubindx` (continuous) by `university` (categorical), then
+
+
+```r
+feols(salary ~ female + pubindx + i(university, ref = &quot;Indiana U&quot;) + `i(university, totpge, ref = &quot;Indiana U&quot;)`, data = big9salary_c) %&gt;%
+  tidy()
+```
+
+
+```
+## # A tibble: 17 × 5
+##    term                                 estimate std.error statistic  p.value
+##    &lt;chr&gt;                                   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)                           79593.      4267.    18.7   3.02e-61
+##  2 female                                -3782.      3113.    -1.21  2.25e- 1
+##  3 pubindx                                  42.5      172.     0.247 8.05e- 1
+##  4 university::Michigan State U         -17995.      5190.    -3.47  5.65e- 4
+##  5 university::Michigan U               -13162.      5577.    -2.36  1.86e- 2
+##  6 university::Ohio State U             -10073.      5633.    -1.79  7.42e- 2
+##  7 university::Purdue U                 -19022.      6291.    -3.02  2.61e- 3
+##  8 university::U of Illinois            -12818.      5568.    -2.30  2.17e- 2
+##  9 university::U of Iowa                -11785.      5510.    -2.14  3.29e- 2
+## 10 university::U of Wisconsin            -8197.      6132.    -1.34  1.82e- 1
+*## 11 university::Michigan State U:pubindx    436.       191.     2.29  2.25e- 2
+## 12 university::Michigan U:pubindx          253.       177.     1.43  1.54e- 1
+## 13 university::Ohio State U:pubindx        305.       185.     1.65  9.96e- 2
+## 14 university::Purdue U:pubindx            422.       212.     2.00  4.65e- 2
+## 15 university::U of Illinois:pubindx       594.       225.     2.64  8.44e- 3
+## 16 university::U of Iowa:pubindx           588.       206.     2.85  4.50e- 3
+## 17 university::U of Wisconsin:pubindx      247.       180.     1.37  1.70e- 1
+```
+
+So, the marginal impact of `pubindex` is `\(436\)` greater for those at Michigan State U than those at Indiana U.
+
+---
 
 class: inverse, center, middle
-name: review
+name: misc
 
-# More on `\(R^2\)`
+# Other miscellaneous topic
 
 &lt;html&gt;&lt;div style=&#39;float:left&#39;&gt;&lt;/div&gt;&lt;hr color=&#39;#EB811B&#39; size=1px width=1000px&gt;&lt;/html&gt;
 

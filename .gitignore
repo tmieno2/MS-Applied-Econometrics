@@ -5,6 +5,9 @@
 /*/cache/*
 /*/*files/*
 /*/*libs/*
+*png
+*js
+*css
 # /*/*libs/*
 /*/figure/*
 *.csv

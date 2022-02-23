@@ -5,7 +5,7 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
+    self_contained: true
     nature:
       ratio: 4:3
       highlightStyle: github
@@ -320,7 +320,7 @@ $\mbox{enforcement actions}  = \beta_0 + \beta_1 \mbox{water quality} + u$
 class: inverse, center, middle
 name: ME
 
-# Measurement Error (Garbage in, Garbage out)  
+# Measurement Error
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
@@ -335,6 +335,8 @@ Inaccuracy in the values observed as opposed to the actual values
 
 --
 
+<br>
+
 .content-box-green[**Examples**]
 
 + reporting errors (any kind of survey has the potential of mis-reporting)
@@ -345,6 +347,8 @@ Inaccuracy in the values observed as opposed to the actual values
   + imputed irrigation costs 
 
 --
+
+<br>
 
 .content-box-green[**Question**]
 
@@ -363,6 +367,8 @@ with MLR.1 through MLR.6 satisfied $(u$ is not correlated with any of the indepe
 
 --
 
+<br>
+
 .content-box-green[**Measurement Errors**]
 
 The difference between the observed $(y)$ and actual values $y^*$
@@ -370,6 +376,8 @@ The difference between the observed $(y)$ and actual values $y^*$
 $e = y-y^*$
 
 --
+
+<br>
 
 .content-box-green[**Estimable Model**]
 
@@ -387,11 +395,15 @@ Plugging the second equation into the first equation, your model is
 
 $y =  \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k + v, \;\;\mbox{where}\;\; v = (u + e)$ 
 
+<br>
+
 .content-box-green[**Question**]
 
 What are the conditions under which OLS estimators are unbiased?
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
