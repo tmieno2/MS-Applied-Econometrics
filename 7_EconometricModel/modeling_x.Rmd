@@ -1152,14 +1152,14 @@ linearHypothesis(
 class: inverse, center, middle
 name: use-i
 
-# R coding tips: categorical variables and interactio terms
+# R coding tips: categorical variables and interaction terms
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
 
 ---
 class: middle
 
-# R coding tips: categorical variables and interactio terms
+# R coding tips: categorical variables and interaction terms
 
 ```{r }
 #* load the package to access the data we want
@@ -1314,19 +1314,21 @@ What happens if you scale up/down variables used in regression?
 
 ---
 
-```{r }
-#--- regression with female dummy ---#
-reg_no_scale <- lm(wage ~ female + educ, data = wage)
-reg_scale <- lm(wage ~ female + I(educ * 12), data = wage)
+```{r scale-no-scale}
+#--- regression with original scale ---#
+reg_no_scale <- feols(wage ~ female + educ, data = wage)
+
+#--- regression with scaled educ ---#
+reg_scale <- feols(wage ~ female + I(educ * 12), data = wage)
 ```
   
 ---
 
-```{r }
+```{r dependson = "scale-no-scale", highlight.output = c(6)}
 tidy(reg_no_scale)
 ```
 
-```{r }
+```{r dependson = "scale-no-scale", highlight.output = c(6)}
 tidy(reg_scale)
 ```
 

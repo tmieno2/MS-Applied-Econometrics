@@ -96,22 +96,21 @@ class: middle
 fread("REA_price_schedule.csv") %>%
   .[REA == "Highline" & year >= 2013, t2 := NA] %>%
   .[REA == "Highline" & year >= 2013, p3 := NA] %>%
-  .[year <= 2016,] %>%
+  .[year <= 2016, ] %>%
   .[, REAnum := NULL] %>%
   .[, REA := NULL] %>%
-  setnames(names(.), c("Year", "Price 1", "Price 2", "Price 3", "Threshold 1", "Threshold 2")) %>% 
-  .[, Supplier := "Highline"] %>% 
-  .[7:12, Supplier := "Y-W"] %>% 
-  relocate(Supplier) %>% 
-  flextable() %>% 
-  merge_v(j = 1) %>% 
+  setnames(names(.), c("Year", "Price 1", "Price 2", "Price 3", "Threshold 1", "Threshold 2")) %>%
+  .[, Supplier := "Highline"] %>%
+  .[7:12, Supplier := "Y-W"] %>%
+  relocate(Supplier) %>%
+  flextable() %>%
+  merge_v(j = 1) %>%
   hline(
     i = 6,
     border = fp_border(width = 1)
-  ) %>% 
-  fix_border_issues() %>% 
+  ) %>%
+  fix_border_issues() %>%
   autofit()
-
 ```
 
 --
@@ -131,22 +130,21 @@ class: middle
 fread("REA_price_schedule.csv") %>%
   .[REA == "Highline" & year >= 2013, t2 := NA] %>%
   .[REA == "Highline" & year >= 2013, p3 := NA] %>%
-  .[year <= 2016,] %>%
+  .[year <= 2016, ] %>%
   .[, REAnum := NULL] %>%
   .[, REA := NULL] %>%
-  setnames(names(.), c("Year", "Price 1", "Price 2", "Price 3", "Threshold 1", "Threshold 2")) %>% 
-  .[, Supplier := "Highline"] %>% 
-  .[7:12, Supplier := "Y-W"] %>% 
-  relocate(Supplier) %>% 
-  flextable() %>% 
-  merge_v(j = 1) %>% 
+  setnames(names(.), c("Year", "Price 1", "Price 2", "Price 3", "Threshold 1", "Threshold 2")) %>%
+  .[, Supplier := "Highline"] %>%
+  .[7:12, Supplier := "Y-W"] %>%
+  relocate(Supplier) %>%
+  flextable() %>%
+  merge_v(j = 1) %>%
   hline(
     i = 6,
     border = fp_border(width = 1)
-  ) %>% 
-  fix_border_issues() %>% 
+  ) %>%
+  fix_border_issues() %>%
   autofit()
-
 ```
 
 --
@@ -167,12 +165,12 @@ massage_data_2p <- data.frame(
   P = c(75, 85, 50, 48, 60, 65, 55, 60),
   Q = c(2, 1.8, 1.0, 1.1, 1.5, 1.4, 0.8, 0.7),
   Ql = rep(c(10, 5, 7, 6), each = 2)
-)  
+)
 ```
 
 ```{r echo = F}
-massage_data_2p %>% 
-  flextable()  
+massage_data_2p %>%
+  flextable()
 ```
 
 ---
@@ -203,19 +201,18 @@ class: middle
 # Beyond individual (well) FEs  
 
 ```{r echo = F}
-final_data <- readRDS("final_data_CO.rds")  
+final_data <- readRDS("final_data_CO.rds")
 
-final_data[wdid %in% c(4905049, 4905044), .(wdid, year, pumpingAF, pc, tier, pump_hp)] %>% 
-  arrange(wdid, year) %>% 
-  flextable() %>% 
-  merge_v(j = 1) %>% 
+final_data[wdid %in% c(4905049, 4905044), .(wdid, year, pumpingAF, pc, tier, pump_hp)] %>%
+  arrange(wdid, year) %>%
+  flextable() %>%
+  merge_v(j = 1) %>%
   hline(
     i = 5,
     border = fp_border(width = 1)
-  ) %>% 
-  fix_border_issues() %>% 
+  ) %>%
+  fix_border_issues() %>%
   autofit()
-
 ```
 
 --

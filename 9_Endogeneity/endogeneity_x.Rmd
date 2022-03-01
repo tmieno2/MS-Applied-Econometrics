@@ -69,6 +69,8 @@ $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + \beta_3 ablility + u$
 
 --
 
+<br>
+
 .content-box-red[**Incorrectly specified (your) model**]
 
 $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper  + v \;\;(u + \beta_3 ablility)$
@@ -145,6 +147,8 @@ Soil quality/type (hard to accurately measure)
 
 --
 
+<br>
+
 .content-box-green[**Key**]
 
 Soil quality/type affect .red[both] the decision of soil moisture sensor adoption and irrigation.
@@ -154,9 +158,17 @@ Soil quality/type affect .red[both] the decision of soil moisture sensor adoptio
 + $sensor$ is a function of soil quality/type
 + $irrigation$ is a function of soil quality/type, which is in the error term uncontrolled for
 
---
+---
+class: middle
 
-$\Rrightarrow$ $sensor$ and the error term in the irrigation model are correlated $\Rrightarrow$ bias 
+$$
+\begin{aligned}
+irrigation  = \beta_0 + \beta_1 sensor(\mbox{soil type}) + u\;\;(= \beta_s \mbox{soil type} + v)
+\end{aligned}
+$$
+where $v$ include all the unobservable variables except soil type.
+
+So, $sensor$ and the error term in the irrigation model are correlated through soil type, leading to biased estimation of the impact of a sensor.
 
 ---
 class: middle
@@ -169,13 +181,17 @@ Selection bias is a form of omitted variable bias
 
 .content-box-green[**Reasoning**]
 
-If you accurately measure the common factors in the two equations, you can simply include them explicitly in the main model  
+If you accurately measure the common factors in the two equations, you can simply include them explicitly in the main model. 
 
---
+For example,
 
-$\Rrightarrow$
+$$
+\begin{aligned}
+irrigation  = \beta_0 + \beta_1 sensor(\mbox{soil type}) + \beta_s \mbox{soil type} + u
+\end{aligned}
+$$
 
-This will get the common factors out of the error in the main model, which means the adoption variable and the error term are no longer correlated in the main model
+This will get the common factor (soil type) out of the error in the main model, which means the adoption variable and the error term are no longer correlated in the main model.
 
 --
 
