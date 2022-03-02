@@ -27,7 +27,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 8: OLS Asymptotics ([html](https://tmieno2.github.io/MS-Applied-Econometrics/8_Asymptotics/asymptotics_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/8_Asymptotics/asymptotics_x.pdf))
 
-+ Lecture 9: Endogeneity ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Endogeneity/endogeneity_x.html))
++ Lecture 9: Endogeneity ([html](https://tmieno2.github.io/MS-Applied-Econometrics/9_Endogeneity/endogeneity_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/9_Endogeneity/endogeneity_x.pdf))
 
 + Lecture 10: Instrumental Variable (IV) Estimation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/InstrumentalVariable/iv_x.html))
 
