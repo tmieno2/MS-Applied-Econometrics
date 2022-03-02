@@ -1324,22 +1324,35 @@ reg_scale <- feols(wage ~ female + I(educ * 12), data = wage)
   
 ---
 
-```{r dependson = "scale-no-scale", highlight.output = c(6)}
-tidy(reg_no_scale)
+.left5[
+```{r dependson = "scale-no-scale", eval = F}
+msummary(
+  list(reg_no_scale, reg_scale),
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+)
 ```
 
-```{r dependson = "scale-no-scale", highlight.output = c(6)}
-tidy(reg_scale)
-```
-
---
-
+<br>
 
 .content-box-green[**So,**]
 
 + coefficient: 1/12
 + standard error: 1/12
 + t-stat: the same
++ $R^2$: the same
+
+]
+
+.right5[
+```{r dependson = "scale-no-scale", echo = F}
+msummary(
+  list(reg_no_scale, reg_scale),
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+)
+```
+]
 
 ---
 

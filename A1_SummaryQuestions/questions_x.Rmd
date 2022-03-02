@@ -1,0 +1,154 @@
+---
+title: "Summary Questions"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    self_contained: true
+    nature:
+      ratio: 4:3
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: middle
+
+```{r, child = './../setup.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/")
+```
+
+```{r additional-libraries, include = F, cache = F}
+#--- load packages ---#
+library(broom)
+library(fixest)
+library(lmtest)
+```
+
+# Interpretation of an econometric model
+
+Consider the following model:
+
+$$
+\begin{aligned}
+y_i = \alpha + \beta_1 x_{1,i} + \beta_2 x^2_{1,i} + \beta_3 x_{1,i} \times x_{2,i} + \beta_4 log(x_{3,i}) +v_{i}
+\end{aligned}
+$$
+
++ $y$ is the dependent variable
++ $x_{1}$, $x_{2}$, and $x_{3}$ are explanatory variables 
++ $v$ is the error term
+
+<br>
+
+.content-box-green[**Questions**]
+
++ What is the marginal impact of $x_i$?
++ How do you interpret $\beta_4$?
++ What does $\alpha$ represent? 
+
+---
+class: middle
+
+# Small and large sample properties
+
+.content-box-green[**Questions**]
+
++ What is the difference between estimators and estimates?
++ What does "unbiasedness" of an estimator mean?
++ What does "consistency" of an estimator mean?
++ Write the mathematical expression of the variance of the OLS estimator of the coefficient on $x_j$, where $x_j$ is one of the explanatory variables in a multivariate regression model.
++ Inspect the variance of the OLS estimator you wrote above and discuss what affects it.
+
+---
+class: middle
+
+# Unbiasedness of OLS estimator of the coefficients
+
+.content-box-green[**Questions**]
+
++ What are the four conditions that you need to satisfy for the OLS estimator of coefficients to be unbiased in multivariate regression?
++ Why is it often the case that the variable of your interest in observational data (i.e., non-experimental data) is correlated with the error term?
++ What does a randomization of a variable do? What is the benefit?
+
+
+---
+class: middle
+
+# Omitted variables and multicollinearity
+
+Conside the model:
+
+$$y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$$
+
+You are considering the following two models to estimate:
+
+$EE_1$: $y_i=\beta_0 + \beta_1 x_{1,i} + v_i (\beta_2 x_{2,i} + u_i)$
+
+$EE_2$: $y_i=\beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + u_i$
+
+<br>
+
+.content-box-green[**Questions**]
+
+For each of the fours cases below, answer the two questions below.
+
++ Is $E[\hat{\beta_1}] = \beta_1$ (unbiasedness) in EE1?
++ In which of EE1 and EE2, $\beta_1$ is more accurately estimated $(Var[\hat{\beta_1}]$ is smaller)?
+
+**Case 1**: $\beta_2=0$, $x_2$ is <span style="color:blue">not</span> correlated with $x_1$?
+
+**Case 2**: $\beta_2=0$ and $x_2$ is <span style="color:blue">highly</span> correlated with $x_1$
+
+**Case 3**: $\beta_2\ne 0$, $x_2$ is <span style="color:blue">not</span> correlated with $x_1$?
+
+**Case 4**: $\beta_2\ne 0$, $x_2$ is <span style="color:blue">highly</span> correlated with $x_1$?
+
+---
+class: middle
+
+# Testing
+
+Consider the following model:
+
+$$
+\begin{aligned}
+income = \alpha + \beta_1 educ + \beta_2 exper + \beta_3 IQ + \beta_4 educ \times female + \beta_5 educ \times IQ + v
+\end{aligned}
+$$
+
+.content-box-green[**Questions**]
+
++ What test do you use to test the null hypothesis that `educ` and `exper` have no effect on `income` jointly?
++ What test do you use to test the null hypothesis that the marginal impact of education on income is the same between male and femals workers?
++ Write the t-statics formula for the null hypothesis that the marginal impact of education on income is 0 when IQ is 120. 
+
+---
+class: middle
+
+# Homeskedastic error and non-heteroskedastic error
+
+.content-box-green[**Questions**]
+
++ What happens to your <span style = "color: blue;"> coefficient </span> estiamation using OLS when error is not homoskedastic? Does it introduce bias?
++ What happens to your estimation of the <span style = "color: blue;"> variance of the coefficient estimator </span> if the default variance estimator is used even when the error is not homoskedastic? What would be potential consequences of getting the estimation of the variance of the coefficient estimator wrong?
++ You suspect that your error not homoskedastic, but heteroskedastic. What would you do to deal with this problem?
++ You suspect that your error is clusterd by group. What would you do to deal with this problem?
++ What happens if you do not treat clustered error? 
+
+---
+class: middle
+
+# $R^2$
+
+.content-box-green[**Questions**]
+
++ What does $R^2$ measure?
++ Suppose you are interested in understanding the causal impact of a variable on the dependent variable. Should you care about $R^2$? Does a high value of $R^2$ guarantee that your estimation of the causal impact of the variable is reliable?
++ Suppose you are interested in predicting the dependent variable because you want to use the predicted values for some other purposes. Should you care about $R^2$?
+
+
+
