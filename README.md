@@ -29,6 +29,8 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 9: Endogeneity ([html](https://tmieno2.github.io/MS-Applied-Econometrics/9_Endogeneity/endogeneity_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/9_Endogeneity/endogeneity_x.pdf))
 
++ Lecture 9: Variation and Identification ([html](https://tmieno2.github.io/MS-Applied-Econometrics/10_Identification/identification_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/10_Identification/identification_x.pdf))
+
 + Lecture 10: Instrumental Variable (IV) Estimation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/InstrumentalVariable/iv_x.html))
 
 + Lecture 11: Panel Data Estimation Methods ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Panel/panel_x.html))

@@ -63,6 +63,12 @@ build_pdf(here("LectureNotes/8_Asymptotics/asymptotics_x.html"))
 rmarkdown::render(here("LectureNotes/9_Endogeneity/endogeneity_x.rmd"))
 build_pdf(here("LectureNotes/9_Endogeneity/endogeneity_x.html"))
 
+# /*===========================================================
+#' # 10. Identification
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/10_Identification/identification_x.rmd"))
+build_pdf(here("LectureNotes/10_Identification/identification_x.html"))
+
 
 # /*===========================================================
 #' # A1 Summary Questions

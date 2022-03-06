@@ -1,0 +1,454 @@
+---
+title: "Data Generating Process, Variation, and Identification"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    self_contained: true
+    nature:
+      ratio: 4:3
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: middle
+
+```{r, child = './../setup.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/")
+```
+
+```{r additional-libraries, include = F, cache = F}
+#--- load packages ---#
+library(broom)
+library(fixest)
+library(lmtest)
+library(Cairo)
+library(tidyverse)
+library(haven)
+library(extrafont)
+library(lubridate)
+library(ggrepel)
+library(ggpubr)
+```
+
+# Before we start 
+
+## Learning objectives
+
+Understand 
+
++ what data generating process is
++ variation in a variable
++ identification of the impact of a variable
+
+## Table of contents
+
+1. [Data Generating Process and Right Variations to Use](#dgp)
+3. [Identification](#identify)
+
+## Reference
+
+The contents of this lecture borrow heavily from "The Effect" by Nick Huntington-Klein ([book available for free here](https://theeffectbook.net/)).
+
+"Huntington-Klein, N. (2021). The effect: An introduction to research design and causality. Chapman and Hall/CRC."
+
+---
+
+class: inverse, center, middle
+name: dgp
+
+# Data Generating Process and Right Variations
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# Data Generating Process
+
+.content-box-red[**Definition**]
+
+The set of underlying laws that determin how the data we observed is created
+
+<br>
+
+.content-box-green[**Features**]
+
++ We cannot see them directly (at least for economic phenomenon)
++ But, we get to observe data generated from it
+
+---
+class: middle
+
+# Example
+
+$$
+\begin{aligned}
+F = \frac{G\times m_1 \times m_2}{r^2}
+\end{aligned}
+$$
+
++ $G$: gravitational constant
++ $m_1$: mass of object 1
++ $m_2$: mass of object 2
++ $r$: distance between the two objects
++ $F$: force pullinf the two objects together
+
++ This is the physical law (data generating process) that governs how an object (say a ball) fall to the ground when it is let go of your hand (ignoring wind). The observation that an object has fallen is data.
+
+<br>
+
+.content-box-green[**Key**]
+
+We did not know the data generating process untill Newton discovers it. By looking at the data, he learned that the underlying process has to be the one above. We are trying to do the same.
+
+---
+class: middle
+
+# A toy example
+
+.content-box-green[**Data Generating Process**]
+
++ Income is log-normally distributed
++ Being brown-haired gives you a 10% income boost 
++ 20% of people are naturally brown-haired 
++ Having a college degree gives you a 20% income boost 
++ 30% of people have college degrees 
++ 40% of people who don't have brown hair or a college degree will choose to dye their hair brown 
+
+<br>
+
+.content-box-green[**Research Goal**]
+
+You are interested in learning the impact of having brown-hair on income.
+
+---
+class: middle
+
+.content-box-green[**The data generating process in code**] 
+
+```{r }
+set.seed(89403)
+
+N <- 10000 #* number of observations
+
+data <-
+  tibble(
+    brown_haired = runif(N) < 0.2, # 1 if naturally brown haired
+    college = runif(N) < 0.3, # 1 if have college degrees
+    error = 0.1 * rnorm(N), #* error term
+  ) %>%
+  mutate(
+    dye_to_brown = runif(N) < 0.4, # whether to dye hair to brown or not
+    brown_haired = ifelse(
+      dye_to_brown == TRUE & college == FALSE,
+      TRUE,
+      brown_haired
+    )
+  ) %>%
+  mutate(
+    income = exp(0.1 * brown_haired + 0.2 * college + error)
+  )
+```
+
+---
+class: middle
+
+.content-box-green[**Your Model**]
+
+$$
+\begin{aligned}
+log(income)  = \alpha + \beta \mbox{brown-haired} + v
+\end{aligned}
+$$
+
+<br>
+
+.content-box-green[**Interpretation**]
+
+$\beta$ represents the percentage difference in income between brown-hared and non-brown-haired people (baseline is the non-brown-haired people).
+
+<br>
+
+.content-box-green[**Diagnostics of the zero conditional mean assumption**]
+
+$E[v|\mbox{brown-haired}] = 0$?
+
+<br>
+
+.content-box-green[**Direction of bias?**]
+
++ Correlation between `brown-haired` and `college`?
++ The sign of the impact of `college`?
++ So, the bias is (negative or positive)?
+
+---
+class: middle
+
+.content-box-green[**Naive model**]
+
+```{r }
+feols(log(income) ~ i(brown_haired), data = data) %>% tidy()
+```
+
+Okay, as we expected, we are severely underestimating the impact of `brown_haired`.
+
+.content-box-green[**Question**]
+
+What should we do to get the estimation right?
+
+---
+class: middle
+
+.content-box-green[**Sensible model**]
+
+```{r }
+feols(log(income) ~ i(brown_haired) + i(college), data = data) %>% tidy()
+```
+
+Okay, as we expected, we are good now.
+
+---
+class: middle
+
+But, let's think of another way to recover a good estimate of the impact of being `brown-haired` using the information we have about the data genereating process while still using the naive model of just regressing `log(income)` on `brown-haired`. Any idea?
+
++ Income is log-normally distributed
++ Being brown-haired gives you a 10% income boost (<span style = "color: blue;"> pretend you do not know this, as this is the objective </span>)
++ 20% of people are naturally brown-haired 
++ Having a college degree gives you a 20% income boost 
++ 30% of people have college degrees 
++ 40% of people who don't have brown hair or a college degree will choose to dye their hair brown 
+
+---
+class: middle
+
+.content-box-green[**Solution**] 
+
+Notice that those with college degrees do not dye their hair to brown. So, if we just use the observations for those people, we can cleanly identify the impact of `brown-haired`.
+
+```{r }
+feols(
+  log(income) ~ i(brown_haired),
+  data = filter(data, college == TRUE)
+) %>%
+  tidy()
+```
+
+---
+class: middle
+
+.content-box-green[**Variation (Definition)**]
+
+How a variable changes from observation to observation
+
+<br>
+
+.content-box-green[**right and bad variations**]
+
++ Bad variations: variations in `brown_haired` for the entire sample 
+
+`brown_haied` is correlated with `college`, which made us confoud (mix) the impact of `brown_haied` and `college`, when the naive model is used.
+
++ Right variations: variations in `brown_haired` only for the samples with college degrees 
+
+No ones with college degrees do not dye their to brown. So, if we just focus on (limit ourselves to) those people, variations in `brown_haied` is not correlated with `college`. So, we were able to estimate the impact of `brown_haired` even with the simple model.
+
+<br>
+
+.content-box-green[**Note**]
+
++ This is just a toy example and we could have just included `college` as a covariate.
++ But, this is just to get you start thinking about different types of variations there are in the dataset. 
++ There are "clean" and "dirty" variations. Limiting ourselves to only the "clean" variation is very important.
+
+---
+class: middle
+
+# Key message through this toy example
+
+.content-box-green[**Message 1**]
+
+By understanding the data generating process, we know why we cannot trust the naive estimation of the impact of `brown_haired` on `income`.
+
+.content-box-green[**Message 2**]
+
+Notice that we make use of our knowledge about a part of the data generating process:
+
+"40% of people who don't have brown hair or a college degree will choose to dye their hair brown"
+
+Of course, in real world applications, we almost always do not have such a clean and crucial information. But, knowing the context of your study lets you make credible "assumptions" that will let you find clean "variations" that we can harness to estimated the impact of our variable of interest credibly. 
+
+---
+class: middle
+
+# A further example of looking for right variations
+
+```{r echo = F, fig.cap = "Weekly Sales of Avocados in California, Jan 2015 - Match 2018"}
+dfavo <-
+  fread(here("causalbook/Identification/avocado.csv")) %>%
+  .[region == "California" & type == "conventional", ] %>%
+  .[, `Total Volume (Millions)` := `Total Volume` / 1000000] %>%
+  .[order(Date), ]
+
+g_avocat <-
+  ggplot(dfavo) +
+  geom_point(
+    aes(y = `Total Volume (Millions)`, x = AveragePrice),
+    size = 0.8
+  ) +
+  theme_pubr() +
+  theme(
+    text = element_text(size = 9),
+    axis.title.x = element_text(size = 9),
+    axis.title.y = element_text(size = 9)
+  ) +
+  labs(
+    y = "Total Avocados Sold (Millions)",
+    x = "Average Avocado Price",
+    title = "",
+    caption = "Data from Hass Avocado Board\nc/o https://www.kaggle.com/neuromusic/avocado-prices/"
+  )
+
+g_avocat
+```
+
+---
+class: middle
+
+.left4[
+
+<br>
+<br>
+
+You are interested in understanding the impact of avocado price on its consumption.
+
+<br>
+
+.content-box-green[**Questions**]
+
+Can you answer the research question from this figure? 
+
+]
+
+.right6[
+<br>
+<br>
+<br>
+<br>
+<br>
+```{r echo = F, out.width = "80%"}
+g_avocat
+```
+]
+
+---
+class: middle
+
+.left4[
+
+<br>
+<br>
+
++ They are negatively associated with each other
+  - Avocado sales tend to be lower in weeks where the price of avocados is high. 
+  - Prices tend to be higher in weeks where fewer avocados are sold
+
++ You cannot make a causal statement like this:
+
+"An increase in avcado price make consumers buy less avacado."
+
++ Reverse causality
+  - price affects demand
+  - demand affects price
+]
+
+.right6[
+<br>
+<br>
+<br>
+<br>
+<br>
+```{r echo = F, out.width = "80%"}
+g_avocat
+```
+]
+
+---
+class: middle
+
+.content-box-green[**Problem**]
+
+Reverse Causality: Price affects demand and demand affects price.
+
+<br>
+
+.content-box-green[**Question**]
+
+Suppose your can run an experiment on the avocado market (ideal situation). If we want to identify the impact of price on demand free of confusing with the impact of demand on price, what would you do?
+
+--
+
+<br>
+
+.content-box-green[**Special contextual knowledge**]
+
+Now, suppse you learned the following fact after studying the supply and purchasing mechanism on the avocado market:
+
+<span style = "color: blue;"> At the beginning of each month, avocado suppliers make a plan for what avocado prices will be each week in that month, and never change their plans until the next month. </span>
+
+--
+
+This means that within the same month changes in avocado price every week is not a function of how much avocado has been bought in the previous weeks, effectively breaking the causal effect of demand on price. 
+
+So, our estimation strategy would be to just look at the variations in demand and price <span style = "color: blue;"> within </span> individual months, but ignore variations in price <span style = "color: blue;"> between</span> months.
+
+---
+class: middle
+
+An example of clean variations in price and its impact on demand. 
+
+```{r echo = F, cache = F}
+
+dfavo %>%
+  .[, date := lubridate::as_date(Date)] %>%
+  .[year(date) == 2015 & month(date) == 3, ] %>%
+  ggplot(
+    data = .,
+    aes(y = `Total Volume (Millions)`, x = AveragePrice)
+  ) +
+  geom_point(size = 2) +
+  geom_line() +
+  theme_pubr() +
+  theme(
+    text = element_text(size = 9),
+    axis.title.x = element_text(size = 9),
+    axis.title.y = element_text(size = 9)
+  ) +
+  labs(
+    y = "Total Avocados Sold (Millions)",
+    x = "Average Avocado Price",
+    title = "Demand and price of avocado in March, 2015.",
+    caption = "Data from Hass Avocado Board\nc/o https://www.kaggle.com/neuromusic/avocado-prices/"
+  )
+```
+
+We will talk about how we can use only the within-month variations in avocado price, but leave out the between-month variations in avocado price econometrically using R. 
+
+---
+class: middle
+
+# Key message through this example
+
+.content-box-green[**Message 1**]
+
+By understanding the data generating process (knowing how any economic market works), we recognize the problem of simply looking at the relationshiop betwee the avocado price and demand to conclude the causal impact of price on demand (reverse causality).
+
+.content-box-green[**Message 2**]
+
+We study the context very well and how the avocado market works in California (of course it is not really how CA avocado market works in reality) and make use of the information to identify the "clean" variations in avocado price to identify its impact on demand.
+
