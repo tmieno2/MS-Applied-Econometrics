@@ -4595,7 +4595,7 @@ Understand
 
 ## Table of contents
 
-1. [Data Generating Process and Right Variations to Use](#dgp)
+1. [Data Generating Process and Clean Variations to Use](#dgp)
 3. [Identification](#identify)
 
 ## Reference
@@ -4609,7 +4609,7 @@ The contents of this lecture borrow heavily from &quot;The Effect&quot; by Nick 
 class: inverse, center, middle
 name: dgp
 
-# Data Generating Process and Right Variations
+# Data Generating Process and Clean Variations
 
 &lt;html&gt;&lt;div style=&#39;float:left&#39;&gt;&lt;/div&gt;&lt;hr color=&#39;#EB811B&#39; size=1px width=1000px&gt;&lt;/html&gt;
 
@@ -4717,15 +4717,21 @@ $$
 
 &lt;br&gt;
 
+--
+
 .content-box-green[**Interpretation**]
 
 `\(\beta\)` represents the percentage difference in income between brown-hared and non-brown-haired people (baseline is the non-brown-haired people).
 
 &lt;br&gt;
 
+--
+
 .content-box-green[**Diagnostics of the zero conditional mean assumption**]
 
 `\(E[v|\mbox{brown-haired}] = 0\)`?
+
+--
 
 &lt;br&gt;
 
@@ -4754,6 +4760,8 @@ feols(log(income) ~ i(brown_haired), data = data) %&gt;% tidy()
 ```
 
 Okay, as we expected, we are severely underestimating the impact of `brown_haired`.
+
+&lt;br&gt;
 
 .content-box-green[**Question**]
 
@@ -4825,17 +4833,21 @@ How a variable changes from observation to observation
 
 &lt;br&gt;
 
-.content-box-green[**right and bad variations**]
+--
+
+.content-box-green[**clean and bad variations**]
 
 + Bad variations: variations in `brown_haired` for the entire sample 
 
-`brown_haied` is correlated with `college`, which made us confound (mix) the impact of `brown_haied` and `college`, when the naive model is used.
+`brown_haired` is correlated with `college`, which made us confound (mix) the impact of `brown_haired` and `college`, when the naive model is used.
 
-+ Right variations: variations in `brown_haired` only for the samples with college degrees 
++ Clean variations: variations in `brown_haired` only for the samples with college degrees 
 
-No ones with college degrees do not dye their to brown. So, if we just focus on (limit ourselves to) those people, variations in `brown_haied` is not correlated with `college`. So, we were able to estimate the impact of `brown_haired` even with the simple model.
+No ones with college degrees do not dye their to brown. So, if we just focus on (limit ourselves to) those people, variations in `brown_haired` is not correlated with `college`. So, we were able to estimate the impact of `brown_haired` even with the simple model.
 
 &lt;br&gt;
+
+--
 
 .content-box-green[**Note**]
 
@@ -4852,9 +4864,13 @@ class: middle
 
 By understanding the data generating process, we know why we cannot trust the naive estimation of the impact of `brown_haired` on `income`.
 
+&lt;br&gt;
+
+--
+
 .content-box-green[**Message 2**]
 
-Notice that we make use of our knowledge about a part of the data generating process:
+We make use of our knowledge about a part of the data generating process to identify the imapact of `brown_haired` credibly:
 
 &quot;40% of people who don&#39;t have brown hair or a college degree will choose to dye their hair brown&quot;
 
@@ -4863,7 +4879,7 @@ Of course, in real world applications, we almost always do not have such a clean
 ---
 class: middle
 
-# A further example of looking for right variations
+# A further example of looking for clean variations
 
 &lt;div class=&quot;figure&quot; style=&quot;text-align: center&quot;&gt;
 &lt;img src=&quot;data:image/png;base64,#identification_x_files/figure-html/unnamed-chunk-7-1.png&quot; alt=&quot;Weekly Sales of Avocados in California, Jan 2015 - Match 2018&quot; width=&quot;60%&quot; /&gt;
