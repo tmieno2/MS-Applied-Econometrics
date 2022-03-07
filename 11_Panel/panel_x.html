@@ -6668,10 +6668,10 @@ class: middle
 
 There are two kinds of variations:
 
-+ intercity (across city) variation 
-+ intracity (within city) variation
++ inte-rcity (across city) variation 
++ intra-city (within city) variation
 
-The cross-sectional data offers only the intercity (across city) variations.
+The cross-sectional data offers only the inte-rcity (across city) variations.
 
 ---
 class: middle
@@ -7512,13 +7512,13 @@ class: middle
 
 .content-box-green[**Question**]
 
-Why looking at the .blue[intracity (within city)] variation seemed to help us estimate the impact of massage price on demand more credibly?
+Why looking at the .blue[intra-city (within city)] variation seemed to help us estimate the impact of massage price on demand more credibly?
 
 --
 
 .content-box-green[**Answer**]
 
-The omitted variable, massage quality, did not change over time within city, which means it is controlled for as long as you look only at the intracity variations (you do not compare .red[across] cities). 
+The omitted variable, massage quality, did not change over time within city, which means it is controlled for as long as you look only at the intra-city variations (you do not compare .red[across] cities). 
 
 ---
 class: middle
@@ -8467,17 +8467,19 @@ massage_data_fd %&gt;% head(5)
 
 
 ```r
-lm(Q ~ P, data = massage_data_fd)
+feols(Q ~ P, data = massage_data_fd)
 ```
 
 ```
-## 
-## Call:
-## lm(formula = Q ~ P, data = massage_data_fd)
-## 
-## Coefficients:
-## (Intercept)            P  
-*##    -0.49651      0.02866
+## OLS estimation, Dep. Var.: Q
+## Observations: 8 
+## Standard-errors: IID 
+##              Estimate Std. Error   t value Pr(&gt;|t|)    
+## (Intercept) -0.496511   0.614204 -0.808381  0.44973    
+## P            0.028659   0.009696  2.955833  0.02542 *  
+*## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## RMSE: 0.27893   Adj. R2: 0.525004
 ```
 
 ]
@@ -8488,17 +8490,19 @@ lm(Q ~ P, data = massage_data_fd)
 
 
 ```r
-lm(Q_dif ~ P_dif, data = massage_data_fd)
+feols(Q_dif ~ P_dif, data = massage_data_fd)
 ```
 
 ```
-## 
-## Call:
-## lm(formula = Q_dif ~ P_dif, data = massage_data_fd)
-## 
-## Coefficients:
-## (Intercept)        P_dif  
-*##     0.03904     -0.02534
+## OLS estimation, Dep. Var.: Q_dif
+## Observations: 4 
+## Standard-errors: IID 
+##              Estimate Std. Error   t value Pr(&gt;|t|)    
+## (Intercept)  0.039041   0.012750   3.06213 0.092145 .  
+## P_dif       -0.025342   0.002055 -12.33333 0.006510 ** 
+*## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## RMSE: 0.012414   Adj. R2: 0.980534
 ```
 
 ]
@@ -9031,17 +9035,17 @@ class: middle
 
 `\(\Rightarrow\)`
 
-`\(Q_{i,t} - \bar{Q_{i}}   = \beta_1 [P_{i,t} - \bar{Q_{i}}] + [v_{i,t} - \bar{v_{i}}] ( = \beta_2 [Ql_{i,t} - \bar{Ql_{i}}] + [u_{i,t} - \bar{u_{i}}])\)`
+`\(Q_{i,t} - \bar{Q_{i}}   = \beta_1 [P_{i,t} - \bar{P_{i}}] + [v_{i,t} - \bar{v_{i}}] ( = \beta_2 [Ql_{i,t} - \bar{Ql_{i}}] + [u_{i,t} - \bar{u_{i}}])\)`
 
 .content-box-red[**Endogeneity Problem?**]
 
-Since `\(Ql_{i,1} = Ql_{i,2} = \dots = Ql_{i,T}\)`, `\(\bar{Ql_i} = Ql_{i,t}\)` for all `\(t\)`.  
+`\(Ql_{i,1} = Ql_{i,2} = \dots = Ql_{i,T} = \bar{Ql_i}\)`  
 
 --
 
 `\(\Rightarrow\)`
 
-`\(Q_{i,T} - \bar{Q_{i}}   = \beta_1 [P_{i,T} - \bar{P_{i}}] + [u_{i,T} - \bar{u_{i}}]\)`
+`\(Q_{i,t} - \bar{Q_{i}}   = \beta_1 [P_{i,t} - \bar{P_{i}}] + [u_{i,t} - \bar{u_{i}}]\)`
 
 No endogeneity problem after the within-transformation!
 
@@ -9115,17 +9119,19 @@ Regress within-transformed `Q` on within-transformed `P`:
 
 
 ```r
-lm(Q_dev ~ P_dev, data = massage_data_wth)
+feols(Q_dev ~ P_dev, data = massage_data_wth)
 ```
 
 ```
-## 
-## Call:
-## lm(formula = Q_dev ~ P_dev, data = massage_data_wth)
-## 
-## Coefficients:
-## (Intercept)        P_dev  
-##   2.944e-17   -2.078e-02
+## OLS estimation, Dep. Var.: Q_dev
+## Observations: 8 
+## Standard-errors: IID 
+##                  Estimate Std. Error       t value   Pr(&gt;|t|)    
+## (Intercept)  2.780000e-17   0.006044  4.590000e-15 1.0000e+00    
+## P_dev       -2.077922e-02   0.001948 -1.066667e+01 4.0041e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## RMSE: 0.014804   Adj. R2: 0.941558
 ```
 
 ---
@@ -9166,17 +9172,22 @@ class: middle
 
 
 ```r
-lm(Q ~ P + Peoria_D + Milwaukee_D + Madison_D, data = massage_data_d)
+feols(Q ~ P + Peoria_D + Milwaukee_D + Madison_D, data = massage_data_d)
 ```
 
 ```
-## 
-## Call:
-## lm(formula = Q ~ P + Peoria_D + Milwaukee_D + Madison_D, data = massage_data_d)
-## 
-## Coefficients:
-## (Intercept)            P     Peoria_D  Milwaukee_D    Madison_D  
-##     3.56234     -0.02078     -1.49416     -0.81364     -1.61753
+## OLS estimation, Dep. Var.: Q
+## Observations: 8 
+## Standard-errors: IID 
+##              Estimate Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept)  3.562338   0.221059  16.11488 0.00051976 ***
+## P           -0.020779   0.002755  -7.54247 0.00483179 ** 
+## Peoria_D    -1.494156   0.088759 -16.83378 0.00045649 ***
+## Milwaukee_D -0.813636   0.053933 -15.08599 0.00063230 ***
+## Madison_D   -1.617532   0.066534 -24.31141 0.00015255 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## RMSE: 0.014804   Adj. R2: 0.997324
 ```
 
 Note that the coefficient estimate on `P` is exactly the same as the one we saw earlier when we regressed `Q_dev` on `P_dev`.
@@ -9184,7 +9195,34 @@ Note that the coefficient estimate on `P` is exactly the same as the one we saw 
 
 .content-box-green[**Note**]
 
-This way of estimating the model is also called .red[Least Square Dummy Variable (LSDV)] estimation.
+This way of estimating the model is also called .red[Least Square Dummy Variable (LSDV)] estimation. But, they are mathematically identical. 
+
+---
+class: middle
+
+Of course, a better way to code this in R is below:
+
+
+```r
+feols(Q ~ P + i(Location), data = massage_data_d)
+```
+
+```
+## OLS estimation, Dep. Var.: Q
+## Observations: 8 
+## Standard-errors: IID 
+##                      Estimate Std. Error   t value   Pr(&gt;|t|)    
+## (Intercept)          3.562338   0.221059  16.11488 0.00051976 ***
+## P                   -0.020779   0.002755  -7.54247 0.00483179 ** 
+## Location::Madison   -1.617532   0.066534 -24.31141 0.00015255 ***
+## Location::Milwaukee -0.813636   0.053933 -15.08599 0.00063230 ***
+## Location::Peoria    -1.494156   0.088759 -16.83378 0.00045649 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## RMSE: 0.014804   Adj. R2: 0.997324
+```
+
+Do not bother to create dummny variables yourself. Let `i()` do it.
 
 ---
 class: middle

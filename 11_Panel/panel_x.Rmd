@@ -23,12 +23,13 @@ setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/En
 
 ```{r additional-libraries, include = F, cache = F}
 #--- load packages ---#
-suppressMessages(library(broom))
-suppressMessages(library(lfe))
-suppressMessages(library(gt))
-suppressMessages(library(stargazer))
-suppressMessages(library(lmtest))
-suppressMessages(library(modelsummary))
+library(broom)
+library(fixest)
+library(lfe)
+library(gt)
+library(stargazer)
+library(lmtest)
+library(modelsummary)
 ```
 
 # Before we start 
@@ -232,10 +233,10 @@ massage_data_2p %>%
 
 There are two kinds of variations:
 
-+ intercity (across city) variation 
-+ intracity (within city) variation
++ inte-rcity (across city) variation 
++ intra-city (within city) variation
 
-The cross-sectional data offers only the intercity (across city) variations.
+The cross-sectional data offers only the inte-rcity (across city) variations.
 
 ---
 class: middle
@@ -268,13 +269,13 @@ massage_data_2p %>%
 
 .content-box-green[**Question**]
 
-Why looking at the .blue[intracity (within city)] variation seemed to help us estimate the impact of massage price on demand more credibly?
+Why looking at the .blue[intra-city (within city)] variation seemed to help us estimate the impact of massage price on demand more credibly?
 
 --
 
 .content-box-green[**Answer**]
 
-The omitted variable, massage quality, did not change over time within city, which means it is controlled for as long as you look only at the intracity variations (you do not compare .red[across] cities). 
+The omitted variable, massage quality, did not change over time within city, which means it is controlled for as long as you look only at the intra-city variations (you do not compare .red[across] cities). 
 
 ---
 class: middle
@@ -393,7 +394,7 @@ massage_data_fd %>% head(5)
 .content-box-green[**OLS on the original data:**]
 
 ```{r highlight.output = 7}
-lm(Q ~ P, data = massage_data_fd)
+feols(Q ~ P, data = massage_data_fd)
 ```
 
 ]
@@ -403,7 +404,7 @@ lm(Q ~ P, data = massage_data_fd)
 .content-box-green[**OLS on the first-differenced data:**]
 
 ```{r highlight.output = 7}
-lm(Q_dif ~ P_dif, data = massage_data_fd)
+feols(Q_dif ~ P_dif, data = massage_data_fd)
 ```
 
 ]
@@ -500,17 +501,17 @@ $Q_{i,T}  = \beta_0 + \beta_1 P_{i,T} + v_{i,T} \;\; ( = \beta_2 Ql_{i,T} + u_{i
 
 $\Rightarrow$
 
-$Q_{i,t} - \bar{Q_{i}}   = \beta_1 [P_{i,t} - \bar{Q_{i}}] + [v_{i,t} - \bar{v_{i}}] ( = \beta_2 [Ql_{i,t} - \bar{Ql_{i}}] + [u_{i,t} - \bar{u_{i}}])$
+$Q_{i,t} - \bar{Q_{i}}   = \beta_1 [P_{i,t} - \bar{P_{i}}] + [v_{i,t} - \bar{v_{i}}] ( = \beta_2 [Ql_{i,t} - \bar{Ql_{i}}] + [u_{i,t} - \bar{u_{i}}])$
 
 .content-box-red[**Endogeneity Problem?**]
 
-Since $Ql_{i,1} = Ql_{i,2} = \dots = Ql_{i,T}$, $\bar{Ql_i} = Ql_{i,t}$ for all $t$.  
+$Ql_{i,1} = Ql_{i,2} = \dots = Ql_{i,T} = \bar{Ql_i}$  
 
 --
 
 $\Rightarrow$
 
-$Q_{i,T} - \bar{Q_{i}}   = \beta_1 [P_{i,T} - \bar{P_{i}}] + [u_{i,T} - \bar{u_{i}}]$
+$Q_{i,t} - \bar{Q_{i}}   = \beta_1 [P_{i,t} - \bar{P_{i}}] + [u_{i,t} - \bar{u_{i}}]$
 
 No endogeneity problem after the within-transformation!
 
@@ -583,7 +584,7 @@ class: middle
 Regress within-transformed `Q` on within-transformed `P`:
 
 ```{r }
-lm(Q_dev ~ P_dev, data = massage_data_wth)
+feols(Q_dev ~ P_dev, data = massage_data_wth)
 ```
 
 ---
@@ -610,7 +611,7 @@ class: middle
 .content-box-green[**Fixed effects estimation (alternative way)**]
 
 ```{r }
-lm(Q ~ P + Peoria_D + Milwaukee_D + Madison_D, data = massage_data_d)
+feols(Q ~ P + Peoria_D + Milwaukee_D + Madison_D, data = massage_data_d)
 ```
 
 Note that the coefficient estimate on `P` is exactly the same as the one we saw earlier when we regressed `Q_dev` on `P_dev`.
@@ -618,7 +619,18 @@ Note that the coefficient estimate on `P` is exactly the same as the one we saw 
 
 .content-box-green[**Note**]
 
-This way of estimating the model is also called .red[Least Square Dummy Variable (LSDV)] estimation.
+This way of estimating the model is also called .red[Least Square Dummy Variable (LSDV)] estimation. But, they are mathematically identical. 
+
+---
+class: middle
+
+Of course, a better way to code this in R is below:
+
+```{r }
+feols(Q ~ P + i(Location), data = massage_data_d)
+```
+
+Do not bother to create dummny variables yourself. Let `i()` do it.
 
 ---
 class: middle
