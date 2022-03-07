@@ -69,6 +69,12 @@ build_pdf(here("LectureNotes/9_Endogeneity/endogeneity_x.html"))
 rmarkdown::render(here("LectureNotes/10_Identification/identification_x.rmd"))
 build_pdf(here("LectureNotes/10_Identification/identification_x.html"))
 
+# /*===========================================================
+#' # 11. Panel Data
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/11_Panel/panel_x.rmd"))
+build_pdf(here("LectureNotes/11_Panel/panel_x.html"))
+
 
 # /*===========================================================
 #' # A1 Summary Questions

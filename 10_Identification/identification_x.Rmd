@@ -84,7 +84,7 @@ The set of underlying laws that determine how the data we observed is created
 ---
 class: middle
 
-# Example
+# Example (Non-economic)
 
 $$
 \begin{aligned}
