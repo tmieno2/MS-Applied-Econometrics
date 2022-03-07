@@ -34,3 +34,6 @@
 /*/*.synctex
 /*/*.blg
 /*/*.fdb
+
+*.RData
+*.Rnw

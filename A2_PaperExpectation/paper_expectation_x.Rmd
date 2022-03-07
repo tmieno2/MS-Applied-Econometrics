@@ -1,0 +1,124 @@
+---
+title: "Final Paper Project Expectation"
+author: "AECN 396/896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    self_contained: true
+    nature:
+      ratio: 4:3
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, center, middle
+name: dgp
+
+```{r, child = './../setup.Rmd'}
+```
+
+```{r echo = F, eval = F}
+setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/")
+```
+
+```{r additional-libraries, include = F, cache = F}
+#--- load packages ---#
+library(broom)
+library(fixest)
+library(lmtest)
+library(Cairo)
+library(tidyverse)
+library(haven)
+library(extrafont)
+library(lubridate)
+library(ggrepel)
+library(ggpubr)
+```
+
+# Final Paper Project Expectation
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# Introduction (3 points)
+
++ clear identification of what you are trying to find out (research question) [1.5 points]
++ why the research question is worthwhile answering [1.5 points]
+
+---
+class: middle
+
+# Data description and exploration (7 points)
+
++ the nature of the data with summary statistics table [2 point]
++ visualize a few key variables in a <span style="color:blue"> meaningful </span> way [5 points]
+
+.content-box-green[**Important**]
+
+Do not just present summary statistics and graphs. Discuss what you get out of them. Without any such discussions, you will get $0$.
+
+---
+class: middle
+
+# Econometric methods (35 points)
+
+The <span style = "color: blue;"> process and thought history </span> of how you end up with the final econometric models and methods. 
+
+---
+class: middle
+
+# Results, Discussions, and Conclusions (5 points)
+
++ interpret and describe the results [3 points]
++ conclusions [2 points]
+
+---
+class: middle
+
+# Details on the Econometric Method Section
+
+.content-box-green[**Data generating process**]
++ What variables are involved in explaining the dependent variable? 
+  - List all the variables both observed and <span style = "color: blue;"> unobserved </span>.
++ How are they related with each other? 
+  - Multicollinearity?
++ What would be the appropriate functional form? 
+  - Non-linear impact (e.g., quadratic, log)? 
+  - Interactions terms? 
+  - Structural difference?
+
+---
+class: middle
+
+# Details on the Econometric Method Section
+
+.content-box-green[**Endogeneity and Econometric Methods**]
+
++ Extensive discussions on why you may have endogeneity problems. What are the sources? 
+  - Omitted variable? 
+  - Selection bias? 
+  - Reverse causality? 
+  - Measurement errors?
++ Hypothetical discussion of what econometric methods you can use to deal with the endogeneity problem 
+  - Randomization of the variable of interest? 
+  - Panel data approach? 
+  - Instrumental variable approach?
+  - Difference in difference?
++ Detailed descriptions of what you end up doing (explain the process)
+  - Why do you think your approach address the endogeneity problem you identified above or not? (<span style = "color: blue;"> It is not at all a problem that you cannot solve the endogeneity problem entirely </span>)
++ Use the appropriate standard error estimation approach 
+(heterogeneity, clustered error, etc)
+
+
+
+---
+class: middle
+
+# Key to writing a successful paper (high grade)
+
++ Justify and explain <span style = "color: blue;"> everything </span> you did in the paper!!
+  - I tested the joint statistical significance of these interactions terms because ...
++ <span style = "color: blue;"> Re-emphasized: </span> I do not care about your results. What I care is the <span style = "color: blue;"> process </span>!! 

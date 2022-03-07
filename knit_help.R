@@ -76,3 +76,10 @@ build_pdf(here("LectureNotes/10_Identification/identification_x.html"))
 rmarkdown::render(here("LectureNotes/A1_SummaryQuestions/questions_x.rmd"))
 
 build_pdf(here("LectureNotes/A1_SummaryQuestions/questions_x.html"))
+
+# /*===========================================================
+#' # A1 Summary Questions
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/A2_PaperExpectation/paper_expectation_x.rmd"))
+
+build_pdf(here("LectureNotes/A2_PaperExpectation/paper_expectation_x.html"))

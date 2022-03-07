@@ -35,7 +35,7 @@ library(ggrepel)
 library(ggpubr)
 ```
 
-# Before we start 
+# Before we start
 
 ## Learning objectives
 
@@ -72,7 +72,7 @@ class: middle
 
 .content-box-red[**Definition**]
 
-The set of underlying laws that determin how the data we observed is created
+The set of underlying laws that determine how the data we observed is created
 
 <br>
 
@@ -104,7 +104,7 @@ $$
 
 .content-box-green[**Key**]
 
-We did not know the data generating process untill Newton discovers it. By looking at the data, he learned that the underlying process has to be the one above. We are trying to do the same.
+We did not know the data generating process until Newton discovers it. By looking at the data, he learned that the underlying process has to be the one above. We are trying to do the same.
 
 ---
 class: middle
@@ -215,7 +215,7 @@ Okay, as we expected, we are good now.
 ---
 class: middle
 
-But, let's think of another way to recover a good estimate of the impact of being `brown-haired` using the information we have about the data genereating process while still using the naive model of just regressing `log(income)` on `brown-haired`. Any idea?
+But, let's think of another way to recover a good estimate of the impact of being `brown-haired` using the information we have about the data generating process while still using the naive model of just regressing `log(income)` on `brown-haired`. Any idea?
 
 + Income is log-normally distributed
 + Being brown-haired gives you a 10% income boost (<span style = "color: blue;"> pretend you do not know this, as this is the objective </span>)
@@ -252,7 +252,7 @@ How a variable changes from observation to observation
 
 + Bad variations: variations in `brown_haired` for the entire sample 
 
-`brown_haied` is correlated with `college`, which made us confoud (mix) the impact of `brown_haied` and `college`, when the naive model is used.
+`brown_haied` is correlated with `college`, which made us confound (mix) the impact of `brown_haied` and `college`, when the naive model is used.
 
 + Right variations: variations in `brown_haired` only for the samples with college degrees 
 
@@ -360,7 +360,7 @@ class: middle
 
 + You cannot make a causal statement like this:
 
-"An increase in avcado price make consumers buy less avacado."
+"An increase in avocado price make consumers buy less avocado."
 
 + Reverse causality
   - price affects demand
@@ -397,7 +397,7 @@ Suppose your can run an experiment on the avocado market (ideal situation). If w
 
 .content-box-green[**Special contextual knowledge**]
 
-Now, suppse you learned the following fact after studying the supply and purchasing mechanism on the avocado market:
+Now, suppose you learned the following fact after studying the supply and purchasing mechanism on the avocado market:
 
 <span style = "color: blue;"> At the beginning of each month, avocado suppliers make a plan for what avocado prices will be each week in that month, and never change their plans until the next month. </span>
 
@@ -446,7 +446,7 @@ class: middle
 
 .content-box-green[**Message 1**]
 
-By understanding the data generating process (knowing how any economic market works), we recognize the problem of simply looking at the relationshiop betwee the avocado price and demand to conclude the causal impact of price on demand (reverse causality).
+By understanding the data generating process (knowing how any economic market works), we recognize the problem of simply looking at the relationship between the avocado price and demand to conclude the causal impact of price on demand (reverse causality).
 
 .content-box-green[**Message 2**]
 
