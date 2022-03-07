@@ -624,19 +624,7 @@ This way of estimating the model is also called .red[Least Square Dummy Variable
 ---
 class: middle
 
-Of course, a better way to code this in R is below:
-
-```{r }
-feols(Q ~ P + i(Location), data = massage_data_d)
-```
-
-Do not bother to create dummny variables yourself. Let `i()` do it.
-
----
-class: middle
-
-# Fixed Effects Estimation in Practice 
-
+# Fixed Effects Estimation in Practice Using R
 
 .content-box-green[**Advice**]
 
@@ -647,18 +635,17 @@ class: middle
 
 .content-box-red[**In practice**]
 
-We will use the `lfe` package (we used this package for instrumental variable estimation).
-
+We will use the `fixest` package.
 
 .content-box-green[**Syntax**]
 
 ```{r eval = F}
-felm(dep var ~ indep vars| FE | 0 | 0, data)
+feols(dep_var ~ indep_vars | FE, data)
 ```
 
 + `FE`: the name of the variable that identifies the cross-sectional units that are observed over time (`Location` in our example) 
 + `dep_var`: original (non-transformed)
-+ `indep_var`: original (non-transformed) 
++ `indep_vars`: original (non-transformed) 
 
 ---
 class: middle
@@ -672,7 +659,7 @@ massage_data_2p
 .content-box-green[**Example**]
 
 ```{r }
-felm(Q ~ P | Location | 0 | 0, data = massage_data_2p)
+feols(Q ~ P | Location, data = massage_data_2p)
 ```
 
 ---
@@ -789,9 +776,9 @@ class: middle
 In order to include year FEs to individual FEs, you can simply add the variable that indicates year like below:  
   
 ```{r }
-felm(I(log(income)) ~ educ | id + year | 0 | 0, data = year_fe) %>%
+feols(I(log(income)) ~ educ | id + year, data = year_fe) %>%
   tidy()
-```  
+```
 
 ---
 class: middle
@@ -826,6 +813,8 @@ class: middle
 
 Correlation of errors over time, which we call .blue[serial correlation]
 
+<br>
+
 --
 
 .content-box-green[**Consequences of serial correlation**]
@@ -835,6 +824,8 @@ Correlation of errors over time, which we call .blue[serial correlation]
 + do not affect the unbiasedness and consistency property of your estimators
 
 --
+
+<br>
 
 .content-box-red[**Important**]
 

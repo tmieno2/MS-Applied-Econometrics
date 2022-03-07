@@ -84,7 +84,7 @@ rmarkdown::render(here("LectureNotes/A1_SummaryQuestions/questions_x.rmd"))
 build_pdf(here("LectureNotes/A1_SummaryQuestions/questions_x.html"))
 
 # /*===========================================================
-#' # A1 Summary Questions
+#' # A2 Paper Expectation
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/A2_PaperExpectation/paper_expectation_x.rmd"))
 
