@@ -293,7 +293,7 @@ By understanding the data generating process, we know why we cannot trust the na
 
 .content-box-green[**Message 2**]
 
-We make use of our knowledge about a part of the data generating process to identify the imapact of `brown_haired` credibly:
+We make gguse of our knowledge about a part of the data generating process to identify the imapact of `brown_haired` credibly:
 
 "40% of people who don't have brown hair or a college degree will choose to dye their hair brown"
 
