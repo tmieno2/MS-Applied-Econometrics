@@ -33,15 +33,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 11: Panel Data Estimation Methods ([html](https://tmieno2.github.io/MS-Applied-Econometrics/11_Panel/panel_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/11_Panel/panel_x.pdf))
 
-+ Lecture 10: Instrumental Variable (IV) Estimation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/InstrumentalVariable/iv_x.html))
 
-+ Lecture 11: Panel Data Estimation Methods ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Panel/panel_x.html))
-
-+ Lecture 12: Research Demonstration ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/Demonstration/demonstration_x.html))
-
-+ Lecture 13: Impact Evaluation ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/ImpactEvaluation/impact_evaluation_x.html))
-
-+ Lecture 14: Discrete Choice ([slide](https://tmieno2.github.io/MS-Applied-Econometrics/DiscreteChoice/discrete_choice_x.html))
 
 ## Assignments
 

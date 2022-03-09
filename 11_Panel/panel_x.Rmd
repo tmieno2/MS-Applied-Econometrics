@@ -55,6 +55,8 @@ Data follow the .blue[same] individuals, families, firms, cities, states or what
 
 --
 
+<br>
+
 .content-box-green[**Example**]
 
 + Randomly select people from a population at a given point in time
@@ -127,27 +129,19 @@ massage_data %>%
 
 --
 
+<br>
+
 .content-box-green[**Question**]
 
 Across the four cities, how are price and quantity are associated? Positive or negative? 
 
 --
 
-.content-box-green[**Answer**]
-
-They are positively correlated.
-
---
-
-.content-box-green[**Question**]
-
-So, does that mean people want more massages as their price increases?     
-
---
+<br>
 
 .content-box-green[**Answer**]
 
-Probably not.
+They are positively correlated. So, does that mean people want more massages as their price increases? Probably not.
 
 ---
 class: middle
@@ -159,11 +153,15 @@ massage_data %>%
   gt()
 ```
 
+<br>
+
 .content-box-green[**Question**]
   
 What could be causing the positive correlation?
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -183,9 +181,13 @@ massage_data <- massage_data %>%
 gt(massage_data)
 ```
 
+<br>
+
 .content-box-green[**Key**]
 
 Massage quality was hidden (omitted) affecting .red[both] price and massages per capita. 
+
+<br>
 
 .content-box-green[**Problem**]
 
@@ -203,6 +205,8 @@ $Q  = \beta_0 + \beta_1 P + v \;\;( = \beta_2 + Ql + u)$
 + $Q$: the number of massages received per capita  
 + $Ql$: the quality of massages
 + $u$: everything else that affect $P$
+
+<br>
 
 .content-box-red[**Endogeneity Problem**]
 
@@ -253,6 +257,8 @@ Now, compare the massage price and massages per capita .red[within] each city (o
 
 --
 
+<br>
+
 .content-box-green[**Answer**]
 
 Price and quantity are .red[negatively] correlated!
@@ -272,6 +278,8 @@ massage_data_2p %>%
 Why looking at the .blue[intra-city (within city)] variation seemed to help us estimate the impact of massage price on demand more credibly?
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -353,6 +361,8 @@ $Q_{i,t}  = \beta_0 + \beta_1 P_{i,t} + v_{i,t} \;\; ( = \beta_2 Ql_{i,t} + u_{i
 
 --
 
+<br>
+
 .content-box-red[**First differencing**]
 
 $Q_{i,1}  = \beta_0 + \beta_1 P_{i,1} + v_{i,1} \;\; ( = \beta_2 Ql_{i,1} + u_{i,1})$ 
@@ -364,6 +374,8 @@ $Q_{i,2}  = \beta_0 + \beta_1 P_{i,2} + v_{i,2} \;\; ( = \beta_2 Ql_{i,2} + u_{i
 $\Rightarrow$
 
 $\Delta Q  = \beta_1 \Delta P + \Delta v ( = \beta_2 \Delta Ql + \Delta u)$
+
+<br>
 
 .content-box-red[**Endogeneity Problem?**]
 
@@ -393,7 +405,7 @@ massage_data_fd %>% head(5)
 
 .content-box-green[**OLS on the original data:**]
 
-```{r highlight.output = 7}
+```{r highlight.output = 6}
 feols(Q ~ P, data = massage_data_fd)
 ```
 
@@ -403,7 +415,7 @@ feols(Q ~ P, data = massage_data_fd)
 
 .content-box-green[**OLS on the first-differenced data:**]
 
-```{r highlight.output = 7}
+```{r highlight.output = 6}
 feols(Q_dif ~ P_dif, data = massage_data_fd)
 ```
 
@@ -415,7 +427,7 @@ class: middle
 
 .content-box-red[**Summary**]
  
-+ As long as the omitted variable that affect both the dependent and independent variables are constant over time (time-invariant), then using only the variations over time (ignoring variations across cross-sectional units) can eliminate the omitted variable bias
++ As long as the omitted variable that affects both the dependent and independent variables are constant over time (time-invariant), then using only the variations over time (ignoring variations across cross-sectional units) can eliminate the omitted variable bias
 
 + First-differencing the data and then regressing changes on changes does the trick of ignoring variations across cross-sectional units
 
@@ -426,7 +438,7 @@ class: middle
 
 # Multi-year panel datasets
 
-+ If we have lots of years of data, we could, in principle, compute all of the differences (i.e., 2004 versus 2003, 2005 versus 2004, etc.) and then run a single regression. But there is an easier way.  
++ If we have lots of years of data, we could, in principle, compute all of the first differences (i.e., 2004 versus 2003, 2005 versus 2004, etc.) and then run a single regression. But there is an easier way.  
 
 --
 
@@ -524,7 +536,7 @@ Consider the following general model
 
 $y_{i,t}=\beta_1 x_{i,t} + \alpha_i + u_{i,t}$
 
-+ $\alpha_i$: the impact of time-invariant factor that is specific to $i$ (also termed .blue[individual fixed effect]) 
++ $\alpha_i$: the impact of time-invariant <span style = "color: blue;"> unobserved </span> factor that is specific to $i$ (also termed .blue[individual fixed effect]) 
 + $\alpha_i$ is thought to be correlated with $x_{i,t}$ 
 
 --
@@ -583,14 +595,24 @@ class: middle
 
 Regress within-transformed `Q` on within-transformed `P`:
 
-```{r }
+```{r highlight.output = 6}
 feols(Q_dev ~ P_dev, data = massage_data_wth)
 ```
 
 ---
 class: middle
 
-.content-box-green[**Alternatively**]
+# An alternative way to view the Fixed Effects estimation methods
+
+.content-box-green[**Important**]
+
+The two approached below will result in the same coefficient estimates (mathematically identical). 
+
++ Running OLS on the within-tranformed (demeaned) data
++ Running OLS on the untransformed data but including the dummy variables for the individuals
+
+---
+class: middle
 
 You can use the original data (no within-transformation) and include dummy variables for all the cities except one.
 
@@ -610,16 +632,79 @@ class: middle
 
 .content-box-green[**Fixed effects estimation (alternative way)**]
 
-```{r }
+```{r highlight.output=6}
 feols(Q ~ P + Peoria_D + Milwaukee_D + Madison_D, data = massage_data_d)
 ```
 
 Note that the coefficient estimate on `P` is exactly the same as the one we saw earlier when we regressed `Q_dev` on `P_dev`.
 
+---
+class: middle
 
-.content-box-green[**Note**]
+.content-box-green[**What does this tell us?**]
 
-This way of estimating the model is also called .red[Least Square Dummy Variable (LSDV)] estimation. But, they are mathematically identical. 
+By including individual dummies (individual fixed effects), you are effectively eliminating the between (inter-city) variations and using only the clean within (within-city) variations for estimation. 
+
+--
+
+<br>
+
+.content-box-red[**Very Important**]
+
+More generally, including dummy variables of a categorical variable (like city in the example above), then that will eliminate the variations <span style = "color: red;"> between </span> the elements of the category (e.g., different cities), and use only the variations <span style = "color: blue;"> within </span> each of the element of the category.
+
+---
+class: middle
+
+# Let's go back to the avovado example
+
+This was how the avocado makert worked:
+
+<span style = "color: blue;"> At the beginning of each month, avocado suppliers make a plan for what avocado prices will be each week in that month, and never change their plans until the next month. </span>
+
+We agreed that we should use only the within-month varaitions instead of between-month variations. 
+
+We have three months of avocado purchase and price observed weekly.
+
+<br>
+
+--
+
+.content-box-green[**Question**]
+
+What should we do?
+
+<br>
+
+--
+
+.content-box-green[**Answer**] 
+
+Include month dummy variables
+
+---
+class: middle
+
+We have two years of avocado purchase and price observed weekly.
+
+<br>
+
+--
+
+.content-box-green[**Question**]
+
+What should we do?
+
+<br>
+
+--
+
+.content-box-green[**Answer**] 
+
++ Include <span style = "color: blue;"> month-year </span> dummy variables. 
+
++ Including <span style = "color: blue;"> month </span> dummy variables will not do it. Because the observations in the same month in two different years are considered to be belong to the same group. That is, variations between two different years of the same month will be used for estimation. (e.g., January in 2014 and January in 2015)
+
 
 ---
 class: middle
@@ -633,9 +718,13 @@ class: middle
 
 --
 
+<br>
+
 .content-box-red[**In practice**]
 
 We will use the `fixest` package.
+
+<br>
 
 .content-box-green[**Syntax**]
 
@@ -644,8 +733,8 @@ feols(dep_var ~ indep_vars | FE, data)
 ```
 
 + `FE`: the name of the variable that identifies the cross-sectional units that are observed over time (`Location` in our example) 
-+ `dep_var`: original (non-transformed)
-+ `indep_vars`: original (non-transformed) 
++ `dep_var`: (non-transformed) dependet variable
++ `indep_vars`: list of (non-transformed) independent variables
 
 ---
 class: middle
@@ -658,7 +747,7 @@ massage_data_2p
 
 .content-box-green[**Example**]
 
-```{r }
+```{r highlight.output = 6}
 feols(Q ~ P | Location, data = massage_data_2p)
 ```
 
@@ -676,6 +765,8 @@ class: middle
 + You almost never see this estimation method used in papers that use non-experimental data 
 
 --
+
+<br>
 
 .content-box-green[**Note**]
 
@@ -718,6 +809,7 @@ class: middle
 
 They capture anything that happened to .red[all] the individuals for a specific year relative to the base year
 
+<br>
 
 .content-box-green[**Example**]
 
@@ -730,7 +822,9 @@ $log(income) = \beta_0 + \beta_1 educ + \beta_2 exper  + \sigma_1 FE_{2012} + \s
 + $\sigma_2$: captures the difference in $log(income)$ between $2013$ and $2014$ (base year)
 
 --
- 
+
+<br> 
+
 .content-box-green[**Interpretation**]
  
 $\sigma_1=0.05$ would mean that $log(income)$ is greater in $2012$ than $2014$ by $5\%$ on average for whatever reasons with everything else fixed.
@@ -745,6 +839,8 @@ It is almost always a good practice to include year FEs if you are using a panel
 
 --
 
+<br>
+
 .content-box-green[**Why?**]
 
 + Remember year FEs capture .blue[anything] that happened to all the individuals for a specific year relative to the base year
@@ -752,6 +848,8 @@ It is almost always a good practice to include year FEs if you are using a panel
 + In other words, .blue[all the unobserved factors] that are common to all the individuals in a specific year is .blue[controlled for (taken out of the error term)]
 
 --
+
+<br>
 
 .content-box-green[**Example**]
 
@@ -860,36 +958,15 @@ class: middle
 
 --
 
+<br>
+
 .content-box-green[**R implementation**]
 
 The last partition is used for clustering standard error estimation by variable like below.
   
 ```{r }
-felm(I(log(income)) ~ educ | id + year | 0 | id, data = year_fe) %>% tidy()
-```  
-
----
-class: middle
-
-# Recap on `felm` 
-
-```{r eval = F}
-felm(dep_var ~ indep_var(s) | FE | IV formula | SE clsuter, data = data) 
+feols(I(log(income)) ~ educ | id + year, cluster = ~id, data = year_fe) %>% tidy()
 ```
-
-+ `FE` partition: 
- 
-Include variables that hold values. Then, the dummy variable for each of the values in the variable is created.
-
-+ `IV formula` partition: 
-
-Specify what variables to be instrumented (endogenous variable) and what variables are instrumenting from outside the model (excluded instruments).
-
-+ `SE cluster` partition:
-
-Include variables by which you want to cluster SE estimation.
-
-
 
 
 
