@@ -38,12 +38,6 @@ library(modelsummary)
 
 Understand the new econometric methods that can be used with panel datasets to address endogeneity problems.
 
-## Table of contents
-
-1. [Selection Bias](#select)
-2. [Reverse Causality](#reverse)
-3. [Measurement Error](#ME)
-
 ---
 class: middle
 
