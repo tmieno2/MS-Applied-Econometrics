@@ -55,7 +55,7 @@ Data follow the .blue[same] individuals, families, firms, cities, states or what
 
 + Randomly select people from a population at a given point in time
 
-+ Then the same people are reinterviewed at several subsequent points in time, which would results in data on wages, hours, education, and so on, for the same group of people in different years.
++ Then the same people are reinterviewed at several subsequent points in time, which would result in data on wages, hours, education, and so on, for the same group of people in different years.
 
 ---
 class: middle
