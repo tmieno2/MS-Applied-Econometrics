@@ -6042,8 +6042,8 @@ You want to estimate the causal impact of education on income.
 + Variable of interest: Education
 + Dependent variable: Income
 
-<div id="htmlwidget-a3962a6894a2a2674bf3" style="width:60%;height:216px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a3962a6894a2a2674bf3">{"x":{"diagram":"\ndigraph {\n  graph [ranksep = 0.2]\n  node [shape = plaintext]\n    A [label = \"Education\"]\n    Y [label = \"Income\"]\n    C [label = \"Erro (Ability + others)\"]\n    E [label = \"Experience\"]\n  edge [minlen = 2]\n    A->Y\n    E->Y\n    C->A\n    C->Y\n  { rank = same; A; Y }\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d3d5806018d3e6f10bd5" style="width:60%;height:216px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d3d5806018d3e6f10bd5">{"x":{"diagram":"\ndigraph {\n  graph [ranksep = 0.2]\n  node [shape = plaintext]\n    A [label = \"Education\"]\n    Y [label = \"Income\"]\n    C [label = \"Error (Ability + others)\"]\n    E [label = \"Experience\"]\n  edge [minlen = 2]\n    A->Y\n    E->Y\n    C->A\n    C->Y\n  { rank = same; A; Y }\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 
 
@@ -7165,7 +7165,25 @@ Clustered SE? You can just add `cluster = ` option just like we previously did.
 
 
 ```r
-feols(log(wage) ~ exper | married + south | educ ~ feduc + sibs, `cluster = ~black`, data = wage2)
+feols(log(wage) ~ exper | married + south | educ ~ feduc + sibs, cluster = ~black, data = wage2)
+```
+
+```
+## TSLS estimation, Dep. Var.: log(wage), Endo.: educ, Instr.: feduc, sibs
+## Second stage: Dep. Var.: log(wage)
+## Observations: 741 
+## Fixed-effects: married: 2,  south: 2
+## Standard-errors: Clustered (black) 
+##          Estimate Std. Error t value Pr(&gt;|t|)    
+## fit_educ 0.124355   0.005258 23.6526 0.026899 *  
+## exper    0.032128   0.002798 11.4842 0.055295 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## RMSE: 0.391178     Adj. R2: 0.116588
+##                  Within R2: 0.069595
+## F-test (1st stage), educ: stat = 61.9     , p &lt; 2.2e-16 , on 2 and 735 DoF.
+##               Wu-Hausman: stat =  8.98498 , p = 0.002814, on 1 and 735 DoF.
+##                   Sargan: stat =  0.169226, p = 0.6808  , on 1 DoF.
 ```
 
 

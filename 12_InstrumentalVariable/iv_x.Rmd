@@ -87,7 +87,7 @@ digraph {
   node [shape = plaintext]
     A [label = 'Education']
     Y [label = 'Income']
-    C [label = 'Erro (Ability + others)']
+    C [label = 'Error (Ability + others)']
     E [label = 'Experience']
   edge [minlen = 2]
     A->Y
