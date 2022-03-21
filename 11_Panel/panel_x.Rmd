@@ -645,7 +645,7 @@ By including individual dummies (individual fixed effects), you are effectively 
 
 .content-box-red[**Very Important**]
 
-More generally, including dummy variables of a categorical variable (like city in the example above), then that will eliminate the variations <span style = "color: red;"> between </span> the elements of the category (e.g., different cities), and use only the variations <span style = "color: blue;"> within </span> each of the element of the category.
+More generally, including dummy variables of a categorical variable (like city in the example above), eliminates the variations <span style = "color: red;"> between </span> the elements of the category (e.g., different cities), and use only the variations <span style = "color: blue;"> within </span> each of the element of the category.
 
 ---
 class: middle

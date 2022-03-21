@@ -33,6 +33,8 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 11: Panel Data Estimation Methods ([html](https://tmieno2.github.io/MS-Applied-Econometrics/11_Panel/panel_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/11_Panel/panel_x.pdf))
 
++ Lecture 12: Instrumental Variable Approach ([html](https://tmieno2.github.io/MS-Applied-Econometrics/12_InstrumentalVariable/iv_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/12_InstrumentalVariable/iv_x.pdf))
+
 
 
 ## Assignments

@@ -75,6 +75,11 @@ build_pdf(here("LectureNotes/10_Identification/identification_x.html"))
 rmarkdown::render(here("LectureNotes/11_Panel/panel_x.rmd"))
 build_pdf(here("LectureNotes/11_Panel/panel_x.html"))
 
+# /*===========================================================
+#' # 12. IV
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/12_InstrumentalVariable/iv_x.rmd"))
+build_pdf(here("LectureNotes/12_InstrumentalVariable/iv_x.html"))
 
 # /*===========================================================
 #' # A1 Summary Questions

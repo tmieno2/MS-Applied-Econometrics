@@ -5,7 +5,7 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
+    self_contained: true
     nature:
       ratio: 4:3
       highlightStyle: github
@@ -22,11 +22,13 @@ setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/En
 
 ```{r additional-libraries, include = F, cache = F}
 #--- load packages ---#
-suppressMessages(library(broom))
-suppressMessages(library(fixest))
-suppressMessages(library(stargazer))
-suppressMessages(library(lmtest))
-suppressMessages(library(readstata13))
+library(broom)
+library(fixest)
+library(stargazer)
+library(ggdag)
+library(lmtest)
+library(readstata13)
+library(DiagrammeR)
 ```
 
 # Before we start 
@@ -39,7 +41,6 @@ Understand how instrumental variable (IV) estimation works.
 
 1. [Instrumental Variable (IV) Approach](#inst)
 2. [IV in R](#iv-r)
-
 
 ---
 class: middle
@@ -72,6 +73,84 @@ name: inst
 ---
 class: middle
 
+# Causal Diagram
+
+You want to estimate the causal impact of education on income.
+
++ Variable of interest: Education
++ Dependent variable: Income
+
+```{r causal-diagramme-endogeneity, echo = FALSE}
+DiagrammeR::grViz("
+digraph {
+  graph [ranksep = 0.2]
+  node [shape = plaintext]
+    A [label = 'Education']
+    Y [label = 'Income']
+    C [label = 'Erro (Ability + others)']
+    E [label = 'Experience']
+  edge [minlen = 2]
+    A->Y
+    E->Y
+    C->A
+    C->Y
+  { rank = same; A; Y }
+}
+")
+```
+
+```{r echo = FALSE, include = F}
+tidy_ggdag <- dagify(
+  Income ~ Ability + Education + Experience,
+  Education ~ Ability,
+  exposure = "Education",
+  outcome = "Income"
+) %>%
+  tidy_dagitty()
+
+ggdag(tidy_ggdag) +
+  theme_dag()
+```
+
+---
+class: middle
+
+# Rough Idea of IV Approach
+
+Find a variable like $Z$ in the diagram below:
+```{r echo = F}
+DiagrammeR::grViz("
+digraph {
+  graph [ranksep = 0.2]
+  node [shape = plaintext]
+    Z [label = 'Z']
+    A [label = 'Education']
+    Y [label = 'Income']
+    C [label = 'Error (Ability + others)']
+    E [label = 'Experience']
+  edge [minlen = 2]
+    A->Y
+    E->Y
+    C->A
+    C->Y
+    Z->A
+  { rank = same; Z; A; Y}
+}
+")
+```
+
++ $Z$ does <span style = "color: blue;">  NOT </span> affect income <span style = "color: blue;">  directly </span>
++ $Z$ is correlated with the variable of interest (education)
+  - does not matter which causes which (associattion is enough)
++ $Z$ is <span style = "color: blue;"> NOT </span> correlated with <span style = "color: red;"> any </span> of the unobservable variables in the error term (including ability) that is making the vairable of interest (education) endogeneous.
+  - $Z$ does not affect ability
+  - abiliyt does not affect $Z$
+
+
+
+---
+class: middle
+
 .content-box-green[**The Model**]
 
 $y=\beta_0 + \beta_1 x_1 + \beta_2 x_2 + u$
@@ -86,9 +165,9 @@ class: middle
 
 Bring in variable(s) (.blue[Instrumental variable(s)]) that does .red[NOT] belong to the model, but .red[IS] related with the endogenous variable,
 
-+ using the instrumental variable(s) (which we denote by $Z$), make the endogenous variable exogenous, which we call .blue[instrumented variable(s)]
++ Using the instrumental variable(s) (which we denote by $Z$), make the endogenous variable exogenous, which we call .blue[instrumented] variable(s)
 
-+ use the variation in the instrumented variable instead of the original endogenous variable to estimate the impact of the original variable
++ Use the variation in the instrumented variable instead of the original endogenous variable to estimate the impact of the original variable
 
 ---
 class: middle
@@ -97,13 +176,15 @@ class: middle
 
 .content-box-green[**Step 1**]
   
-using the instrumental variables, make the endogenous variable exogenous, which we call .blue[instrumented variable]
+Using the instrumental variables, make the endogenous variable exogenous, which we call .blue[instrumented] variable
 
 --
 
+<br>
+
 .content-box-green[**Step 1: mathematically**]
 
-+ Regress the endogenous variable $(x_1)$ on the instrumental variable(s) $(Z=\{z_1,z_2\}$, two instruments here) and all the other exogenous variables
++ Regress the endogenous variable $(x_1)$ on the instrumental variable(s) $(Z=\{z_1,z_2\}$, two instruments here) and all the other exogenous variables $(x_2$ here)
 
 $x_1 = \alpha_0 + \sigma_2 x_2 + \alpha_1 z_1 +\alpha_2 z_2 + v$
 
@@ -122,6 +203,9 @@ class: middle
 
 use the variation in the instrumented variable instead of the original endogenous variable to estimate the impact of the original variable
 
+--
+
+<br>
 
 .content-box-green[**Step 2: Mathematically**]
 
@@ -147,24 +231,19 @@ $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + (\beta_3 ability + v)$
 
 --
 
+<br>
+
 .content-box-green[**Instruments (Z)**]
 
-+ IQ test score ($IQ$)
-+ number of siblings ($sibs$)
+Suppose you selected the following variables as instruments:
+
++ IQ test score $(IQ)$
++ number of siblings $(sibs)$
 
 ---
+class: middle
 
-.content-box-green[**Model of interest**]
-
-$log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + (\beta_3 ability + v)$ 
-
-.content-box-green[**Instruments (Z)**]
-
-+ IQ test score ($IQ$)
-+ number of siblings ($sibs$)
-
---
-
+.left4[
 .content-box-green[**Step 1:**]
 
 Regress $educ$ on $exper$, $IQ$, and $sibs$:
@@ -174,26 +253,61 @@ $educ = \alpha_0 + \alpha_1 exper + \alpha_2 IQ + \alpha_3 sibs + u$
 Use the coefficient estimates on $\alpha_0$, $\alpha_1$, $\alpha_2$, and $\alpha_3$ to predict $educ$ as a function of $exper$, $IQ$, and $sibs$.
 
 $\hat{educ} = \hat{\alpha_0} + \hat{\alpha_1} exper + \hat{\alpha_2} IQ + \hat{\alpha_3} sibs$
+]
 
---
+.right6[
+```{r }
+library(wooldridge)
+data("wage2")
 
-.content-box-green[**Step 2:**]
+#* regress educ on exper, IQ, and sibs
+first_reg <- feols(educ ~ exper + IQ + sibs, data = wage2)
 
-Use $\hat{educ}$ in place of $educ$ to estimate the model of interest:
+#* predict educ as a function of exper, IQ, and sibs
+wage2 <- mutate(wage2, educ_hat = first_reg$fitted.values)
 
-$log(wage) = \beta_0 + \beta_1 \hat{educ} + \beta_2 exper + (\beta_3 ability + v)$ 
-
+#* seed the predicted values
+wage2 %>%
+  relocate(educ_hat) %>%
+  head()
+```
+]
 
 ---
 class: middle
 
-# Does IV really work? 
+.left4[
+.content-box-green[**Step 2:**]
+
+Use $\hat{educ}$ in place of $educ$ to estimate the model of interest:
+
+$log(wage) = \beta_0 + \beta_1 \hat{educ} + \beta_2 exper + u$ 
+]
+
+.right6[
+```{r }
+#* regression with educ_hat in place of educ
+second_reg <- feols(wage ~ educ_hat + exper, data = wage2)
+
+#* see the results
+second_reg
+```
+]
+
+---
+class: middle
+
+# When does IV work? 
+
+Just like OLS needs to satisy some conditions for it to consistently estimate the coefficients, IV approach needs to satisy some conditions for it to work.
 
 .content-box-green[**Estimation Procedure**]
 
 + Step 1: $\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2$  
 
 + Step 2: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
+
+<br>
 
 .content-box-green[**Important question**]
 
@@ -215,11 +329,15 @@ class: middle
 
 + Step 2: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
 
+<br>
+
 .content-box-green[**Question**]
 
 What happens if $Z$ have no power to explain $x_1$ $(\alpha_1=0$ and $\alpha_2=0)$?
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -235,7 +353,7 @@ class: middle
 
 .content-box-red[**Condition 1**]
 
-The instrument(s) $Z$ have jointly significant explanatory power on the endogenous variable $x_1$ .red[after] you control for all the other exogenous variables (here $x_2)$}
+The instrument(s) $Z$ have jointly significant explanatory power on the endogenous variable $x_1$ .red[after] you control for all the other exogenous variables (here $x_2)$
 
 ---
 class: middle center
@@ -249,6 +367,8 @@ class: middle
 
 $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u$ 
 
+<br>
+
 .content-box-green[**Estimation Procedure**]
 
 + Step 1: $\hat{x}_1 = \hat{\alpha}_0 +\hat{\sigma}_2 x_2 + \hat{\alpha}_1 z_1 + \hat{\alpha}_2 z_2$  
@@ -256,8 +376,6 @@ $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + u$
 + Step 2: $y = \beta_0 + \beta_1 \hat{x_1}+ \beta_2 x_2 + \varepsilon$
 
 --
-
-<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>  
 
 Remember you can break $x_1$ into the predicted part and the residuals.
 
@@ -282,9 +400,9 @@ class: middle
 
 $y = \beta_0 + \beta_1 \hat{x}_1 + \beta_2 x_2+ (\beta_1\hat{\varepsilon} + u)$
 
-<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html> 
-
 --
+
+<br>
 
 .content-box-green[**Question**]
 
@@ -292,6 +410,7 @@ What is the condition under which the OLS estimation of $\beta_1$ in the main mo
 
 --
 
+<br>
 .content-box-green[**Answer**]
 
 $\hat{x}_1$ is not correlated with $(\beta_1\hat{\varepsilon} + u)$
@@ -318,11 +437,15 @@ class: middle
 
 Do you think we can test condition 2?
 
+<br>
+
 --
 
 .content-box-green[**Answer**]
 
 No, because we never observe the error term.
+
+<br>
 
 --
 
@@ -342,6 +465,7 @@ class: middle
 
 + The instrument(s) $Z$ have jointly significant explanatory power on the endogenous variable $x_1$ .red[after] you control for all the other exogenous variables (here $x_2)$}
 
+<br>
 
 .content-box-red[**Condition 2**]
 
@@ -350,6 +474,8 @@ class: middle
 + $z_1$ and $z_2$ are not correlated with the error term (there are no unobserved factors in the error term that are correlated with $Z)$
 
 --
+
+<br>
 
 .content-box-red[**Important**]
 
@@ -389,12 +515,14 @@ $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability
 
 `educ` is endogenous because of its correlation with `ability`.
 
+<br>
 --
 
 .content-box-green[**Question**]
 
 What conditions would a good instrument $(z)$ satisfy?
 
+<br>
 --
 
 .content-box-green[**Answer**]
@@ -410,9 +538,13 @@ class: middle
 
 $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)$
 
+<br>
+
 .content-box-green[**An example of instruments**]
 
 The last digit of an individual's Social Security Number? (this has been actually used in some journal articles)
+
+<br>
 
 .content-box-green[**Question**]
 
@@ -428,11 +560,15 @@ class: middle
 .content-box-green[**The model**]
 
 $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)$
+
+<br>
 
 .content-box-green[**An example of instruments**]
 
 IQ test score
 
+<br>
+
 .content-box-green[**Question**]
 
 + Is it uncorrelated with $v$ $(ability$ and all the other important unobservables)?
@@ -447,11 +583,15 @@ class: middle
 .content-box-green[**The model**]
 
 $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)$
+
+<br>
 
 .content-box-green[**An example of instruments**]
 
 Mother's education
 
+<br>
+
 .content-box-green[**Question**]
 
 + Is it uncorrelated with $v$ $(ability$ and all the other important unobservables)?
@@ -467,9 +607,12 @@ class: middle
 
 $log(wage) = \beta_0 + \beta_1 educ + \beta_2 exper + v \;\; ( = \beta_3 ability + u)$
 
+<br>
 .content-box-green[**An example of instruments**]
 
 Number of siblings
+
+<br>
 
 .content-box-green[**Question**]
 
@@ -503,9 +646,11 @@ We believe
 
 + $exper$ is exogenous $(x_2)$
 
-+ we use the number of siblings ($sibs$) and father's education ($feduc$) as the instruments ($Z$)
++ we use the number of siblings $(sibs)$ and father's education $(feduc)$ as the instruments ($Z$)
 
 --
+
+<br>
 
 .content-box-green[**Terminology**]
 
@@ -522,34 +667,32 @@ class: middle
 .content-box-green[**Dataset**]
 
 ```{r }
-#--- read the data ---#   
-data <- read.dta13('WAGE2.dta')
-
 #--- take a look at the data ---#
-select(data, wage, educ, sibs, feduc) %>% head
+wage2 %>%
+  select(wage, educ, sibs, feduc) %>%
+  head()
 ```
 
 ---
 class: middle
 
-We can use the `lfe` package to run IV estimation method.
+We can continue to use the `fixest` package to run IV estimation method.
 
 ```{r cache = F}
-library(lfe)  
+library(fixest)
 ```
-
----
-class: middle 
 
 .content-box-green[**Syntax**]
 
 ```{r eval = F}
-felm(dep var ~ included instruments|0|first stage formula|0 , data = dataset)  
+felm(dep var ~ included instruments|first stage formula, data = dataset)
 ```
 
 + `included instruments`: exogenous included variables (do not include endogenous variables here)
 
 --
+
+<br>
 
 .content-box-green[**first stage formula**]
 
@@ -559,10 +702,12 @@ felm(dep var ~ included instruments|0|first stage formula|0 , data = dataset)
 
 --
 
+<br>
+
 .content-box-green[**Example**]
 
 ```{r }
-iv_res <- felm(log(wage) ~ exper| 0 | (educ ~ sibs + feduc) | 0, data = data)  
+iv_res <- feols(log(wage) ~ exper | educ ~ sibs + feduc, data = wage2)
 ```
 
 + `included variable`: 
@@ -575,13 +720,17 @@ iv_res <- felm(log(wage) ~ exper| 0 | (educ ~ sibs + feduc) | 0, data = data)
 ---
 class: middle
 
+.content-box-red[**IV regression results**]
+
 ```{r }
-tidy(iv_res)  
+iv_res
 ```
+
+<br>
 
 .content-box-green[**Note**]
 
-+ When variable `x` is the endogenous variable, `felm` changes the name of `x` to `x(fit)`.
++ When variable `x` is the endogenous variable, `fixest` changes the name of `x` to `x(fit)`.
 
 + Here, `educ` has become `educ(fit)`.
 
@@ -591,16 +740,20 @@ class: middle
 
 .content-box-green[**Comparison of OLS and IV Estimation Results**]
 
-```{r echo = F, results = "asis"}
+```{r echo = F}
 #--- OLS ---#  
-reg_ols <- lm(log(wage)~educ+exper,data=data)
+reg_ols <- feols(log(wage) ~ educ + exper, data = wage2)
 
 #--- Stargaze ---#  
-stargazer(reg_ols,iv_res,single.row=TRUE,omit.stat=c('all'),table.layout='-ldc-t-',type='html',column.labels=c('OLS','IV'))  
+msummary(
+  list(reg_ols, iv_res),
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+)
 ```
 
 --
-
 
 .content-box-green[**Question**]
 
@@ -618,6 +771,8 @@ We can always test if the excluded instruments are weak or not (test of conditio
 
 --
 
+<br>
+
 .content-box-green[**How**]
 
 + Run the 1st stage regression
@@ -633,18 +788,25 @@ If excluded instruments $(sibs$ and $feduc$) are jointly significant, then it wo
 ---
 class: middle
 
-When we ran the IV estimation using `felm()` earlier, it automatically calculated the F-statistic for the weak instrument test.
-
-To see it, access the `stage1` element of `iv_res`, and further access the `rob.iv1fstat` component of `stage1`.
+When we ran the IV estimation using `fixest::feols()` earlier, it automatically calculated the F-statistic for the weak instrument test.
 
 --
 
-```{r }
-iv_res$stage1$rob.iv1fstat
+```{r highlight.output = 12}
+iv_res
 ```
 
-+ `F`: F-statistic for the weak instrument test
-+ `P`: p-value for the weak instrument test
+Here, F-test for the null hypothesis of the excluded instruments (`sibs` and `feduc`) do not have any explanatory power on the endogenous variable (`educ`) beyond the included instrument (`exper`) is rejected. 
+
+---
+class: middle
+
+Alternatively, you can access the `iv_first_stage` component of the 
+regression results.
+
+```{r }
+iv_res$iv_first_stage
+```
 
 ---
 class: middle
@@ -655,7 +817,7 @@ class: middle
 
 + Even if you reject the null if $F$-stat is small, you may have a problem
 
-+ You know nothing about if your excluded instruments satisfy Condition II. 
++ You know nothing about if your excluded instruments satisfy Condition 2. 
 
 + If you cannot reject the null, it is a strong indication that your instruments are weak. Look for other instruments.
 
@@ -670,17 +832,17 @@ class: middle
 
 ```{r }
 set.seed(73289)
-N <- 500 # number of observations  
+N <- 500 # number of observations
 
-u_common <- runif(N)# the term shared by the endogenous variable and the error term 
+u_common <- runif(N) # the term shared by the endogenous variable and the error term
 z_common <- runif(N) # the term shared by the endogenous variable and instruments
-x_end <- u_common + z_common + runif(N) # the endogenous variable 
+x_end <- u_common + z_common + runif(N) # the endogenous variable
 z_strong <- z_common + runif(N) # strong instrument
-z_weak <- 0.01*z_common + 0.99995*runif(N) # weak instrument
+z_weak <- 0.01 * z_common + 0.99995 * runif(N) # weak instrument
 u <- u_common + runif(N) # error term
 y <- x_end + u # dependent variable
 
-data <- data.frame(y,x_end,z_strong,z_weak)
+data <- data.frame(y, x_end, z_strong, z_weak)
 ```
 
 ---
@@ -700,14 +862,16 @@ class: middle
 
 ```{r }
 #--- IV estimation (strong) ---#
-iv_strong <- felm(y ~ 1 | 0 | (x_end ~ z_strong) | 0, data = data)
+iv_strong <- feols(y ~ 1 | x_end ~ z_strong, data = data)
 ```
+
+<br>
 
 .content-box-green[**Estimation with the weak instrumental variable**]
 
 ```{r }
 #--- IV estimation (weak) ---#
-iv_weak <- felm(y ~ 1 | 0 | (x_end ~ z_weak) | 0, data = data)
+iv_weak <- feols(y ~ 1 | x_end ~ z_weak, data = data)
 ```
 
 ---
@@ -718,7 +882,7 @@ class: middle
 tidy(iv_strong)
 
 #--- coefs (weak) ---#
-tidy(iv_weak)  
+tidy(iv_weak)
 ```
 
 
@@ -739,16 +903,18 @@ class: middle
 .scroll-box-10[
 ```{r }
 #--- diagnostics (strong) ---#
-iv_strong$stage1$rob.iv1fstat
+iv_strong$iv_first_stage
 ```
 ]
 
 .scroll-box-10[
 ```{r }
 #--- diagnostics (weak) ---#
-iv_weak$stage1$rob.iv1fstat 
+iv_weak$iv_first_stage
 ```
 ]
+
+<br>
 
 .content-box-green[**Question**]
 
@@ -766,28 +932,28 @@ class: middle
 
 ```{r }
 B <- 1000 # the number of experiments
-beta_hat_store <- matrix(0,B,2) # storage of beta hat
+beta_hat_store <- matrix(0, B, 2) # storage of beta hat
 
-for (i in 1:B){
+for (i in 1:B) {
 
   #--- data generation ---#
-  u_common <- runif(N) 
-  z_common <- runif(N) 
-  x_end <- u_common + z_common + runif(N) 
+  u_common <- runif(N)
+  z_common <- runif(N)
+  x_end <- u_common + z_common + runif(N)
   z_strong <- z_common + runif(N)
-  z_weak <- 0.01*z_common + 0.99995*runif(N)
+  z_weak <- 0.01 * z_common + 0.99995 * runif(N)
   u <- u_common + runif(N)
   y <- x_end + u
-  data <- data.table(y,x_end,z_strong,z_weak)
+  data <- data.table(y, x_end, z_strong, z_weak)
 
   #--- IV estimation with a strong instrument ---#
-  iv_strong <- felm(y ~ 1 | 0 | (x_end ~ z_strong) | 0, data=data)
-  beta_hat_store[i,1] <- iv_strong$coef[2, 1]
+  iv_strong <- feols(y ~ 1 | x_end ~ z_strong, data = data)
+  beta_hat_store[i, 1] <- iv_strong$coefficients[2]
 
   #--- IV estimation with a weak instrument ---#
-  iv_weak <- felm(y ~ 1 | 0 | (x_end ~ z_weak) | 0, data=data)
-  beta_hat_store[i,2] <- iv_weak$coef[2, 1]
-}  
+  iv_weak <- feols(y ~ 1 | x_end ~ z_weak, data = data)
+  beta_hat_store[i, 2] <- iv_weak$coefficients[2]
+}
 ```
 
 ---
@@ -797,16 +963,16 @@ class: middle
 
 ```{r echo = F, out.width = "70%"}
 melted <- melt(data.table(beta_hat_store))
-melted[variable=='V1',variable:='Strong']
-melted[variable=='V2',variable:='Weak']
+melted[variable == "V1", variable := "Strong"]
+melted[variable == "V2", variable := "Weak"]
 
-ggplot(data=melted) +
-  geom_density(aes(x=value,fill=variable),alpha=0.3) +
-  geom_vline(xintercept=1,color='red') +
-  scale_fill_discrete(name='') +
+ggplot(data = melted[abs(value) < 5, ]) +
+  geom_density(aes(x = value, fill = variable), alpha = 0.3) +
+  geom_vline(xintercept = 1, color = "red") +
+  scale_fill_discrete(name = "") +
   theme(
-  legend.position='bottom'
-  )   
+    legend.position = "bottom"
+  )
 ```
 
 ---
@@ -815,11 +981,11 @@ class: middle
 .content-box-green[**Visualization of the MC Results**]
 
 ```{r echo = F, out.width = "70%"}
-ggplot(data=melted[abs(value)<3,]) +
-  geom_density(aes(x=value,fill=variable),alpha=0.3) +
-  geom_vline(xintercept=1,color='red') +
-  scale_fill_discrete(name='') +
-  theme(legend.position='bottom')   
+ggplot(data = melted[abs(value) < 5, ]) +
+  geom_density(aes(x = value, fill = variable), alpha = 0.3) +
+  geom_vline(xintercept = 1, color = "red") +
+  scale_fill_discrete(name = "") +
+  theme(legend.position = "bottom")
 ```
 
 ---
@@ -837,3 +1003,32 @@ class: middle
 .content-box-red[**condition 1**])
 
 + Implement IV estimation and report the results
+
+---
+class: middle
+
+You can include fixed effects in your IV estimation.
+
+.content-box-green[**Syntax**]
+```{r eval = F}
+feols(dep var ~ included instruments | FE | 1st stage formula, data = dataset)
+```
+
+.content-box-green[**Example**]
+
+Include `married` and `south` as fixed effects.
+```{r }
+feols(log(wage) ~ exper | married + south | educ ~ feduc + sibs, data = wage2)
+```
+
+---
+class: middle
+
+Clustered SE? You can just add `cluster = ` option just like we previously did.
+
+```{r }
+feols(log(wage) ~ exper | married + south | educ ~ feduc + sibs, cluster = ~black, data = wage2)
+```
+
+
+
