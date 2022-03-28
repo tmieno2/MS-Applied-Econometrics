@@ -82,6 +82,12 @@ rmarkdown::render(here("LectureNotes/12_InstrumentalVariable/iv_x.rmd"))
 build_pdf(here("LectureNotes/12_InstrumentalVariable/iv_x.html"))
 
 # /*===========================================================
+#' # 13. Impact Evaluation
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/13_ImpactEvaluation/impact_evaluation_x.rmd"))
+build_pdf(here("LectureNotes/13_ImpactEvaluation/impact_evaluation_x.html"))
+
+# /*===========================================================
 #' # A1 Summary Questions
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/A1_SummaryQuestions/questions_x.rmd"))

@@ -5,49 +5,40 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
+    self_contained: true
     nature:
       ratio: 4:3
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
-class: middle
+class: inverse, center, middle
+name: mvr
 
 ```{r, child = './../setup.Rmd'}
 ```
 
+```{r knitr-setup, include = FALSE, cache = F}
+library(knitr)
+opts_chunk$set(
+  echo = F,
+  root.dir = here("LectureNotes/13_ImpactEvaluation")
+)
+```
 ```{r echo = F, eval = F}
-setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/ImpactEvaluation/")
+setwd(here("LectureNotes/13_ImpactEvaluation"))
 ```
 
 ```{r additional-libraries, include = F, cache = F}
 #--- load packages ---#
-suppressMessages(library(broom))
-suppressMessages(library(lfe))
-suppressMessages(library(gt))
-suppressMessages(library(stargazer))
-suppressMessages(library(flextable))
-suppressMessages(library(readstata13))
-suppressMessages(library(lmtest))
-suppressMessages(library(modelsummary))
+library(broom)
+library(fixest)
+library(gt)
+library(flextable)
+library(readstata13)
+library(lmtest)
+library(modelsummary)
 ```
-
-# Before we start 
-
-## Learning objectives
-
-Understand the new econometric methods that can be used with panel datasets to address endogeneity problems.
-
-## Table of contents
-
-1. [Selection Bias](#select)
-2. [Reverse Causality](#reverse)
-3. [Measurement Error](#ME)
-
----
-class: inverse, center, middle
-name: select
 
 # Impact (Program) Evaluation
 
@@ -59,15 +50,17 @@ class: middle
 
 .content-box-green[**Definition**]
 
-Impact (program) evaluation is a field of econometrics that focuses on estimating the impact of a program.
+Impact (program) evaluation is a field of econometrics that focuses on estimating the impact of a program or event.
+
+<br>
 
 .content-box-green[**Examples**]
 
-+ Groundwater use limit in Nebraska 
-+ Technology adoption (soil moisture sensor)
-+ Crop insurance
-+ Job training program
-+ Food Stamp 
++ Groundwater use limit in Nebraska $\Rightarrow$ water use 
++ Technology adoption (soil moisture sensor) $\Rightarrow$ water use 
++ Crop insurance $\Rightarrow$ input use 
++ Job training program $\Rightarrow$ productivty 
++ Food Stamp $\Rightarrow$ health, education, etc
 
 ---
 class: middle
@@ -76,7 +69,7 @@ class: middle
 
 Most of the programs you are interested in are not randomized.
 
-$\Rightarrow$ 
+$\downarrow$ 
 
 Selection Bias (endogeneity problem arising from self-selection into the program)
 
@@ -87,7 +80,9 @@ class: middle
 
 + The best (if feasible) way to tackle the problem of selection bias in impact evaluation is randomized experiment, where who gets treated or not is determined randomly (you design a program or experiment and randomize treatment-control assignment)
 
-+ This ensures that the dummy variable of treated or not is not correlated with the error term 
++ This ensures that the treatment status (dummy variable indicating treated or not) is not correlated with the error term 
+
+<br>
 
 .content-box-green[**Example**]
 
@@ -97,11 +92,13 @@ $y \;\;(\mbox{income}) = \beta_0 + \beta_1 program \;\;(\mbox{financial aid}) + 
 
 --
 
+<br>
+
 .content-box-red[**Problem**]
 
-Many of the programs are simply not possible to randomize because of financial and ethical reasons 
+Many of the programs are simply not possible to randomize because of financial and/or ethical reasons.
 
-$\Rightarrow$
+$\downarrow$
 
 We need to use data from an event that happened outside our control.
 
@@ -117,11 +114,15 @@ An event or policy change (often a change in government policy) that happens .bl
 
 --
 
+<br>
+
 .content-box-green[**Challenges**]
 
 The program is most likely correlated with the error term.
 
 --
+
+<br>
 
 .content-box-green[**Lecture Objectives**]
 
@@ -140,6 +141,8 @@ class: middle
 
 + construction started in 1981
 
+<br>
+
 .content-box-green[**Data collected**]
 
 Housing prices in 1978 and 1981, and other variables (we observations before and after the incinerator construction)
@@ -149,11 +152,11 @@ class: middle
  
 # Various Approaches 
 
-+ Approach 1: cross-sectional comparison of houses that are close to (treated) and far away from (control) to the incinerator .red[after] the incinerator was built (data in 1981)
++ <span style = "color: blue;"> Approach 1 </span>: cross-sectional comparison of houses that are close to (treated) and far away from (control) to the incinerator .red[after] the incinerator was built (data in 1981)
   
-+ Approach 2: comparison of the houses that are close to the incinerator before (control) and after (treated) the incinerator was built (data in 1978 and 1981)
++ <span style = "color: blue;"> Approach 2 </span>: comparison of the houses that are close to the incinerator before (control) and after (treated) the incinerator was built (data in 1978 and 1981)
 
-+ Approach 3: comparison of differences (close by v.s. far away) in differences (before-after) of house prices (this method will become clearer later)
++ <span style = "color: blue;"> Approach 3 </span>: comparison of differences (close by v.s. far away) in differences (before-after) of house prices (this method will become clearer later)
 
 ---
 class: middle
@@ -170,6 +173,8 @@ $rpice = \gamma_0 + \gamma_1 nearinc + u$
 
 + $\gamma_1$: .blue[the difference between the mean house price of houses nearby the incinerator and the rest (not nearby) in 1981]
 
+<br>
+
 .content-box-green[**Question**]
 
 Is `nearinc` endogenous?
@@ -179,31 +184,36 @@ class: middle
 
 ```{r }
 #--- import the data ---#
-data <- read.dta13('KIELMC.dta') %>%
-    mutate(rprice=rprice/1000)
+data <-
+  read.dta13("KIELMC.dta") %>%
+  mutate(rprice = rprice / 1000)
 
 #--- run regression ---#
-reg_81 <- felm(
-  rprice ~ nearinc, 
-  data = filter(data, year == 1981)
-)  
+reg_81 <-
+  feols(
+    rprice ~ nearinc,
+    data = filter(data, year == 1981)
+  )
 ```
 
 ```{r echo = F}
 msummary(
   reg_81,
-  gof_omit = "IC|Log|Adj|F",
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
   output = "flextable",
   star = TRUE
-) %>% 
-fontsize(size = 16, part = "all") %>% 
-padding(
-  padding.top = 5,
-  padding.bottom = 5, 
-  part = "all"
-) %>% 
-autofit()
+) %>%
+  fontsize(size = 12, part = "all") %>%
+  color(i = 3, j = 2, color = "red") %>%
+  padding(
+    padding.top = 5,
+    padding.bottom = 5,
+    part = "all"
+  ) %>%
+  autofit()
 ```
+
+<br>
 
 .content-box-green[**Question**]
 Is this reliable? 
@@ -224,29 +234,31 @@ class: middle
 
 ```{r 78_reg}
 #--- run regression ---#
-reg_78 <- felm(
-  rprice ~ nearinc, 
-  data = filter(data, year == 1978)
-)  
+reg_78 <-
+  feols(
+    rprice ~ nearinc,
+    data = filter(data, year == 1978)
+  )
 ```
 
 ```{r echo = F}
 msummary(
   reg_78,
-  gof_omit = "IC|Log|Adj|F",
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
   output = "flextable",
   star = TRUE
-) %>% 
-fontsize(size = 16, part = "all") %>% 
-padding(
-  padding.top = 5,
-  padding.bottom = 5, 
-  part = "all"
-) %>% 
-autofit()
+) %>%
+  fontsize(size = 12, part = "all") %>%
+  padding(
+    padding.top = 5,
+    padding.bottom = 5,
+    part = "all"
+  ) %>%
+  color(i = 3, j = 2, color = "red") %>%
+  autofit()
 ```
 
---
+<br>
 
 .content-box-red[**Critical**]
 
@@ -264,7 +276,7 @@ ggplot() +
   geom_bar(
     data = data_mean,
     aes(
-      y = m_rprice, 
+      y = m_rprice,
       x = factor(year),
       fill = factor(nearinc)
     ),
@@ -284,16 +296,18 @@ class: middle
 ```{r echo = F}
 ex_results_tab <- data.frame(
   `treated` = c("nearinc = 0", "nearinc = 1"),
-  `before` = c("\\(\\gamma_0\\)", "\\(\\gamma_1\\)"), 
+  `before` = c("\\(\\gamma_0\\)", "\\(\\gamma_1\\)"),
   after = c("\\(\\gamma_0 + \\alpha_0 + 0\\)", "\\(\\gamma_1 + \\alpha_1 + \\beta \\)")
 ) %>%
-knitr::kable(
-  format = "html", 
-  escape = FALSE
-)
+  knitr::kable(
+    format = "html",
+    escape = FALSE
+  )
 
 ex_results_tab
 ```
+
+<br>
 
 + $\gamma_j$ is the average house price of those that are $nearinc=j$ in 1978 (before)
 
@@ -314,11 +328,15 @@ ex_results_tab
 
 + $\beta$ is the true causal impact of the incinerator placement
 
+<br>
+
 .content-box-green[**Question**]
 
 So, what did we estimate with Approach 1?
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -342,9 +360,13 @@ class: middle
 
 + $\alpha_1 - \alpha_0$: differences in the trends in housing price between the two groups  
 
+<br>
+
 .content-box-green[**Question**]
 
 So, when Approach 1 gives us unbiased estimation of the impact of the incinerator? 
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -360,10 +382,13 @@ class: middle
 
 Compare of the houses that are close to the incinerator before (control) and after (treated) the incinerator was built (data in 1978 and 1981)
 
+<br>
 
 .content-box-green[**Data**]
 
 Restrict the data to the houses that are near the incinerator 
+
+<br>
 
 .content-box-green[**Model**]
 
@@ -380,31 +405,32 @@ $rpice = \beta_0 + \beta_1 y81 + u$
 class: middle
 
 ```{r reg_ba}
-reg_treated <- felm(
-  rprice ~ y81, 
-  data = filter(data, nearinc == 1) #<<
-)  
+reg_treated <- feols(
+  rprice ~ y81,
+  data = filter(data, nearinc == 1) # <<
+)
 ```
 
 ```{r echo = F}
 msummary(
   reg_treated,
-  gof_omit = "IC|Log|Adj|F",
+  gof_omit = "IC|Log|Adj|F|Within|Pseudo",
   output = "flextable",
   star = TRUE
-) %>% 
-fontsize(size = 16, part = "all") %>% 
-padding(
-  padding.top = 5,
-  padding.bottom = 5, 
-  part = "all"
-) %>% 
-autofit()
+) %>%
+  fontsize(size = 12, part = "all") %>%
+  color(i = 3, j = 2, color = "red") %>%
+  padding(
+    padding.top = 5,
+    padding.bottom = 5,
+    part = "all"
+  ) %>%
+  autofit()
 ```
 
---
+<br>
 
-The incinerator increased the average house price (not statistically significant).  
+The incinerator increased the average house price (not statistically significant).
 
 ---
 class: middle
@@ -413,17 +439,23 @@ class: middle
 ex_results_tab
 ```
 
+<br>
+
 + $\gamma_j$ is the average house price of those that are $nearinc=j$ in 1978 (before)
 
 + $\alpha_j$ is .blue[any] macro shocks .blue[other than the incinerator event] that happened between the before and after period to the houses that are $nearinc=j$
 
 + $\beta$ is the true causal impact of the incinerator placement
 
+<br>
+
 .content-box-green[**Question**]
 
 So, what did we estimate with Approach 2?
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -444,11 +476,15 @@ $= \alpha_1 + \beta$
 
 --
 
+<br>
+
 .content-box-green[**Question**]
 
 So, when Approach 2 gives us unbiased estimation of the impact of the incinerator? 
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -470,6 +506,8 @@ Compare of differences (close by v.s. far away) in differences (before-after) of
 
 + Find the difference in the differences
 
+<br>
+
 .content-box-green[**Note**]
 
 This method is called DID estimation method (Difference-in- differences). 
@@ -477,9 +515,13 @@ This method is called DID estimation method (Difference-in- differences).
 ---
 class: middle
 
+<br>
+
 .content-box-green[**Data**]
 
 All the observations 
+
+<br>
 
 .content-box-green[**Model**]
 
@@ -500,6 +542,8 @@ $rpice = \beta_0 + \beta_1 y81 + \beta_2 nearinc + \beta_3 nearinc \times y81 + 
 
 --
 
+<br>
+
 .content-box-green[**Expected house price**]
 
 + $E[rprice|year=1981, nearinc = 0] = \beta_0 + \beta_1$ 
@@ -511,6 +555,8 @@ $rpice = \beta_0 + \beta_1 y81 + \beta_2 nearinc + \beta_3 nearinc \times y81 + 
 + $E[rprice|year=1978, nearinc = 1] = \beta_0 + \beta_2$
 
 --
+
+<br>
 
 .content-box-green[**Differences**]
 
@@ -526,6 +572,8 @@ $= \beta_1$
 
 --
 
+<br>
+
 .content-box-green[**Difference in the differences**]
 
 $(\beta_1 + \beta_3) - \beta_1 = \beta_3$
@@ -533,30 +581,29 @@ $(\beta_1 + \beta_3) - \beta_1 = \beta_3$
 ---
 class: middle
 
-```{r reg_ba}
-reg_did <- felm(
-  rprice ~ nearinc + y81 + nearinc*y81,
+```{r reg_ba_did}
+reg_did <- feols(
+  rprice ~ nearinc + y81 + nearinc * y81,
   data = data
-)  
+)
 ```
 
 ```{r echo = F}
 msummary(
   reg_did,
-  gof_omit = "IC|Log|Adj|F",
+  gof_omit = "IC|Log|Adj|F|Within|Pseudo",
   output = "flextable",
   star = TRUE
-) %>% 
-fontsize(size = 16, part = "all") %>% 
-bg(i = c(5, 6), bg = "#FF7F7F") %>% 
-padding(
-  padding.top = 5,
-  padding.bottom = 5, 
-  part = "all"
-) %>% 
-autofit()
+) %>%
+  fontsize(size = 12, part = "all") %>%
+  color(i = 7, j = 2, color = "red") %>%
+  padding(
+    padding.top = 5,
+    padding.bottom = 5,
+    part = "all"
+  ) %>%
+  autofit()
 ```
---
 
 <br>
 
@@ -569,11 +616,15 @@ class: middle
 ex_results_tab
 ```
 
+<br>
+
 .content-box-green[**Question**]
 
 So, what did we estimate with Approach 3?
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -596,11 +647,15 @@ class: middle
 
 Difference $= \alpha_1 - \alpha_0 + \beta$
 
+<br>
+
 .content-box-green[**Question**]
 
 So, when Approach 3 gives us unbiased estimation of the impact of the incinerator? 
 
 --
+
+<br>
 
 .content-box-green[**Answer**]
 
@@ -611,18 +666,20 @@ So, when Approach 3 gives us unbiased estimation of the impact of the incinerato
 ---
 class: middle
 
-
-.content-box-green[**Key condition**]
+.content-box-green[**Key condition (common/parallel trend assumption)**]
 
 $\alpha_1 = \alpha_0$: the two groups experienced the same trend in house price from 1978 to 1981
 
+<br>
+.content-box-green[**Common/parallel trend assumption in general**]  
+
+If no treatment had occurred, the difference between the treated group and the untreated group would have stayed the same in the post-treatment period as it was in the pre-treatment period. 
+
+<br>
+
 .content-box-red[**Important**]
 
-+ This condition is untestable
-􏰂 
-+ If there were any significant changes in policy that happen to only one of them other than the treatment of interest, DID confound the impact of the other policy and the treatment of interest
-
-+ It is a common practice to present the trend of the dependent variable prior to the year before the treatment happened
+This condition/assumption is <span style = "color: red;"> NOT </span> testable because you never observe what would the treament group be like if it were not for the treatment (we will discuss this further)
 
 ---
 class: middle
@@ -637,11 +694,13 @@ Approach 3: $\alpha_1 - \alpha_0 + \beta$
 
 --
 
+<br>
+
 .content-box-red[**Important**]
 
 --
 
-+ None of these approached are perfect. 
++ None of these approaches are perfect. 
 
 --
 
@@ -657,5 +716,203 @@ Approach 3: $\alpha_1 - \alpha_0 + \beta$
 
 e.g., $\alpha_1 = 5$ and $\alpha_0 = - 5$
 
+---
+class: middle
 
+# DID: Another Example
+
+.content-box-green[**Cholera**]
+
++ Back in mid 1800s', Cholera was believed to spread via air
++ John Snow believe it was actually through fecally-contaminated water
+
+<br>
+
+.content-box-green[**Setting**]
+
++ London's water needs were served by a number of competing companies, who got their water intake from different parts of the Thames river. 
+
++ Water taken in from the parts of the Thames that were downstream of London contained everything that Londoners dumped in the river, including plenty of fecal matter from people infected with cholera. 
+
+<br>
+
+.content-box-green[**Natural Experiment**]
+
++ Between those two periods of 1849 and 1854, a policy was enacted: the Lambeth Company was required by an Act of Parliament to move their water intake upstream of London. 
+
+---
+class: middle
+
+.content-box-green[**Treatment**]
+
++ Switch of where water is taken (downstream to upstream)
+
+<br>
+
+.content-box-green[**Before and After**]
+
++ "before" (1849): Lambeth took water downstream
++ "after" (1854): Lambeth took water upstream
+
+<br>
+
+.content-box-green[**Control and Treatment Groups**]
+
++ Control group: those who were not served by Lambeth 
++ Treatment group: those who were served by Lambeth 
+
+
+---
+class: middle
+
+.content-box-green[**Data**] 
+
+```{r echo = F}
+data.table(
+  Supplier = c("Non-Lambeth only", "Lambeth + Others"),
+  `1849` = c(134.9, 146.6),
+  `1854` = c(130.1, 84.9)
+) %>%
+  flextable() %>%
+  autofit()
+```
+
+--
+<br>
+
+.content-box-green[**DID estimate**]
+
+Estimate treatment effect is:
+
+(84.9 - 130.1) - (146.6 - 134.9) = `r (84.9 - 130.1) - (146.6 - 134.9)`
+
+---
+class: middle
+
+# DID using R 
+
+.content-box-green[**Well-levle groundwater use data in Kansas**]
+
+```{r }
+(
+  lema_data <- readRDS("LEMA_data.rds")
+)
+```
+
+.content-box-green[**Main variables**]
+
++ `site`: well
++ `af_used`: groundwater used (dependent variable)
++ `in_LEMA`: whether located inside the LEMA region or not
++ `year`: year
+
+
+---
+class: middle
+
+.content-box-green[**Important**]
+
+Selecting the right control group is important in DID. If the following conditions are satisfied, it is more plausible that the control and treatment groups would have had the same macro shock ($\alpha_1 = \alpha_0$) if it were not for the treatment.
+
++ There were no events that could significantly affect the dependent variable of the control group between the "before" and "after" period
++ The two groups are generally similar so other factors do not drive the differences between them
++ They had similar trajectories of the dependent variable prior to the treatment (possible if you have more than one years of data prior to the treatment)
+
+---
+class: middle
+
+```{r echo = F, out.width = "80%", cache = FALSE}
+set.seed(1000)
+tb <- tibble(
+  Time = rep(1:10, 2),
+  Group = c(
+    rep("Treatment", 10),
+    rep("Control", 10)
+  )
+) %>%
+  mutate(After = Time >= 7) %>%
+  mutate(
+    YCons = .4 * Time + 2 * After * (Group == "Treatment") + (Group == "Treatment") + rnorm(20, 0, .5),
+    YDiv = (.3 + .5 * (Group == "Control")) * Time + 2 * After * (Group == "Treatment") + 3 * (Group == "Treatment") + rnorm(20, 0, .5)
+  )
+
+p1 <- ggplot(tb, aes(x = Time, y = YCons, color = Group)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(aes(xintercept = 7), linetype = "dashed") +
+  geom_text(
+    data = tb %>% filter(Time == 10),
+    aes(x = Time + .1, label = Group, color = Group),
+    size = 2, hjust = 0
+  ) +
+  annotate(
+    geom = "label",
+    x = 7,
+    y = 1,
+    label = "Treatment\nPeriod",
+    size = 2
+  ) +
+  scale_color_manual(values = c("#676767", "black")) +
+  expand_limits(x = 14) +
+  labs(
+    y = "Outcome",
+    title = "(a) Parallel Prior Trends"
+  ) +
+  theme_pubr() +
+  guides(color = "none") +
+  theme(
+    text = element_text(size = 6),
+    axis.title.x = element_text(size = 6),
+    axis.title.y = element_text(size = 6),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+  )
+
+p2 <- ggplot(tb, aes(x = Time, y = YDiv, color = Group)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(aes(xintercept = 7), linetype = "dashed") +
+  geom_text(
+    data = tb %>% filter(Time == 10),
+    aes(x = Time + .1, label = Group, color = Group),
+    size = 2, hjust = 0
+  ) +
+  annotate(
+    geom = "label",
+    x = 7,
+    y = 2.5,
+    label = "Treatment\nPeriod",
+    size = 2
+  ) +
+  scale_color_manual(values = c("#676767", "black")) +
+  expand_limits(x = 14) +
+  labs(
+    y = "Outcome",
+    title = "(b) Converging Prior Trends"
+  ) +
+  theme_pubr() +
+  guides(color = "none") +
+  theme(
+    text = element_text(size = 6),
+    axis.title.x = element_text(size = 6),
+    axis.title.y = element_text(size = 6),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+  )
+
+
+# ggsave(
+#   'prior_trends.pdf', p1 | p2, width = 10, height = 5, units = 'in', device = cairo_pdf)
+```
+
+```{r cache = FALSE, out.width="80%", echo = F}
+p1
+```
+
+---
+class: middle
+
+```{r cache = FALSE, out.width="80%", echo = F}
+p2
+```
 
