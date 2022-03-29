@@ -205,11 +205,6 @@ msummary(
 ) %>%
   fontsize(size = 12, part = "all") %>%
   color(i = 3, j = 2, color = "red") %>%
-  padding(
-    padding.top = 5,
-    padding.bottom = 5,
-    part = "all"
-  ) %>%
   autofit()
 ```
 
@@ -249,11 +244,6 @@ msummary(
   star = TRUE
 ) %>%
   fontsize(size = 12, part = "all") %>%
-  padding(
-    padding.top = 5,
-    padding.bottom = 5,
-    part = "all"
-  ) %>%
   color(i = 3, j = 2, color = "red") %>%
   autofit()
 ```
@@ -420,11 +410,6 @@ msummary(
 ) %>%
   fontsize(size = 12, part = "all") %>%
   color(i = 3, j = 2, color = "red") %>%
-  padding(
-    padding.top = 5,
-    padding.bottom = 5,
-    part = "all"
-  ) %>%
   autofit()
 ```
 
@@ -597,11 +582,6 @@ msummary(
 ) %>%
   fontsize(size = 12, part = "all") %>%
   color(i = 7, j = 2, color = "red") %>%
-  padding(
-    padding.top = 5,
-    padding.bottom = 5,
-    part = "all"
-  ) %>%
   autofit()
 ```
 
@@ -857,17 +837,105 @@ $$
 
 The variable of interest is $\beta_3$, which measures the impact of the treatment.
 
----
-class: middle
-
 .content-box-green[**R code**] 
 
-```{r }
-did_res <- feols(af_used ~ before_after + in_LEMA + before_after * in_LEMA, data = lema_data)
+```{r echo = TRUE}
+did_res <- feols(
+  af_used ~ before_after + in_LEMA + I(before_after * in_LEMA) + pr + et0,
+  cluster = ~site,
+  data = lema_data
+)
 ```
 
 ---
 class: middle
+
+```{r }
+msummary(
+  did_res,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
+  output = "flextable",
+  star = TRUE
+) %>%
+  fontsize(size = 12, part = "all") %>%
+  color(i = 11, j = 2, color = "red") %>%
+  autofit()
+```
+
+---
+class: middle
+
+.content-box-green[**Note: individual fixed effects**]
+
+DID does not require panel data. Two periods of cross-setional data are sufficient. But, if you have panel data, you can certainly include individual fixed effects, which would certainly help to control for time-invariant characteristics (both observed and unobserved) 
+
+```{r did-ife, include = FALSE}
+did_res_ife <- feols(
+  af_used ~ before_after + in_LEMA + I(before_after * in_LEMA) + pr + et0 | site,
+  cluster = ~site,
+  data = lema_data
+)
+```
+
+```{r echo = FALSE}
+flair::decorate("did-ife") %>%
+  flair::flair("| site") %>%
+  knit_print.with_flair()
+```
+
+Notice that `in_LEMA` was dropped due to perfect collinearity (this is not a problem). `in_LEMA` is effectively controlled for by including individual fixed effects.
+
+```{r }
+msummary(
+  did_res_ife,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
+  output = "flextable",
+  star = TRUE
+) %>%
+  fontsize(size = 9, part = "all") %>%
+  color(i = 7, j = 2, color = "red") %>%
+  autofit()
+```
+
+---
+class: middle
+
+.content-box-green[**Note: year fixed effects**]
+
+If you have multiple years of observations in the before and after periods, you can (and should) include year fixed effects. 
+
+```{r did-yfe, include = FALSE}
+did_res_yfe <- feols(
+  af_used ~ before_after + in_LEMA + I(before_after * in_LEMA) + pr + et0 | site + year,
+  cluster = ~site,
+  data = lema_data
+)
+```
+
+```{r echo = FALSE}
+flair::decorate("did-yfe") %>%
+  flair::flair("+ year") %>%
+  knit_print.with_flair()
+```
+
+Notice that `before_after` was dropped due to perfect collinearity (this is not a problem). `before_after` is effectively controlled for by including year fixed effects. Indeed, year fixed effects provide a tighter controls on annual macro shocks. 
+
+```{r }
+msummary(
+  did_res_yfe,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
+  output = "flextable",
+  star = TRUE
+) %>%
+  fontsize(size = 9, part = "all") %>%
+  color(i = 5, j = 2, color = "red") %>%
+  autofit()
+```
+
+---
+class: middle
+
+# How to argue your DID is good 
 
 .content-box-green[**Important**]
 
@@ -876,6 +944,7 @@ Selecting the right control group is important in DID. If the following conditio
 + There were no events that could significantly affect the dependent variable of the control group between the "before" and "after" period
 + The two groups are generally similar so other factors do not drive the differences between them
 + They had similar trajectories of the dependent variable prior to the treatment (possible if you have more than one years of data prior to the treatment)
+  - this does <span style = "color: red;"> NOT </span> guarantee that the their trends <span style = "color: red;"> after </span> the treatment are similar
 
 ---
 class: middle
@@ -915,7 +984,7 @@ p1 <- ggplot(tb, aes(x = Time, y = YCons, color = Group)) +
   expand_limits(x = 14) +
   labs(
     y = "Outcome",
-    title = "(a) Parallel Prior Trends"
+    title = "(a) (More or less) Parallel Prior Trends"
   ) +
   theme_pubr() +
   guides(color = "none") +
@@ -975,3 +1044,116 @@ class: middle
 p2
 ```
 
+---
+class: middle
+
+So, how about our example?
+
+```{r }
+lema_mean_af <-
+  lema_data %>%
+  group_by(year, in_LEMA) %>%
+  summarize(mean_af = mean(af_used))
+
+ggplot(data = lema_mean_af) +
+  geom_line(aes(
+    y = mean_af,
+    x = year,
+    color = factor(in_LEMA)
+  )) +
+  geom_vline(xintercept = 2012.5, color = "black") +
+  scale_color_discrete(name = "") +
+  scale_x_continuous(
+    breaks = min(lema_data$year):max(lema_data$year)
+  ) +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 90)
+  ) +
+  ylab("Groundwater Pumping (acre-feet)") +
+  xlab("Year")
+```
+
+Not too bad. We might want to consider starting from 1993.
+
+---
+class: middle
+
+# Placebo tests
+
++ Look at only the pre-treatment periods
++ Pretend that a treatment happend sometime in the middle of the pre-treatment period to the actual treatment group
++ Estimate the impact of the fake treatment
++ Check if the estimated impact is stastitically insignificantly different from 0 
++ If statistically significant, that would mean there is likley to be something wrong with the parallel trende assumption
+
+---
+class: middle
+
+Fake treament for the wells inside LEMA in 2000.
+
+```{r echo = TRUE}
+pre_lema_data <-
+  filter(lema_data, year <= 2012 & year >= 1993) %>%
+  #* pretend that a treatment happend in 2000
+  mutate(after_2000 = ifelse(year >= 2000, 1, 0))
+
+did_res_placebo <-
+  feols(
+    af_used ~ I(after_2000 * in_LEMA) + pr + et0 | site + year,
+    cluster = ~site,
+    data = pre_lema_data
+  )
+```
+
+```{r }
+msummary(
+  did_res_placebo,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
+  output = "flextable",
+  star = TRUE
+) %>%
+  fontsize(size = 9, part = "all") %>%
+  color(i = 1, j = 2, color = "red") %>%
+  autofit()
+```
+
+---
+class: middle
+
+Fake treament for the wells inside LEMA in 1995.
+
+```{r echo = TRUE}
+pre_lema_data <-
+  filter(lema_data, year <= 2012 & year >= 1993) %>%
+  #* pretend that a treatment happend in 1995
+  mutate(after_1995 = ifelse(year >= 1995, 1, 0))
+
+did_res_placebo <-
+  feols(
+    af_used ~ I(after_1995 * in_LEMA) + pr + et0 | site + year,
+    cluster = ~site,
+    data = pre_lema_data
+  )
+```
+
+```{r }
+msummary(
+  did_res_placebo,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
+  output = "flextable",
+  star = TRUE
+) %>%
+  fontsize(size = 9, part = "all") %>%
+  color(i = 1, j = 2, color = "red") %>%
+  autofit()
+```
+
+You can try more years as the starting year of a fake treatment and see what happens.
+
+---
+class: middle
+
+.content-box-green[**Note**] 
+
+Statistically insignificant estimated impacts of fake treatments bolster your claim about parallel trend assumption. But, it still does <span style = "color: red;"> NOT </span> guarantee the assumption is valid. Remember, the assumption is not testable.
