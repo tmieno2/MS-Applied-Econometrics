@@ -35,7 +35,7 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 12: Instrumental Variable Approach ([html](https://tmieno2.github.io/MS-Applied-Econometrics/12_InstrumentalVariable/iv_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/12_InstrumentalVariable/iv_x.pdf))
 
-+ Lecture 13: DID ([html](https://tmieno2.github.io/MS-Applied-Econometrics/13_ImpactEvaluation/impact_evaluation.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/13_ImpactEvaluation/impact_evaluation.pdf))
++ Lecture 13: DID ([html](https://tmieno2.github.io/MS-Applied-Econometrics/13_ImpactEvaluation/impact_evaluation_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/13_ImpactEvaluation/impact_evaluation_x.pdf))
 
 
 
