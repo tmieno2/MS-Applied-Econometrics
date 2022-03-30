@@ -88,6 +88,12 @@ rmarkdown::render(here("LectureNotes/13_ImpactEvaluation/impact_evaluation_x.rmd
 pagedown::chrome_print(here("LectureNotes/13_ImpactEvaluation/impact_evaluation_x.html"))
 
 # /*===========================================================
+#' # 14. Demonstration of conducting research
+# /*===========================================================
+rmarkdown::render(here("LectureNotes/A3_ResearchDemonstration/demonstration_supplement_x.rmd"))
+pagedown::chrome_print(here("LectureNotes/A3_ResearchDemonstration/demonstration_supplement_x.html"))
+
+# /*===========================================================
 #' # 14. Discrete choice
 # /*===========================================================
 rmarkdown::render(here("LectureNotes/DiscreteChoice/discrete_choice_x.rmd"))

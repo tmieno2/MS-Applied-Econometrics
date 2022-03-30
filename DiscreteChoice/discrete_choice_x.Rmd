@@ -49,9 +49,7 @@ $y = 1 \;\; \mbox{(if you own at least one car)}$
 
 <br>
 
---
-
-.content-box-green[**Question**]
+.content-box-green[**Question we would like to answer**]
 
 How do variables $x_1,\dots,x_k$ affect the status of $y$ (the choice of whether to own at least one car or not)?
 
@@ -103,6 +101,8 @@ $G(z) = exp(z)/[1+exp(z)] = \frac{e^z}{1+e^z}$
 
 where $z = \beta_0+\beta_1 x_1+\dots+\beta_k x_k$
 
+<br>
+
 .content-box-green[**Probit model**]
 
 $G(z) = \Phi(z)$
@@ -111,6 +111,8 @@ where $\Phi(z)$ is the standard normal cumulative distribution function
 
 ---
 class: middle
+
+This what $G()$ looks like for logit and probit.
 
 ```{r echo = F, out.width = "70%"}
 plot_data <- data.table(z = seq(-3, 3, length = 1000)) %>%
@@ -146,19 +148,39 @@ $\mbox{After:}\;\; x_1=1 \;\;\mbox{and}\;\; x_2=0,\dots,x_k=0 \Rightarrow z=\bet
 
 
 ```{r echo = F}
+
 g_gz <- ggplot(data = plot_data[variable == "normal", ]) +
   geom_line(aes(x = z, y = value), size = 1) +
   geom_hline(yintercept = 0, size = 0.2) +
   #--- before ---#
   geom_point(aes(y = 0, x = -1), color = "red") +
-  geom_text(aes(y = -0.06, x = -1, label = "before"), color = "blue", size = 4) +
-  annotate("text", y = -0.14, x = -1, label = expression(beta[0]), color = "blue", size = 4) +
+  geom_text(
+    aes(y = -0.06, x = -1, label = "before"),
+    color = "blue",
+    size = 3
+  ) +
+  annotate(
+    "text",
+    y = -0.14, x = -1, label = expression(beta[0]),
+    color = "blue", size = 3
+  ) +
   geom_point(aes(y = pnorm(-1), x = -1), color = "red") +
-  geom_segment(aes(y = pnorm(-1), x = -1, yend = 0, xend = -1), color = "red", linetype = 2) +
+  geom_segment(
+    aes(y = pnorm(-1), x = -1, yend = 0, xend = -1),
+    color = "red",
+    linetype = 2
+  ) +
   #--- after ---#
   geom_point(aes(y = 0, x = 1), color = "red") +
-  geom_text(aes(y = -0.06, x = 1, label = "after"), color = "blue", size = 4) +
-  annotate("text", y = -0.14, x = 1, label = expression(beta[0] + beta[1]), color = "blue", size = 4) +
+  geom_text(
+    aes(y = -0.06, x = 1, label = "after"),
+    color = "blue", size = 3
+  ) +
+  annotate(
+    "text",
+    y = -0.14, x = 1, label = expression(beta[0] + beta[1]),
+    color = "blue", size = 3
+  ) +
   geom_point(aes(y = pnorm(1), x = 1), color = "red") +
   geom_segment(aes(y = pnorm(1), x = 1, yend = 0, xend = 1), color = "red", linetype = 2) +
   #--- change in z ---#
@@ -194,12 +216,15 @@ class: middle
 
 To understand the marginal impact of $x_k$ on $Prob(y=1)$ (how a change in $x_k$ affects the likelihood of owning a car), you need to do a bit of math.
 
+<br>
 
 .content-box-green[**Model**]
 
 $Pr(y=1|x_1,\dots,x_k) = G(z)$ 
 
 $z = \beta_0+\beta_1 x_1+\dots+\beta_k x_k$
+
+<br>
 
 .content-box-green[**marginal impact**]
 
@@ -219,6 +244,8 @@ Differentiating both sides with respect to $x_k$,
 $\frac{\partial Pr(y=1|x_1,\dots,x_k)}{\partial x_k} = G'(z)\times \frac{\partial z}{\partial x_k}$ 
 
 $\qquad\qquad\qquad\:\: = G'(z)\times \beta_k$
+
+<br>
 
 .content-box-green[**Notes**]
 
@@ -243,6 +270,8 @@ class: middle
 
 Find parameters that makes the sum of residuals squared the smallest
 
+<br>
+
 .content-box-green[**MLE (very loosely put)**]
 
 Find parameters $(\beta$s) that makes what we observed (collection of binary decisions made by different individuals) most likely (.blue[Maximum Likelihood])
@@ -259,6 +288,8 @@ class: middle
 
 --
 
+<br>
+
 .content-box-green[**Probability of individual decisions**]
 
 + $\mbox{Individual 1}: Prob(y_1=1|\mathbf{x_1})= G(z_1)$
@@ -272,6 +303,8 @@ where
 + $z_i = \beta_0+\beta_1 x_{1,i}+\dots+\beta_k x_{k,i}$ 
 
 --
+
+<br>
 
 .content-box-green[**Probability of a collection of decisions**]
 
@@ -293,6 +326,8 @@ $Prob(y_1=1|\mathbf{x_1})\times Prob(y_2=0|\mathbf{x_2}) = G(z_1)\times [1-G(z_2
 which we call .blue[likelihood function].
 
 --
+
+<br>
 
 .content-box-green[**MLE**]
 
@@ -309,10 +344,14 @@ $Max_{\beta_1,\dots,\beta_k}\;\; L$
 
 where $L=\Pi_{i=1}^n \Big[y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big]$ is the likelihood function.
 
+<br>
+
 .content-box-green[**Log-likelihood function**]
     
 $LL = log\Big(\Pi_{i=1}^n \Big[y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big]\Big)$ 
 $\qquad = \sum_{i=1}^n log\Big(y_i\times G(z_i)+(1-y_i)\times(1-G(z_i))\Big)$
+
+<br>
 
 .content-box-green[**MLE with $LL$**]
 
@@ -363,7 +402,7 @@ For individual 1 (row 1 of the data),
 
 $z_1 = \beta_0+\beta_1 `r round(data[1, ]$nwifeinc, digits = 2)`+ \beta_2 `r round(data[1, ]$educ)`+ \beta_3 `r round(data[1, ]$exper)` + \beta_4 `r round(data[1, ]$exper2)` + \beta_5 `r round(data[1, ]$age)` + \beta_6 `r round(data[1, ]$kidslt6)` + \beta_7 `r round(data[1, ]$kidsge6)`$
 
-The probability that individual 1 would make the decision he/she made is:
+The probability that individual 1 would make the decision he/she made given $\beta$s is:
 
 $G(z_1)$ (a function of $\beta$s)
 
@@ -373,13 +412,13 @@ class: middle
 ```{r echo = F}
 dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %>%
   tail()
-``` 
+```
 
 For individual 753 (row 753 of the data),
 
-$z_{753} = \beta_0+\beta_{753} `r round(data[753, ]$nwifeinc, digits = 2)`+ \beta_2 `r round(data[753, ]$educ)`+ \beta_3 `r round(data[753, ]$exper)` + \beta_4 `r round(data[753, ]$exper2)` + \beta_5 `r round(data[753, ]$age)` + \beta_6 `r round(data[753, ]$kidslt6)` + \beta_7 `r round(data[753, ]$kidsge6)`$
+$z_{753} = \beta_0+\beta_1 `r round(data[753, ]$nwifeinc, digits = 2)`+ \beta_2 `r round(data[753, ]$educ)`+ \beta_3 `r round(data[753, ]$exper)` + \beta_4 `r round(data[753, ]$exper2)` + \beta_5 `r round(data[753, ]$age)` + \beta_6 `r round(data[753, ]$kidslt6)` + \beta_7 `r round(data[753, ]$kidsge6)`$
 
-The probability that individual 753 would make the decision he/she made is:
+The probability that individual 753 would make the decision he/she made given $\beta$s is:
 
 $1 - G(z_{753})$ (a function of $\beta$s)
 
@@ -429,6 +468,8 @@ probit_lf <- glm(
 )
 ```
 
+<br>
+
 .content-box-green[**family option**]
 
 + `binomial()`: tells R that your dependent variable is binary
@@ -443,11 +484,11 @@ class: middle
 msummary(
   probit_lf,
   stars = TRUE,
-  gof_omit = "IC",
+  gof_omit = "IC|F",
   output = "flextable"
 ) %>%
   fontsize(
-    size = 18,
+    size = 9,
     part = "all"
   ) %>%
   autofit()
@@ -489,13 +530,13 @@ class: middle
 .left5[
 ```{r model-sum-glm, eval = F}  
 msummary(
-  probit_lf,
+  logit_lf,
   stars = TRUE,
-  gof_omit = "IC",
+  gof_omit = "IC|F",
   output = "flextable"
 ) %>%
   fontsize(
-    size = 18,
+    size = 9,
     part = "all"
   ) %>%
   autofit()
@@ -507,6 +548,14 @@ msummary(
 
 ```
 ]
+
+---
+class: middle
+
+.content-box-green[**Important**]
+
++ You <span style = "color: red;"> cannot </span> directly compare the coefficient on the same variable from probit and logit! The fact that the coefficient on `educ` is higher from the logit model does not mean the logit model is suggesting `educ` is more influential than the probit model suggests. They are on different scales. 
+
 
 ---
 class: middle
@@ -523,6 +572,8 @@ $LL =\sum_{i=1}^n log\Big(y_i\times G(\hat{z}_i)+(1-y_i)\times(1-G(\hat{z}_i))\B
 + $\hat{z}_i=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k$
 
 + $G(\hat{z}_i)$ is the fitted value of $Prob(y=1|\mathbf{x})$
+
+<br>
 
 .content-box-green[**Example**]
 
@@ -544,6 +595,8 @@ $LL =\sum_{i=1}^n log\Big(y_i\times G(\hat{z}_i)+(1-y_i)\times(1-G(\hat{z}_i))\B
 
 + $G(\hat{z}_i)$ is the fitted value of $Prob(y=1|\mathbf{x})$
 
+<br>
+
 .content-box-green[**Example**]
 
 + $G(\hat{z}_i) = 0.9$: predicted that individual $i$ is very likely to own a car 
@@ -558,7 +611,7 @@ class: middle
 
 .content-box-green[**Log-likelihood (fitted)**]
 
-So, the better your prediction (model fit) is the .blue[(The greater (less negative) the LL is.]
+So, the better your prediction (model fit) is, the .blue[the greater (less negative) LL is.]
 
 ---
 class: middle
@@ -622,9 +675,13 @@ $LR = 2(LL_{unrestricted}-LL_{restricted}) \sim \chi^2_{df\_restrictions}$
 
 where $df\_restrictions$ is the number of restrictions.
 
+<br>
+
 .content-box-green[**Note**]
 
 LR test is very similar conceptually to F-test.
+
+<br>
 
 .content-box-green[**Example**]
 
@@ -704,11 +761,13 @@ class: middle
 
 .content-box-green[**Marginal impact at the mean**]
 
-$\frac{\partial Pr(y=1|\bar{x_1},\dots,\bar{x_k})}{\partial x_k} = G'(\beta_0+\beta_1 \bar{x_1}+\dots+\beta_k\bar{x_k})\times \beta_k$
+$\frac{\partial Pr(y=1|x_1,\dots,\bar{x_k})}{\partial x_k} = G'(\beta_0+\beta_1 \bar{x_1}+\dots+\beta_k\bar{x_k})\times \beta_k$
+
+<br>
 
 .content-box-green[**Mean marginal impact (MME)**]
 
-$\sum_{i=1}^n \frac{\partial Pr(y_i=1|\bar{x_{i,1}},\dots,\bar{x_{i,k}})}{\partial x_k} = \sum_{i=1}^n G'(z_i)\times \beta_k$
+$\sum_{i=1}^n \frac{\partial Pr(y_i=1|x_{i,1},\dots,x_{i,k})}{\partial x_k} = \sum_{i=1}^n G'(z_i)\times \beta_k$
 
 ---
 class: middle
@@ -743,7 +802,6 @@ summary(mme_lf)
 ```
 
 ---
-
 class: inverse, center, middle
 
 # Multinomial Choice Model
@@ -798,6 +856,8 @@ class: middle
 
 --
 
+<br>
+
 .content-box-green[**Associated utility**]
 
 + $V_1=\alpha_1 + \beta 10 + \gamma 30 + \rho 1 + v_1$
@@ -838,6 +898,8 @@ $P_i = \Pi_{j=1}^3 y_{i,j}\times P_j$
 
 where $y_{i,j}=1$ if $i$ chose $j$, 0 otherwise.
 
+<br>
+
 .content-box-green[**Example**]
 
 $y_{i,1} = 0, \;\;y_{i,2} = 1,\;\;y_{i,3} = 0$
@@ -855,6 +917,8 @@ if choices made by the subjects are independent with each other.
 
 --
 
+<br>
+
 .content-box-green[**MLE**]
 
 $Max_{\beta,\gamma,\rho}\;\; log(LL)$
@@ -871,6 +935,8 @@ $V_{i,j} = \alpha_j + \beta_1 x_{1,i,j} + \dots + \beta_k x_{k,i,j}$
 $P_{i,j} = \frac{e^{V_{i,j}}}{\sum_{k=1}^J e^{V_{i,k}}}$
 
 --
+
+<br>
 
 .content-box-green[**Interpretation of the coefficients**]
   
@@ -946,7 +1012,7 @@ class: middle
 ```{r }
 #--- estimate ---#
 ml_reg <- mlogit(choice ~ wait + vcost + travel, data = TM)
-``` 
+```
 
 ---
 class: middle
@@ -970,4 +1036,16 @@ summary(ml_reg)$coef
   * train:(intercept) is $-0.786$ means that train is less likely to be chosen if all the other .blue[included] variables are the same
 
 + the greater the travel time, the less likely the option is chosen
+
+---
+class: inverse, center, middle
+
+# Count data (Poisson)
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=1000px></html>
+
+---
+class: middle
+
+# Count data (Poisson)
 

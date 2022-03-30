@@ -37,6 +37,10 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/Syllabus/sylla
 
 + Lecture 13: DID ([html](https://tmieno2.github.io/MS-Applied-Econometrics/13_ImpactEvaluation/impact_evaluation_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/13_ImpactEvaluation/impact_evaluation_x.pdf))
 
+## Appendix
+
++ Lecture A3: Research Demonstration Supplementary Information ([html](https://tmieno2.github.io/MS-Applied-Econometrics/A3_ResearchDemonstration/demonstration_supplement_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/A3_ResearchDemonstration/demonstration_supplement_x.pdf))
+
 
 
 ## Assignments

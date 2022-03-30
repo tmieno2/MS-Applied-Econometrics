@@ -1,11 +1,11 @@
 ---
-title: "The Impacts of Irrigation Costs on Irrigation Demand"
+title: "Research Demonstration: The Impacts of Irrigation Costs on Irrigation Demand"
 author: "AECN 396/896-002"
 output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
+    self_contained: true
     nature:
       ratio: 4:3
       highlightStyle: github
@@ -18,21 +18,60 @@ class: middle
 ```
 
 ```{r echo = F, eval = F}
-setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Demonstration/")
+setwd(here("LectureNotes/14_ResearchDemonstration"))
 ```
 
 ```{r additional-libraries, include = F, cache = F}
 #--- load packages ---#
-suppressMessages(library(broom))
-suppressMessages(library(fixest))
-suppressMessages(library(flextable))
-suppressMessages(library(officer))
-suppressMessages(library(gt))
-suppressMessages(library(lmtest))
-suppressMessages(library(lfe))
-suppressMessages(library(tidyverse))
-suppressMessages(library(data.table))
+library(broom)
+library(fixest)
+library(flextable)
+library(officer)
+library(gt)
+library(lmtest)
+library(lfe)
+library(tidyverse)
+library(data.table)
 ```
+
+.content-box-green[**Objective**]
+
+Understand the impact of pumping cost on groundwater use for irrigated agriculture
+
+<br>
+
+.content-box-green[**Data**]
+
+Well-level groundwater use observed annually in Eastern Colorado
+
+---
+class: middle
+
+# Data
+
+```{r read-data}
+(data <- readRDS("final_data_CO.rds") %>%
+  dplyr::select(site_no, year, pumpingAF, pc, precip, et, gpm, REA, tier))
+```
+
++ `site_no`: well id 
++ `year`: year 
++ `pumpingAF`: groundwater use (acre-feet)
++ `pc`: pumping cost ($/acre-feet)
++ `precip`: total precipitation (inches) during the growing season
++ `et`: total evapotranspiration (inches) during the growing season
++ `gpm`: well yield (gallons per minute)
++ `REA`: energy supplier name
++ `tier`: price tier (explained later)
+
+---
+class: middle
+
+# Exploratory Data Analysis
+
+---
+
+class: middle
 
 # Econometric Model (univariate)
 
@@ -47,7 +86,9 @@ class: middle
 
 # Endogeneity: Omitted Variable Bias
 
-$W = \beta_0 + \beta_1 IC + v$
+$W_{i,t} = \beta_0 + \beta_1 IC_{i,t} + v_{i,t}$
+
+<br>
 
 .content-box-green[**Question**]
 
@@ -64,26 +105,19 @@ class: middle
 
 # Econometric Model (multi-variate) 
 
-$W = \beta_0 + \beta_1 IC+ \beta_2 WY + \sigma_5 P^5 + \sigma_6 P^6 + \sigma_7 P^7 + \sigma_8 P^8 + \sigma_9 P^9 + \varepsilon$
+$W_{i,t} = \beta_0 + \beta_1 IC_{i,t} + \beta_2 WY_{i,t} + \beta_3 Precip_{i,t} + \beta_4 ET_{i,t} + \varepsilon_{i,t}$
 
 + $W$: irrigation amount 
 + $IC$: irrigation cost 
 + $WY$: well yield
-+ $P^x$: total precipitation in month $x$
++ $Precip$: total precipitation during the production season
++ $ET$: total evapotranspiration during the production season
 + $\varepsilon$: error term
 
 ---
 class: middle
 
-# Panel Data Method
-
-$W_{i,t} = \beta_0 + \beta_1 IC_{i,t}+ \beta_2 WY_{i,t} + \sigma_5 P^5_{i,t} + \sigma_6 P^6_{i,t} + \sigma_7 P^7_{i,t} + \sigma_8 P^8_{i,t} + \sigma_9 P^9_{i,t} + \varepsilon_{i,t}$
-
-+ $W$: irrigation amount 
-+ $IC$: irrigation cost 
-+ $WY$: well yield
-+ $P^x$: total precipitation in month $x$
-+ $\varepsilon$: error term
+# Can Individual (well) Fixed Effects help?
 
 ---
 class: middle
@@ -93,7 +127,8 @@ class: middle
 .content-box-red[**Declining block rate pricing**]
 
 ```{r echo = F}
-fread("REA_price_schedule.csv") %>%
+block_price_table <-
+  fread("REA_price_schedule.csv") %>%
   .[REA == "Highline" & year >= 2013, t2 := NA] %>%
   .[REA == "Highline" & year >= 2013, p3 := NA] %>%
   .[year <= 2016, ] %>%
@@ -113,11 +148,26 @@ fread("REA_price_schedule.csv") %>%
   autofit()
 ```
 
---
+```{r echo = F}
+block_price_table
+```
+
+Threshold 1 and 2 refer to the threshold electricity uses (kwh/HP) over which the users move on to the next tier. For example, for a farmer served by Highline who has a pump of 100 HP, the farmer would be at the second tier after using 40,000 kwh.
+
+---
+class: middle
+
+# Endogeneity
+
+.content-box-red[**Declining block rate pricing**]
+
+```{r echo = F}
+block_price_table
+```
 
 .content-box-green[**Example**]
 
-A well in Highline’s service area with 100 HP will be on the second price tier after using 40,000 kWh.
+A well in Highline's service area with 100 HP will be on the second price tier after using 40,000 kWh.
 
 ---
 class: middle
@@ -127,27 +177,8 @@ class: middle
 .content-box-red[**Declining block rate pricing**]
 
 ```{r echo = F}
-fread("REA_price_schedule.csv") %>%
-  .[REA == "Highline" & year >= 2013, t2 := NA] %>%
-  .[REA == "Highline" & year >= 2013, p3 := NA] %>%
-  .[year <= 2016, ] %>%
-  .[, REAnum := NULL] %>%
-  .[, REA := NULL] %>%
-  setnames(names(.), c("Year", "Price 1", "Price 2", "Price 3", "Threshold 1", "Threshold 2")) %>%
-  .[, Supplier := "Highline"] %>%
-  .[7:12, Supplier := "Y-W"] %>%
-  relocate(Supplier) %>%
-  flextable() %>%
-  merge_v(j = 1) %>%
-  hline(
-    i = 6,
-    border = fp_border(width = 1)
-  ) %>%
-  fix_border_issues() %>%
-  autofit()
+block_price_table
 ```
-
---
 
 .content-box-green[**Endogeneity?**]
 
@@ -178,7 +209,7 @@ class: middle
 
 # (individual) Fixed Effects Estimation
 
-+ Including individual (cross-sectional units) dummies (here, it is well represented by `wdid`) in the model
++ Including individual (cross-sectional units) dummies (here, they are wells represented by `wdid`) in the model
 
 + This is equivalent to do within-transformation of the data (deviation from the individual means) and then regress deviation on deviation
 
@@ -201,7 +232,6 @@ class: middle
 # Beyond individual (well) FEs  
 
 ```{r echo = F}
-final_data <- readRDS("final_data_CO.rds")
 
 final_data[wdid %in% c(4905049, 4905044), .(wdid, year, pumpingAF, pc, tier, pump_hp)] %>%
   arrange(wdid, year) %>%
