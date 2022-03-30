@@ -4468,6 +4468,11 @@ layout: true
 
 
 &lt;style type=&quot;text/css&quot;&gt;
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
 
 .remark-slide-content.hljs-github h1 {
   margin-top: 5px;  
@@ -5358,7 +5363,7 @@ Histogram of education:
 ---
 class: middle
 
-.content-box-red[**Testing of the marginal impact**]
+.content-box-red[**Test of marginal impacts**]
 
 
 + Just like the case of the quadratic specification of education, marginal impact of experience is not constant
@@ -5906,7 +5911,7 @@ gpa &lt;-
 reg_full &lt;-
   feols(
     cumgpa ~
-    female + sat + female_sat + hsperc + female_hsperc +
+      female + sat + female_sat + hsperc + female_hsperc +
       tothrs + female_tothrs,
     data = gpa
   )

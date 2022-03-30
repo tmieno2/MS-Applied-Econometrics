@@ -88,7 +88,7 @@ class: middle
 
 $y \;\;(\mbox{income}) = \beta_0 + \beta_1 program \;\;(\mbox{financial aid}) + u$
 
-, where $E[u|program]=0$ (the program is correlated with the error term). OLS is just fine.
+, where $E[u|program]=0$ (the program is not correlated with the error term). OLS is just fine.
 
 --
 
@@ -550,7 +550,7 @@ $E[rprice|year=1981, nearinc = 1] - E[rprice|year=1978, nearinc = 1]$
 $= (\beta_0 + \beta_1 + \beta_2 + \beta_3) - (\beta_0 + \beta_2)$
 $= \beta_1 + \beta_3$
 
-$E[rprice|year=1981, nearinc = 1] - E[rprice|year=1978, nearinc = 0]$
+$E[rprice|year=1981, nearinc = 0] - E[rprice|year=1978, nearinc = 0]$
 
 $= (\beta_0 + \beta_1) - \beta_0$
 $= \beta_1$
@@ -945,6 +945,11 @@ Selecting the right control group is important in DID. If the following conditio
 + The two groups are generally similar so other factors do not drive the differences between them
 + They had similar trajectories of the dependent variable prior to the treatment (possible if you have more than one years of data prior to the treatment)
   - this does <span style = "color: red;"> NOT </span> guarantee that the their trends <span style = "color: red;"> after </span> the treatment are similar
+
+.content-box-green[**To do**] 
+
++ Show the trajectory of the dependent variable
++ Run placebo tests  
 
 ---
 class: middle

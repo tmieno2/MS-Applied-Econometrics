@@ -42,7 +42,12 @@ style_duo_accent(
   code_inline_background_color = "#e6e6e6",
   text_font_size = "1rem",
   code_font_size = "0.6rem",
-  link_color = "#ff005a"
+  link_color = "#ff005a",
+  extra_css = list(
+    ".has-continuation" = list(
+      "display" = "block !important"
+    )
+  )
 )
 ```
 
@@ -123,6 +128,11 @@ bib <- ReadBib(file.name)
 ```
 
 ```{css css-setup, echo = F}
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
 
 .remark-slide-content.hljs-github h1 {
   margin-top: 5px;  

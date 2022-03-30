@@ -5,42 +5,29 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    lib_dir: libs
+    self_contained: true
     nature:
       ratio: 4:3
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
+class: middle
 
 ```{r, child = './../setup.Rmd'}
 ```
 
 ```{r echo = F, eval = F}
-setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/Endogeneity/")
+setwd(here("LectureNotes/DiscreteChoice"))
 ```
 
 ```{r additional-libraries, include = F, cache = F}
 #--- load packages ---#
-suppressMessages(library(broom))
-suppressMessages(library(fixest))
-suppressMessages(library(lmtest))
+library(broom)
+library(margins)
+library(fixest)
+library(lmtest)
 ```
-
-# Before we start 
-
-## Learning objectives
-
-Understand how endogeneity problems arise
-
-## Table of contents
-
-1. [Selection Bias](#select)
-2. [Reverse Causality](#reverse)
-3. [Measurement Error](#ME)
-
----
-class: middle
 
 # Discrete Choice Analysis
 + Focus on understanding choices that are discrete (not continuous)
@@ -48,21 +35,21 @@ class: middle
   * Whether you use an iPhone, Android, or other types of cell phones (Multinomial choice)
   * Which recreation sites you visit this winter (multinomial)
 + Linear models we have seen are often not appropriate
-l
 
 ---
 class: middle
 
 # Binary Response Model  
 
----
-class: middle
-
 .content-box-green[**Binary response**]
 
 $y = 0 \;\; \mbox{(if you do not own a car)}$ 
 
 $y = 1 \;\; \mbox{(if you own at least one car)}$
+
+<br>
+
+--
 
 .content-box-green[**Question**]
 
@@ -87,6 +74,8 @@ class: middle
 $Pr(y=1|x_1,\dots,x_k) = \beta_0+\beta_1 x_1+\dots+\beta_k x_k$
 
 --
+
+<br>
 
 .content-box-green[**Drawback**]
 
@@ -160,25 +149,22 @@ $\mbox{After:}\;\; x_1=1 \;\;\mbox{and}\;\; x_2=0,\dots,x_k=0 \Rightarrow z=\bet
 g_gz <- ggplot(data = plot_data[variable == "normal", ]) +
   geom_line(aes(x = z, y = value), size = 1) +
   geom_hline(yintercept = 0, size = 0.2) +
-
   #--- before ---#
   geom_point(aes(y = 0, x = -1), color = "red") +
   geom_text(aes(y = -0.06, x = -1, label = "before"), color = "blue", size = 4) +
   annotate("text", y = -0.14, x = -1, label = expression(beta[0]), color = "blue", size = 4) +
   geom_point(aes(y = pnorm(-1), x = -1), color = "red") +
   geom_segment(aes(y = pnorm(-1), x = -1, yend = 0, xend = -1), color = "red", linetype = 2) +
-
   #--- after ---#
   geom_point(aes(y = 0, x = 1), color = "red") +
   geom_text(aes(y = -0.06, x = 1, label = "after"), color = "blue", size = 4) +
   annotate("text", y = -0.14, x = 1, label = expression(beta[0] + beta[1]), color = "blue", size = 4) +
   geom_point(aes(y = pnorm(1), x = 1), color = "red") +
   geom_segment(aes(y = pnorm(1), x = 1, yend = 0, xend = 1), color = "red", linetype = 2) +
-
   #--- change in z ---#
   geom_segment(
     aes(x = -1, y = 0, xend = 1, yend = 0),
-    arrow = arrow(length = unit(0.05, "npc")),
+    arrow = ggplot2::arrow(length = unit(0.05, "npc")),
     color = "red", size = 0.5
   ) +
   ylab("G(z)") +
@@ -189,14 +175,14 @@ g_gz <- ggplot(data = plot_data[variable == "normal", ]) +
 ```
 
 ```{r echo = F, out.width = "70%"}
-g_gz 
+g_gz
 ```
 
 ---
 class: middle
 
 ```{r echo = F, out.width = "60%"}
-g_gz 
+g_gz
 ```
 
 + $\beta$s measure how far you move along the x-axis
@@ -357,12 +343,12 @@ class: middle
 
 ```{r }
 #--- import the data ---#
-data <- read.dta13('MROZ.dta') %>%
+data <- read.dta13("MROZ.dta") %>%
   mutate(exper2 = exper^2)
 
 #--- take a look ---#
 dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %>%
-  head()  
+  head()
 ```
 
 ---
@@ -370,7 +356,7 @@ class: middle
 
 ```{r echo = F}
 dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %>%
-  head() 
+  head()
 ```
 
 For individual 1 (row 1 of the data),
@@ -386,7 +372,7 @@ class: middle
 
 ```{r echo = F}
 dplyr::select(data, inlf, nwifeinc, kidslt6, kidsge6, educ) %>%
-  tail() 
+  tail()
 ``` 
 
 For individual 753 (row 753 of the data),
@@ -435,12 +421,12 @@ class: middle
 ```{r }
 probit_lf <- glm(
   #--- formula ---#
-  inlf ~ nwifeinc+ educ+ exper+ exper2+ age+ kidslt6+ kidsge6,
+  inlf ~ nwifeinc + educ + exper + exper2 + age + kidslt6 + kidsge6,
   #--- data ---#
   data = data,
   #--- models ---#
   family = binomial(link = "probit")
-)  
+)
 ```
 
 .content-box-green[**family option**]
@@ -459,12 +445,12 @@ msummary(
   stars = TRUE,
   gof_omit = "IC",
   output = "flextable"
-) %>% 
-fontsize(
-  size = 18, 
-  part = "all"
-) %>% 
-autofit()
+) %>%
+  fontsize(
+    size = 18,
+    part = "all"
+  ) %>%
+  autofit()
 ```
 ]
 
@@ -483,12 +469,12 @@ class: middle
 ```{r }
 logit_lf <- glm(
   #--- formula ---#
-  inlf ~ nwifeinc+ educ+ exper+ exper2+ age+ kidslt6+ kidsge6,
+  inlf ~ nwifeinc + educ + exper + exper2 + age + kidslt6 + kidsge6,
   #--- data ---#
   data = data,
   #--- models ---#
   family = binomial(link = "logit")
-)  
+)
 ```
 
 .content-box-green[**family option**]
@@ -507,12 +493,12 @@ msummary(
   stars = TRUE,
   gof_omit = "IC",
   output = "flextable"
-) %>% 
-fontsize(
-  size = 18, 
-  part = "all"
-) %>% 
-autofit()
+) %>%
+  fontsize(
+    size = 18,
+    part = "all"
+  ) %>%
+  autofit()
 ```
 ]
 
@@ -605,7 +591,7 @@ logit_lf_0 <- glm(
 (LL <- logLik(logit_lf))
 
 #--- pseudo R2 ---#
-1-LL/LL0
+1 - LL / LL0
 ```
 ---
 class: middle
@@ -615,11 +601,11 @@ class: middle
 
 ```{r }
 #--- or more easily ---#
-1-logit_lf$deviance/logit_lf$null.deviance
+1 - logit_lf$deviance / logit_lf$null.deviance
 
 #--- what are deviances? ---#
 logit_lf$null.deviance # = -2*LL0
-logit_lf$deviance # = -2*LL  
+logit_lf$deviance # = -2*LL
 ```
 
 + `null.deviance` $= -2\times LL_0$
@@ -652,19 +638,19 @@ class: middle
 ```{r }
 #--- unrestricted ---#
 logit_ur <- glm(
-  inlf~nwifeinc+educ+exper+exper2+age+kidslt6+kidsge6,
-  data = data,family=binomial(link='logit')
-  )
+  inlf ~ nwifeinc + educ + exper + exper2 + age + kidslt6 + kidsge6,
+  data = data, family = binomial(link = "logit")
+)
 
 #--- restricted ---#
 logit_r <- glm(
-  inlf~nwifeinc+educ+kidslt6+kidsge6,
-  data = data,family=binomial(link='logit')
-  )
+  inlf ~ nwifeinc + educ + kidslt6 + kidsge6,
+  data = data, family = binomial(link = "logit")
+)
 
 #--- LR test using lrtest() from the lmtest package ---#
 library(lmtest)
-lrtest(logit_r,logit_ur)  
+lrtest(logit_r, logit_ur)
 ```
 ---
 class: middle
@@ -689,7 +675,7 @@ head(z)
 
 #--- G(z) hat ---#
 Gz <- predict(probit_lf, type = "response")
-head(Gz) 
+head(Gz)
 ```
 
 ---
@@ -738,7 +724,7 @@ z <- predict(probit_lf, type = "link")
 Gz_indiv <- dnorm(z)
 
 #--- mean marignal impact of eduction ---#
-mean(Gz_indiv) * probit_lf$coef['educ']
+mean(Gz_indiv) * probit_lf$coef["educ"]
 ```
 
 ---
@@ -747,7 +733,7 @@ class: middle
 Fortunately, the `margins` package provides you with a more convenient way of calculating MMEs.
 
 ```{r }
-library(margins)  
+library(margins)
 
 #--- calculate MME based on the probit estimation ---#
 mme_lf <- margins(probit_lf, type = "response")
@@ -919,7 +905,7 @@ data("TravelMode", package = "AER")
 
 #--- take a look at the data ---#
 # first 10 rows
-head(TravelMode, 10)  
+head(TravelMode, 10)
 ```
 
 
@@ -935,7 +921,7 @@ TM <- mlogit.data(TravelMode,
   choice = "choice", # name of the variable that indicates choice made
   chid.var = "individual", # name of the variable that indicates who made choices
   alt.var = "mode" # the name of the variable that indicates options
-  )
+)
 ```
 
 ---
@@ -944,12 +930,12 @@ class: middle
 ```{r eval = F}
 #--- take a look at the data ---#
 # first 10 rows
-head(TM, 10) 
+head(TM, 10)
 ```
 
 .scroll-box-16[
 ```{r echo = F}
-head(TM, 10) 
+head(TM, 10)
 ```
 ]
 
@@ -959,7 +945,7 @@ class: middle
 
 ```{r }
 #--- estimate ---#
-ml_reg <- mlogit(choice ~ wait + vcost + travel, data = TM)  
+ml_reg <- mlogit(choice ~ wait + vcost + travel, data = TM)
 ``` 
 
 ---
@@ -967,7 +953,7 @@ class: middle
 
 .scroll-box-24[
 ```{r }
-summary(ml_reg) 
+summary(ml_reg)
 ```
 ]
 

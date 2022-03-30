@@ -22,19 +22,20 @@ layout: true
 ```
 
 ```{r echo = F, eval = F}
-setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/EconometricModel/")
+setwd(here("LectureNotes/7_EconometricModel"))
 ```
 
 ```{r packages, include = F, cache = F}
 #--- load packages ---#
-suppressMessages(library(broom))
-suppressMessages(library(fixest))
-suppressMessages(library(patchwork))
-suppressMessages(library(readstata13))
-suppressMessages(library(modelsummary))
-suppressMessages(library(car))
-suppressMessages(library(stargazer))
-suppressMessages(library(lmtest))
+library(broom)
+library(fixest)
+library(margins)
+library(patchwork)
+library(readstata13)
+library(modelsummary)
+library(car)
+library(stargazer)
+library(lmtest)
 ```
 
 # Before we start
@@ -567,7 +568,7 @@ g_hist
 ---
 class: middle
 
-.content-box-red[**Testing of the marginal impact**]
+.content-box-red[**Test of marginal impacts**]
 
 
 + Just like the case of the quadratic specification of education, marginal impact of experience is not constant
@@ -1103,7 +1104,7 @@ gpa <-
 reg_full <-
   feols(
     cumgpa ~
-    female + sat + female_sat + hsperc + female_hsperc +
+      female + sat + female_sat + hsperc + female_hsperc +
       tothrs + female_tothrs,
     data = gpa
   )

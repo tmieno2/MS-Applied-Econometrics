@@ -445,7 +445,7 @@ How much each observation differs from the average for that city?
 
 ```{r echo = F}
 massage_data_wth <- massage_data_2p %>%
-  select(Location, Year, P, Q, Ql) %>%
+  dplyr::select(Location, Year, P, Q, Ql) %>%
   group_by(Location) %>%
   mutate(
     P_mean = mean(P),
@@ -456,7 +456,7 @@ massage_data_wth <- massage_data_2p %>%
     Ql_dev = Ql - Ql_mean
   ) %>%
   ungroup() %>%
-  select(Location, Year, P, P_mean, P_dev, Q, Q_mean, Q_dev, Ql, Ql_mean, Ql_dev)
+  dplyr::select(Location, Year, P, P_mean, P_dev, Q, Q_mean, Q_dev, Ql, Ql_mean, Ql_dev)
 
 massage_data_wth %>%
   gt() %>%
