@@ -260,7 +260,7 @@ class: middle
 ```{r echo = F, out.width = "70%"}
 data_mean <- data %>%
   group_by(year, nearinc) %>%
-  summarize(m_rprice = mean(rprice))
+  dplyr::summarize(m_rprice = mean(rprice))
 
 ggplot() +
   geom_bar(
@@ -1162,3 +1162,38 @@ class: middle
 .content-box-green[**Note**] 
 
 Statistically insignificant estimated impacts of fake treatments bolster your claim about parallel trend assumption. But, it still does <span style = "color: red;"> NOT </span> guarantee the assumption is valid. Remember, the assumption is not testable.
+
+---
+class: middle
+
+What if your data spans from 1991 to 2000 with a treatment occuring at 1993? 
+
+```{r echo = TRUE}
+pre_lema_data <-
+  filter(lema_data, year <= 2000) %>%
+  #* pretend that a treatment happend in 1993
+  mutate(after_1993 = ifelse(year >= 1993, 1, 0))
+
+did_res_placebo <-
+  feols(
+    af_used ~ I(after_1993 * in_LEMA) + pr + et0 | site + year,
+    cluster = ~site,
+    data = pre_lema_data
+  )
+```
+
+```{r }
+msummary(
+  did_res_placebo,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
+  output = "flextable",
+  star = TRUE
+) %>%
+  fontsize(size = 9, part = "all") %>%
+  color(i = 1, j = 2, color = "red") %>%
+  autofit()
+```
+
++ So, this tells you that if it was a real treatment of which you want to understand the impact, then you would have suffered significant bias.
++ This clearly indicates that DID is by no means perfect and indeed can be very dangerous
+
