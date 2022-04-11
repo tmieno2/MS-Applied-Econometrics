@@ -1,5 +1,19 @@
-```{r setup-knitr, include = FALSE, cache = F}
+```{r libraries, include = F, cache = F}
+#--- load packages ---#
+library(here)
+library(data.table)
+library(DT)
+library(tictoc)
+library(RefManageR)
+library(tmap)
+library(extrafont)
+library(ggthemes)
+library(RColorBrewer)
+library(parallel)
+library(tidyverse)
+```
 
+```{r setup-knitr, include = FALSE, cache = F}
 library(knitr)
 options(htmltools.dir.version = FALSE)
 options(knitr.duplicate.label = "allow")
@@ -51,20 +65,7 @@ style_duo_accent(
 )
 ```
 
-```{r libraries, include = F, cache = F}
-#--- load packages ---#
-library(here)
-library(data.table)
-library(DT)
-library(tictoc)
-library(RefManageR)
-library(tmap)
-library(extrafont)
-library(ggthemes)
-library(RColorBrewer)
-library(parallel)
-library(tidyverse)
-```
+
 
 ```{r figure_setup, include = F, cache = F}
 theme_update(

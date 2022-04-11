@@ -116,8 +116,6 @@ What happens if $\beta_2\ne 0$, but <span style="color:blue">omit</span> $x_2$ t
 class: inverse, center, middle
 name: case-2
 
-# Case 1
-
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=440px></html>
 
 ---

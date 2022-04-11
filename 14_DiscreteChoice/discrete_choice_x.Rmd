@@ -25,8 +25,11 @@ setwd(here("LectureNotes/DiscreteChoice"))
 #--- load packages ---#
 library(broom)
 library(margins)
+library(here)
 library(fixest)
 library(lmtest)
+library(modelsummary)
+library(stargazer)
 ```
 
 # Discrete Choice Analysis
@@ -775,13 +778,40 @@ class: middle
 
 .content-box-green[**R codes to get MME**]
 
+$$
+\begin{aligned}
+\hat{z}=\hat{\beta}_0+\hat{\beta}_1 x_1+\dots+\hat{\beta}_k x_k
+\end{aligned}
+$$ 
+
 ```{r }
 #--- get z for all the individuals ---#
 z <- predict(probit_lf, type = "link")
+```
 
+--
+
+$$
+\begin{aligned}
+G'(\beta_0+\beta_1 \bar{x_1}+\dots+\beta_k\bar{x_k})
+\end{aligned}
+$$
+where $G(z)$ is the cumulative distribution function for the standard normal distribution.
+
+```{r }
 #--- get G'(z) ---#
 Gz_indiv <- dnorm(z)
+```
 
+--
+
+$$
+\begin{aligned}
+G'(\beta_0+\beta_1 \bar{x_1}+\dots+\beta_k\bar{x_k})
+\end{aligned}\times \beta_k
+$$
+
+```{r }
 #--- mean marignal impact of eduction ---#
 mean(Gz_indiv) * probit_lf$coef["educ"]
 ```
@@ -1049,3 +1079,258 @@ class: middle
 
 # Count data (Poisson)
 
+Count variables take <span style = "color: blue;"> non-negative discrete integers </span>  $(0,1,\dots,)$
+
++ the number of times individuals get arrested in a year
++ the number of cars owned by a family
++ the number of kids in a family
+
+---
+class: middle
+
+# Poisson regression
+
+By far the most popular choice to analyze count variables is <span style = "color: blue;"> Poisson regression </span>
+
++ The outcome (count) variable is assumed to be Poisson distributed
++ The mean of the Poisson distribution is assumed to be a function of some variables you believe matter
+
+--
+<br>
+
+.content-box-green[**Poisson distribution**]
+
+Poisson distribution is a discrete probability distribution that describes the probability of the number of events that occur in a fixed interval of time and/or space 
+
+$$
+\begin{aligned}
+Prob(y|\lambda)=\frac{\lambda^y e^{-\lambda}}{y!}, \;\; \mbox{where} \;\; \lambda=E[y]
+\end{aligned}
+$$
+
+---
+class: middle
+```{r poisson, echo=FALSE}
+x <- 0:15
+plot_data <- data.table(
+  x = x,
+  " E[y]=1 " = dpois(x, lambda = 1),
+  " E[y]=3 " = dpois(x, lambda = 3),
+  " E[y]=5 " = dpois(x, lambda = 5)
+) %>%
+  melt(id.vars = "x")
+
+ggplot(data = plot_data) +
+  geom_bar(
+    aes(x = factor(x), y = value, fill = variable),
+    color = "black", stat = "identity", position = "dodge"
+  ) +
+  ylab("probability") +
+  scale_fill_discrete(name = "") +
+  xlab("the number of events") +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+.content-box-green[**Poisson regression**]
+
+We try to learn what and how variables affect the <span style = "color: blue;"> expected value </span> (the expected number of events conditional on independent variables).
+
+---
+class: middle
+
+.content-box-green[**Expected number of events conditional on independent variables**]
+
+$$
+\begin{aligned}
+E[y|\mathbf{x}] = G(\beta_0+\beta_1 x_1+\dots + \beta_k x_k)
+\end{aligned}
+$$
+
++ This is exactly the same modeling framework we used
+  - Linear model: $G(z)=z$
+  - Probit model: $G(z)=\Phi(z)$
+
+--
+<br>
+
+.content-box-green[**A popular choice of **]$G()$
+$$
+\begin{aligned}
+  G(z) = exp(z)
+\end{aligned}
+$$
+
+This ensures that the expected value conditional on $\mathbf{x}$ is always positive
+
+---
+class: middle
+
+.content-box-green[**The number of events for two individuals**]
+
++ Individual 1: $y=3$ (own three cars)
++ Individual 2: $y=1$ (own one car)
+
+--
+<br>
+
+.content-box-green[**Expected number of events observed**]
++ Individual 1: $\lambda_1= exp(z_1)$
++ Individual 2: $\lambda_2= exp(z_2)$
+
+---
+<br>
+.content-box-green[**Probability of observing the number of events we observed**]
+
+$$
+\begin{aligned}
+\mbox{Individual 1}:& Prob(y=3|\mathbf{x_1})=\frac{\lambda_1^3 e^{-\lambda_1}}{3!}  \\
+\mbox{Individual 2}:& Prob(y=1|\mathbf{x_2})= \frac{\lambda_2^1 e^{-\lambda_2}}{1!}
+\end{aligned}
+$$
+
+--
+<br>    
+
+.content-box-green[**Probability of observing a series of events by all individuals**]
+
+The probability that we observe the collection of choices made by them (if their events are independent)
+
+$$
+\begin{aligned}
+L=Prob(y_1=3|\mathbf{x_1})\times Prob(y_2=1|\mathbf{x_2}) = \frac{\lambda_1^3 e^{-\lambda_1}}{3!}\times\frac{\lambda_2^1 e^{-\lambda_2}}{1!}
+\end{aligned}
+$$
+
+which we call llikelihood function.
+
+--
+<br>
+
+.content-box-green[**Log-likelihood function**]
+
+$$
+\begin{aligned}
+LL=log(L)&= log(\frac{\lambda_1^3 e^{-\lambda_1}}{3!}) + log(\frac{\lambda_2^1 e^{-\lambda_2}}{1!})
+\end{aligned}
+$$
+
+(Remember $\lambda_i=exp(\beta_0+\beta_1 x_{i,1}+\dots + \beta_k x_{i,k})$)
+
+--
+<br>
+
+$$
+\begin{aligned}
+Max_{\beta_1,\dots,\beta_k}\;\; & LL
+\end{aligned}
+$$
+
+---
+class: middle
+
+# Implementation in R with an example
+
+The number of times a man is arrested during 1986:
+$$
+\begin{aligned}
+Pr(narr86|\mathbf{x})= G(z)
+\end{aligned}
+$$
+
+where
+
+$$
+\begin{aligned}
+z = & \beta_0+\beta_1 pcnv+ \beta_2 tottime + \beta_3 qemp86 + \beta_4 inc86\\
+& + \beta_5 black + \beta_6 hispan
+\end{aligned}
+$$
+
++ $narr86$: \# of times arrested in 1986
++ $pcnv$: proportion of prior conviction
++ $tottime$: time in prison since 18
++ $qemp86$: \# quarters employed in 1986
++ $inc86$: legal income in 1986 (in $\$100$)
+
+
+---
+class: middle
+
+R code: importing the data
+
+```{r data_pois, cache=TRUE}
+#--- import the data ---#
+data <- read.dta13("CRIME1.dta")
+
+#--- take a look ---#
+dplyr::select(data, narr86, pcnv, qemp86, inc86) %>%
+  head()
+```
+
+---
+class: middle
+
+.content-box-green[**R code: Poisson model estimation using glm()**]
+
+```{r pois, cache=TRUE}
+pois_lf <- glm(
+
+  #--- formula ---#
+  narr86 ~ pcnv + tottime + qemp86 + inc86 + black + hispan,
+
+  #--- data ---#
+  data = data,
+
+  #--- models ---#
+  family = poisson(link = "log")
+)
+```
+
+.content-box-green[**`family` option**]
+
++ `poisson()`: tells $R$ that your dependent variable is Poisson distributed
++ `link = "log"`: tells $R$ that you want to use $exp()$ (the inverse of $log()$) as $G()$ in $E(y=1|\mathbf{x})=G(z)$
+
+---
+class: middle
+
+.left4[
+```{r, eval = F, cache=TRUE}
+msummary(
+  pois_lf,
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within"
+)
+```
+]
+
+.right6[
+```{r, cache = TRUE, echo = F}
+msummary(
+  pois_lf,
+  # keep these options as they are
+  stars = TRUE,
+  gof_omit = "IC|Log|Adj|F|Pseudo|Within",
+  output = "flextable"
+) %>%
+  fontsize(
+    size = 9,
+    part = "all"
+  ) %>%
+  autofit()
+```
+]
+
+---
+class: middle
+
+# Calculate average marginal effects
+
+Just like the binomial regressions we saw earlier, we can use `margins::margins()` function to get the average marginal effects of covariates.
+
+```{r }
+pois_marginal_e <- margins(pois_lf, type = "response")
+```
