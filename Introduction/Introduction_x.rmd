@@ -53,7 +53,9 @@ class: middle
 # Instructors
 
 + <span style = "color: red;"> Instructor </span>: Taro Mieno (Office: 209, E-mail: tmieno2@unl.edu)
-+ <span style = "color: red;"> Teaching Assistant </span>: Shunkei Kakimoto (E-mail: skakimoto3@huskers.unl.edu)
++ <span style = "color: red;"> Teaching Assistant </span>: 
+  - Aakanksha Melkani: amelkani@unl.edu
+  - Sagar Dahal: sdahal3@huskers.unl.edu
 
 ---
 class: middle
@@ -72,11 +74,8 @@ class: middle
 
 # Text Books
 
-## Required:
+## Recommended:
 Wooldridge, Jeffrey M. 2006. "Introductory Econometrics: A Modern Approach (<span style = "color: red;">5</span>th edition)." Mason, OH: Thomson/South-Western.
-
-## Recommended
-+ Florian, Heiss. 2016 "Using R for Introductory Econometrics." CreateSpace Independent Publishing Platform. (free version available online [here](http://www.urfie.net/))
 
 ---
 class: middle
@@ -93,18 +92,17 @@ class: middle
 
 [Course Website](https://github.com/tmieno2/MS-Applied-Econometrics)
 + Lecture Slides 
-+ Assignments
-+ Final paper
++ Assignments and submission links
++ Final paper samples and submission link
 
 ---
 class: middle
 
 # Grading
 
-+ Problem sets (4 assignments): 50% 
-+ Paper: 50%
-  - Proposal: 5%
-  - Final paper: 45%
++ Problem sets (4 assignments): 40% 
++ Small-size midterms  (2): 20% 
++ Paper: 40%
 
 ---
 class: middle
@@ -129,7 +127,17 @@ class: middle
 + 2nd year students have answers to all the questions I will assign (I will use exactly the same problems because they are really good to learn econometrics)
 + You are free to copy and paste (or rephrase) the answers for your assignment. I won't bother to try to tell if you have copied and pasted answers.
 + However, you are simply doing dis-service to yourself by depriving yourself of learning opportunities
-+ Moreover, your lack of understanding of the material will be clearly manifested on your final paper (I am not at all shy of giving bad grades on the final paper)
++ Moreover, your lack of understanding of the material will be clearly manifested on your performance at midterms and final paper
+
+---
+class: middle
+
+# Midterms
+
+In-class open-book midterm 
+
++ Midterm 1: Oct, 10 (M)
++ Midterm 2: Nov, 21 (M)
 
 ---
 class: middle
@@ -137,9 +145,7 @@ class: middle
 # Paper
 
 In this assignment,
-  + you write 
-    - a paper proposal with in-class presentation (5 points)
-    - a paper with a particular emphasis on econometric analysis using a real world data set (45 points)
+  + you write a paper with a particular emphasis on econometric analysis using a real world data set
   + you are encouraged to use the data set you are using for your masters thesis (talk with your advisor)
   + you need to ensure that you use a <span style = "color: red;"> panel </span> dataset
   + No presentation of your final paper
@@ -149,9 +155,9 @@ class: middle
 
 # Paper
 Here is the time line of the paper assignment:
-  + <span style = "color: red;"> March, 23 </span>: identify a research topic and the data set you will be using, and get an approval from the instructor
-  + <span style = "color: red;"> April, 1 </span>: paper proposal 
-  + <span style = "color: red;"> May, 11 </span>: final paper 
+  + <span style = "color: red;"> Oct, 17 </span>: identify a research topic and the data set you will be using, and get an approval from the instructor
+  + <span style = "color: red;"> Oct, 24 </span>: paper proposal 
+  + <span style = "color: red;"> Dec, 16 </span>: final paper 
 
 ---
 class: middle

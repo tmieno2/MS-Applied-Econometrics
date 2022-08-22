@@ -831,6 +831,8 @@ mme_lf <- margins(probit_lf, type = "response")
 summary(mme_lf)
 ```
 
+For example, the average marginal effect of `educ` on the probability of "in labor force" is `r data.table(summary(mme_lf))[factor == "educ", AME] %>% round(digits = 3)`. That is if education increases by one year, then the probability of being in labor force increases by 4%.
+
 ---
 class: inverse, center, middle
 
