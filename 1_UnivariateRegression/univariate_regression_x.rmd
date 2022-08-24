@@ -339,7 +339,14 @@ class: middle
 
 It turns out, the following condition between $x$ and $u$ needs to be satisfied,
 
-.content-box-red[**Mean independence**]
+<br>
+
+.content-box-red[Condition 1]
+
+Mean independence of the error term and indepent variables.
+
+--
+
 + mathematically:
     \begin{align}
       E[u|x]=E[u] 
@@ -355,8 +362,6 @@ class: middle
 .content-box-green[**Note**]
 
 Mean independence of $u$ and $x$ implies no correlation. But, no correlation does not imply mean independence.
-
-.content-box-green[**Mean Independence Implies Correlation (proof)**]
 
 \begin{aligned}
     Cov(u,x)= & E[(u-E[u])(x-E[x])] \\\\
@@ -376,7 +381,12 @@ class: middle
 
 # Crucial conditions to identify the ceteris paribus impact
 
-.content-box-red[**$E(u)=0$**]
+
+.content-box-red[Condition 2]
+
+Expected value of the error term is 0 $(E(u)=0)$.
+
+--
 
 This is always satisfied as long as an intercept is included in the model:
 
@@ -402,7 +412,7 @@ class: middle
 
 .content-box-green[**zero conditional mean**]
 
-Combining mean independence and $E[u] = 0$,
+Combining $E[u|x] = E[u]$ (mean independence) and $E[u] = 0$,
 
 $$
 \begin{aligned}
@@ -1499,7 +1509,6 @@ Heteroskedastic Error
 
 ```{r out.width="60%"}
 g_hetero
-
 ```
 
 ---

@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Econometrics"
-author: "AECN 896-002"
+author: "AECN 896-004"
 output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
@@ -14,7 +14,7 @@ output:
 ---
 class: middle
 
-```{r, child = "./../setup.Rmd"}
+```{r, child = "setup.Rmd"}
 ```
 
 
@@ -378,16 +378,21 @@ class: middle
 An association of two variables arise because <span style = "color: red;"> either of or both </span> variables affect the other variable
 
 \begin{align}
-  A \longleftrightarrow B 
+  A \longleftrightarrow B \\
+  A \longrightarrow B \\
+  A \longleftarrow B 
 \end{align}
 
-Association does not concern which affects which. This is what <span style = "color: blue;"> correlation coefficient </span> measures.
+Association does <span style = "color: red;"> NOT </span> concern which affects which. Under all the three cases above, A and B are <span style = "color: blue;"> associated</span>. Or, we say there is an association between A and B. This is what <span style = "color: blue;"> correlation coefficient </span> measures.
+
+--
 
 .content-box-red[**Causality**]
-Causal effect is the impact of one variable on the other,
+
+When A has a causal impact on B,
 
 \begin{align}
-  A \rightarrow B 
+  A \longrightarrow B 
 \end{align}
 
 Here, changes in $A$ cause changes in $B$, not the other way around
