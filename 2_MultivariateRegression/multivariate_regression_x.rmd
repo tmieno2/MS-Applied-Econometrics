@@ -5,7 +5,8 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    self_contained: true
+    # self_contained: true
+    libs: libs
     nature:
       ratio: 12:8
       highlightStyle: github

@@ -47,11 +47,11 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/syllabus_2022.
 
 ## Assignments
 
-+ [Assignment 1](https://www.dropbox.com/sh/8q8twk1gph0qts0/AADYc4cWzYJCArWUtNZmPNsva?dl=0) ([Submission Link](https://www.dropbox.com/request/UYPeg7SVSkNiIDwWD5CX))
++ [Assignment 1](https://www.dropbox.com/sh/8q8twk1gph0qts0/AADYc4cWzYJCArWUtNZmPNsva?dl=0) ([Submission Link](https://www.dropbox.com/request/QoEGkBxBSn1xvmYhJbe1))
 
-+ [Assignment 2](https://www.dropbox.com/sh/f8f9tdqla719qxw/AACZ8YjVFOC6H8Eck4-rRs1ta?dl=0) ([Submission Link](https://www.dropbox.com/request/uMDhAdB6rMN787Dzslgj))
++ [Assignment 2](https://www.dropbox.com/sh/f8f9tdqla719qxw/AACZ8YjVFOC6H8Eck4-rRs1ta?dl=0) ([Submission Link](https://www.dropbox.com/request/vE0P1Q4Q5iZLEN6oVQcR))
 
-+ [Assignment 3](https://www.dropbox.com/sh/ms57jt2c0dqq2zu/AADzY7dTQeh6AhciFELgkL43a?dl=0) ([Submission Link](https://www.dropbox.com/request/hWDplzmHp5KiDhmo0raF))
++ [Assignment 3](https://www.dropbox.com/sh/ms57jt2c0dqq2zu/AADzY7dTQeh6AhciFELgkL43a?dl=0) ([Submission Link](https://www.dropbox.com/request/32FikC5b8LqGqyni1i2s))
 
 ## Final paper
 + Final Paper ([Instruction](https://tmieno2.github.io/MS-Applied-Econometrics/A2_PaperExpectation/paper_expectation_x.html), [Submission Link](https://www.dropbox.com/request/UVp6fI1CbH9Om2u51MLK))
