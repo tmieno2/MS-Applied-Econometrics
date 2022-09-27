@@ -20,7 +20,6 @@
 *.blg
 *.fdb
 */*DS_store
-
 /*/*.csv
 /*/*.rds
 /*/*.dta
