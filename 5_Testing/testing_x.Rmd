@@ -1,11 +1,12 @@
 ---
-title: "Statistical Hypothesis Testing"
+title: "Hypothesis Testing"
 author: "AECN 396/896-002"
 output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    self_contained: true
+    # self_contained: true
+    lib_dir: libs
     nature:
       ratio: 13:16
       highlightStyle: github
@@ -17,6 +18,9 @@ output:
 ```
 
 
+```{r, include = FALSE}
+library(fixest)
+```
 
 ```{r include = F}
 # setwd("/Users/tmieno2/Dropbox/TeachingUNL/AppliedEconometrics_MS/LectureNotes/5_Testing/")
