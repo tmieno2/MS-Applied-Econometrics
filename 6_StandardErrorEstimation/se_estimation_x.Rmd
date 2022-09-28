@@ -5,7 +5,8 @@ output:
   xaringan::moon_reader:
     # css: [default, metropolis, metropolis-fonts] 
     css: xaringan-themer.css 
-    self_contained: true
+    # self_contained: true
+    lib_dir: libs
     nature:
       ratio: 4:3
       highlightStyle: github
@@ -21,12 +22,12 @@ class: middle
 setwd(here("LectureNotes/6_StandardErrorEstimation"))
 ```
 
-```{r libraries, include = F, cache = F}
+```{r libraries-extra, include = F, cache = F}
 #--- load packages ---#
-suppressMessages(library(broom))
-suppressMessages(library(fixest))
-suppressMessages(library(modelsummary))
-suppressMessages(library(lmtest))
+library(broom)
+library(fixest)
+library(modelsummary)
+library(lmtest)
 ```
 
 # Before we start 
