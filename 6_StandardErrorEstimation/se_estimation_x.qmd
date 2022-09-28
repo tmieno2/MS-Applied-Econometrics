@@ -1,0 +1,65 @@
+---
+title: "Standard Error Estimation"
+format:
+  revealjs:
+    toc: true
+    slide-number: true
+    chalkboard: true
+    html-math-method: katex
+    preview-links: auto 
+---
+
+## First slide
+
+```{r echo = TRUE, eval = F}
+library(here)
+setwd(here("LectureNotes/6_StandardErrorEstimation"))
+```
+
+
+## Second slide
+
+```{r}
+plot(mtcars)
+```
+
+## Line Highlighting
+
+### jkfer
+
+-   Highlight specific lines for emphasis
+-   Incrementally highlight additional lines
+
+```{.python code-line-numbers="4-5|7|10"}
+import numpy as np
+import matplotlib.pyplot as plt
+
+r = np.arange(0, 2, 0.01)
+theta = 2 * np.pi * r
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+ax.plot(theta, r)
+ax.set_rticks([0.5, 1, 1.5, 2])
+ax.grid(True)
+plt.show()
+```
+
+::: footer
+Learn more: [Line Highlighting](https://quarto.org/docs/presentations/revealjs/#line-highlighting)
+:::
+
+## Executable Code
+
+```{r}
+#| echo: true
+#| fig-width: 10
+#| fig-height: 4.5
+library(ggplot2)
+ggplot(mtcars, aes(hp, mpg, color = am)) +
+  geom_point() +  geom_smooth(formula = y ~ x, method = "loess")
+```
+
+## 
+
+$$
+y_{i,t} = \alpha + \beta x
+$$

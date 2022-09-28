@@ -3,11 +3,11 @@
 /Labs/*
 /*/*_cache/*
 /*/cache/*
-/*/*files/*
-*png
+# /*/*files/*
+# *png
 *js
 *css
-/*/figure/*
+# /*/figure/*
 *.csv
 *.rds
 *.dta
