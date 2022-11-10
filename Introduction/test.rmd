@@ -1,0 +1,36 @@
+---
+title: "Introduction to Econometrics"
+author: "AECN 896-002"
+output:
+  xaringan::moon_reader:
+    # css: [default, metropolis, metropolis-fonts] 
+    css: xaringan-themer.css 
+    lib_dir: libs
+    nature:
+      ratio: 12:8
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: middle
+
+```{r libraries, include = F, cache = F}
+#--- load packages ---#
+library(here)
+library(data.table)
+library(DT)
+library(tictoc)
+library(RefManageR)
+library(tmap)
+library(extrafont)
+library(ggthemes)
+library(RColorBrewer)
+library(parallel)
+library(tidyverse)
+```
+
+```{r}
+print(here())
+```
+
+

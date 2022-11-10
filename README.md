@@ -53,6 +53,8 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/syllabus_2022.
 
 + [Assignment 3](https://www.dropbox.com/sh/ms57jt2c0dqq2zu/AADzY7dTQeh6AhciFELgkL43a?dl=0) ([Submission Link](https://www.dropbox.com/request/32FikC5b8LqGqyni1i2s))
 
++ [Assignment 4](https://www.dropbox.com/sh/sbl3cih6yv1nvxj/AAAsoFgAqPRi87qWc0GAlHWoa?dl=0) ([Submission Link](https://www.dropbox.com/request/ziUBm3LLDQQEgbOXScNl))
+
 ## Final paper
 + Final Paper ([Instruction](https://tmieno2.github.io/MS-Applied-Econometrics/A2_PaperExpectation/paper_expectation_x.html), [Submission Link](https://www.dropbox.com/request/UVp6fI1CbH9Om2u51MLK))
 
