@@ -1,5 +1,5 @@
 # /*===========================================================
-#' # Introduction
+#' # Intro
 # /*===========================================================
 rmarkdown::render(here::here("LectureNotes/Introduction/Introduction_x.rmd"))
 pagedown::chrome_print(here::here("LectureNotes/Introduction/Introduction_x.html"))

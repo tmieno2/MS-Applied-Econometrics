@@ -3,7 +3,7 @@
   <head>
     <title>Introduction to Econometrics</title>
     <meta charset="utf-8" />
-    <meta name="author" content="AECN 896-002" />
+    <meta name="author" content="AECN 896-004" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
     <script src="libs/tile-view/tile-view.js"></script>
@@ -22,7 +22,7 @@
 class: center, middle, inverse, title-slide
 
 # Introduction to Econometrics
-### AECN 896-002
+### AECN 896-004
 
 ---
 
@@ -386,8 +386,7 @@ class: middle
 
 + &lt;span style = "color: red;"&gt; Instructor &lt;/span&gt;: Taro Mieno (Office: 209, E-mail: tmieno2@unl.edu)
 + &lt;span style = "color: red;"&gt; Teaching Assistant &lt;/span&gt;: 
-  - Aakanksha Melkani: amelkani@unl.edu
-  - Sagar Dahal: sdahal3@huskers.unl.edu
+  - TBD
 
 ---
 class: middle
@@ -466,10 +465,10 @@ class: middle
 
 # Midterms
 
-In-class open-book midterm 
+In-class open-book midterms
 
-+ Midterm 1: Oct, 10 (M)
-+ Midterm 2: Nov, 21 (M)
++ Midterm 1: Oct, 9 (M)
++ Midterm 2: Nov, 20 (M)
 
 ---
 class: middle
@@ -487,9 +486,9 @@ class: middle
 
 # Paper
 Here is the time line of the paper assignment:
-  + &lt;span style = "color: red;"&gt; Oct, 17 &lt;/span&gt;: identify a research topic and the data set you will be using, and get an approval from the instructor
-  + &lt;span style = "color: red;"&gt; Oct, 24 &lt;/span&gt;: paper proposal 
-  + &lt;span style = "color: red;"&gt; Dec, 16 &lt;/span&gt;: final paper 
+  + &lt;span style = "color: red;"&gt; Oct, 16 &lt;/span&gt;: identify a research topic and the data set you will be using, and get an approval from the instructor
+  + &lt;span style = "color: red;"&gt; Oct, 23 &lt;/span&gt;: paper proposal 
+  + &lt;span style = "color: red;"&gt; Dec, 15 &lt;/span&gt;: final paper 
 
 ---
 class: middle
@@ -946,7 +945,14 @@ class: middle
 
 .content-box-green[**Endogeneity (Definition)**]:
 
-Variables of interest are correlated with some unobservables (variables that cannot be observed or are missing) that have non-zero impacts on the variable that you want to explain
++ Variables of interest are correlated with some &lt;span style = "color: blue;"&gt; unobservables &lt;/span&gt; (variables that cannot be observed or are missing) that have non-zero impacts on the variable that you want to explain
+
++ The unobserved variables are also called &lt;span style = "color: blue;"&gt; confounder/confounding factor &lt;/span&gt;.
+
+.content-box-green[**Note**]
+
+&lt;span style = "color: blue;"&gt; Confound &lt;/span&gt;: mix up (something) with something else so that the individual elements become difficult to distinguish (Oxford dictionary).
+
 
 ---
 class: middle
@@ -954,14 +960,15 @@ class: middle
 In the above example,
 
 + &lt;span style = "color: red;"&gt; variable of interest &lt;/span&gt;: the number of firefighters
-+ &lt;span style = "color: red;"&gt; unobservables &lt;/span&gt;: the scale of fire events (and other factors)
++ &lt;span style = "color: red;"&gt; unobservables/confounder &lt;/span&gt;: the scale of fire events (and other factors)
 + &lt;span style = "color: red;"&gt; variable to explain &lt;/span&gt;: death toll
 
 --
 
 .content-box-green[**The model**]:
 `\begin{align}
-  \mbox{death toll} = \alpha + \beta\; \mbox{# of fire fighters} + (\gamma\; \mbox{scale} + v)
+  \mbox{death toll} &amp; = \alpha + \beta\; \mbox{# of fire fighters} + \mu\\
+  ,\mbox{where } \mu &amp; = (\gamma\; \mbox{scale} + v) \mbox{ is the error term (collection of unobservables)}
 \end{align}`
 
 .content-box-green[**Endogeneity Problem**]:
@@ -1001,9 +1008,9 @@ class: middle
 
 # How to deal with endogeneity?
 + You have two opportunities to deal with endogeneity problems
-  - at the design stage
+  - at the design (design to collect data) stage
   - at the regression stage (what you will learn in this course)
-+ Econometrics has evolved to address endogeneity problems at the regression stage because randomized experiments are infeasible most of the time
++ Econometrics has evolved mostly to address endogeneity problems at the &lt;span style = "color: blue;"&gt; regression stage &lt;/span&gt; because randomized experiments are infeasible most of the time
 + How about econometrics and other fields of statistics: Statistics, Psychometrics, and Biometrics?
 
 ---
@@ -1089,7 +1096,7 @@ class: middle
 
 .content-box-green[**Farmer**]
 
-+ decide nitrogen rate based on soil characteristics
++ decide nitrogen rate based on soil/field characteristics (some of them we researchers do not get to observe)
 
 .content-box-green[**Researcher**]
 

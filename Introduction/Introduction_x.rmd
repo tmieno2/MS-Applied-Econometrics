@@ -54,8 +54,7 @@ class: middle
 
 + <span style = "color: red;"> Instructor </span>: Taro Mieno (Office: 209, E-mail: tmieno2@unl.edu)
 + <span style = "color: red;"> Teaching Assistant </span>: 
-  - Aakanksha Melkani: amelkani@unl.edu
-  - Sagar Dahal: sdahal3@huskers.unl.edu
+  - TBD
 
 ---
 class: middle
@@ -134,10 +133,10 @@ class: middle
 
 # Midterms
 
-In-class open-book midterm 
+In-class open-book midterms
 
-+ Midterm 1: Oct, 10 (M)
-+ Midterm 2: Nov, 21 (M)
++ Midterm 1: Oct, 9 (M)
++ Midterm 2: Nov, 20 (M)
 
 ---
 class: middle
@@ -155,9 +154,9 @@ class: middle
 
 # Paper
 Here is the time line of the paper assignment:
-  + <span style = "color: red;"> Oct, 17 </span>: identify a research topic and the data set you will be using, and get an approval from the instructor
-  + <span style = "color: red;"> Oct, 24 </span>: paper proposal 
-  + <span style = "color: red;"> Dec, 16 </span>: final paper 
+  + <span style = "color: red;"> Oct, 16 </span>: identify a research topic and the data set you will be using, and get an approval from the instructor
+  + <span style = "color: red;"> Oct, 23 </span>: paper proposal 
+  + <span style = "color: red;"> Dec, 15 </span>: final paper 
 
 ---
 class: middle
@@ -503,7 +502,14 @@ class: middle
 
 .content-box-green[**Endogeneity (Definition)**]:
 
-Variables of interest are correlated with some unobservables (variables that cannot be observed or are missing) that have non-zero impacts on the variable that you want to explain
++ Variables of interest are correlated with some <span style = "color: blue;"> unobservables </span> (variables that cannot be observed or are missing) that have non-zero impacts on the variable that you want to explain
+
++ The unobserved variables are also called <span style = "color: blue;"> confounder/confounding factor </span>.
+
+.content-box-green[**Note**]
+
+<span style = "color: blue;"> Confound </span>: mix up (something) with something else so that the individual elements become difficult to distinguish (Oxford dictionary).
+
 
 ---
 class: middle
@@ -511,14 +517,15 @@ class: middle
 In the above example,
 
 + <span style = "color: red;"> variable of interest </span>: the number of firefighters
-+ <span style = "color: red;"> unobservables </span>: the scale of fire events (and other factors)
++ <span style = "color: red;"> unobservables/confounder </span>: the scale of fire events (and other factors)
 + <span style = "color: red;"> variable to explain </span>: death toll
 
 --
 
 .content-box-green[**The model**]:
 \begin{align}
-  \mbox{death toll} = \alpha + \beta\; \mbox{# of fire fighters} + (\gamma\; \mbox{scale} + v)
+  \mbox{death toll} & = \alpha + \beta\; \mbox{# of fire fighters} + \mu\\
+  ,\mbox{where } \mu & = (\gamma\; \mbox{scale} + v) \mbox{ is the error term (collection of unobservables)}
 \end{align}
 
 .content-box-green[**Endogeneity Problem**]:
@@ -558,9 +565,9 @@ class: middle
 
 # How to deal with endogeneity?
 + You have two opportunities to deal with endogeneity problems
-  - at the design stage
+  - at the design (design to collect data) stage
   - at the regression stage (what you will learn in this course)
-+ Econometrics has evolved to address endogeneity problems at the regression stage because randomized experiments are infeasible most of the time
++ Econometrics has evolved mostly to address endogeneity problems at the <span style = "color: blue;"> regression stage </span> because randomized experiments are infeasible most of the time
 + How about econometrics and other fields of statistics: Statistics, Psychometrics, and Biometrics?
 
 ---
@@ -606,7 +613,7 @@ class: middle
 
 .content-box-green[**Farmer**]
 
-+ decide nitrogen rate based on soil characteristics
++ decide nitrogen rate based on soil/field characteristics (some of them we researchers do not get to observe)
 
 .content-box-green[**Researcher**]
 
