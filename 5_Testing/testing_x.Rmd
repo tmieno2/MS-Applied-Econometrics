@@ -806,31 +806,33 @@ class: middle
 .content-box-red[**Get the data and run a regression**]
 
 ```{r }
+library(wooldridge)
+
 #--- get the data ---#
-wage <- read_csv("wage1.csv")
+data("wage1")
 
 #--- run a regression ---#
-reg_wage <- feols(wage ~ educ + exper + tenure, data = wage)
+reg_wage <- feols(wage ~ educ + exper + tenure, data = wage1)
 ```
 
 --
 
 .content-box-red[**Obtain t-statistics**]
 
-You can apply the `tidy()` function from the `broom` package to access the regression results (`reg_wage` here) as a `tibble` (`data.frame`).
+You can apply the `broom::tidy()` function from the `broom` package to access the regression results (`reg_wage` here) as a `tibble` (`data.frame`).
 
 ```{r }
 library(broom)
 
 #* tidy up the regression results
-reg_results_table <- tidy(reg_wage)
+reg_results_table <- broom::tidy(reg_wage)
 
 #* display
 reg_results_table
 ```
 
 + `estimate`: coefficient estimates $(\hat{\beta}_j)$
-+ `std.error`: $se(\hat{\beta}_j$)
++ `std.error`: $\widehat{se(\hat{\beta}_j}$)
 + `statistic`: t-statistic for the null of $\beta_j = 0$
 + `p.value`: p-value (for the two sided test with the null of $\beta_j = 0$)
 
@@ -1007,17 +1009,18 @@ So, following the general procedure we discussed in the previous slide, the A% c
 
 --
 
-But, we want the A% CI of $\beta_j$, not $\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}$. Solving for $\beta_j$,
+But, we want the A% CI of $\beta_j$, not $\frac{\hat{\beta}_j - \beta_j}{\widehat{se(\hat{\beta}_j)}}$. Solving for $\beta_j$,
 
-$\beta_j = t_{n-k-1}\times se(\hat{\beta}_j) + \hat{\beta}_j$
+$\beta_j = t_{n-k-1}\times \widehat{se(\hat{\beta}_j)} + \hat{\beta}_j$
 
 --
 
-So, to get the A% CI of $\beta_j$, we scale the CI of $\frac{\hat{\beta}_j - \beta_j}{se(\hat{\beta}_j)}$ by $se(\hat{\beta}_j)$ and then shift by $\hat{\beta}_j$.
+So, to get the A% CI of $\beta_j$, we scale the CI of $\frac{\hat{\beta}_j - \beta_j}{\widehat{se(\hat{\beta}_j)}}$ by $se(\hat{\beta}_j)$ and then shift by $\hat{\beta}_j$.
 
-+ lower bound: $Q_l \times se(\hat{\beta}_j) + \hat{\beta}_j$
++ lower bound: $Q_l \times se(\hat{\beta}_j) + \hat{\beta}_j$ 
 + lower bound: $Q_h \times se(\hat{\beta}_j) + \hat{\beta}_j$
 
+Note that $Q_l$ is negative and $Q_h$ is negative.
 ---
 
 # CI: An Example
@@ -1026,8 +1029,7 @@ So, to get the A% CI of $\beta_j$, we scale the CI of $\frac{\hat{\beta}_j - \be
 .content-box-green[**Get data**]
 
 ```{r get-wage-data}
-wage <- read_csv("wage1.csv") %>%
-  select(wage, educ, exper, tenure)
+wage <- dplyr::select(wage1, educ, exper, tenure)
 ```
 
 Take a look at the data:
@@ -1043,14 +1045,14 @@ head(wage)
 wage_reg <- feols(wage ~ educ + exper + tenure, data = wage)
 ```
 
-Applying `tidy()` to `wage_reg`,
+Applying `broom::tidy()` to `wage_reg`,
 
 ```{r }
-tidy(wage_reg)
+broom::tidy(wage_reg)
 ```
 
 ```{r echo = F}
-wage_reg_coef <- tidy(reg_wage)
+wage_reg_coef <- broom::tidy(reg_wage)
 ```
 
 The degrees of freedom of residual (n-k-1) is
@@ -1154,10 +1156,10 @@ class: middle
 
 # In practice ...
 
-You can just use `tidy()` with `conf.int = TRUE`, `conf.level = confidence level` like below:
+You can just use `broom::tidy()` with `conf.int = TRUE`, `conf.level = confidence level` like below:
 
 ```{r }
-tidy(wage_reg, conf.int = TRUE, conf.level = 0.9) %>%
+broom::tidy(wage_reg, conf.int = TRUE, conf.level = 0.9) %>%
   relocate(term, conf.low, conf.high)
 ```
 
@@ -1218,7 +1220,7 @@ Note that $\alpha$ is a linear combination of $\beta_1$ and  $\beta_2$.
 
 For any linear combination of the OLS coefficients, denoted as $\hat{\alpha}$, the following holds:
 
-$$\frac{\hat{\alpha}-\alpha}{se(\hat{\alpha})} \sim t_{n-k-1}$$
+$$\frac{\hat{\alpha}-\alpha}{\widehat{se(\hat{\alpha})}} \sim t_{n-k-1}$$
 
 Where $\alpha$ is the true value (it is $\beta_1 - \beta_2$ in the example in the previous slide).
 
@@ -1226,7 +1228,7 @@ Where $\alpha$ is the true value (it is $\beta_1 - \beta_2$ in the example in th
 
 So, using the example, this means that 
 
-$$\frac{\hat{\alpha}-\alpha}{se(\hat{\alpha})} = \frac{\hat{\beta}_1-\hat{\beta}_2-(\beta_1 - \beta_2)}{se(\hat{\beta}_1-\hat{\beta}_2)} \sim t_{n-k-1}$$
+$$\frac{\hat{\alpha}-\alpha}{\widehat{se(\hat{\alpha})}} = \frac{\hat{\beta}_1-\hat{\beta}_2-(\beta_1 - \beta_2)}{\widehat{se(\hat{\beta}_1-\hat{\beta}_2)}} \sim t_{n-k-1}$$
 
 --
 
@@ -1240,11 +1242,11 @@ Our null hypothesis is $\alpha = 0$ (or $\beta_1 - \beta_2 = 0$).
 
 So, .red[If] indeed the null hypothesis is true, then
 
-$$\frac{\hat{\alpha}-0}{se(\hat{\alpha})} = \frac{\hat{\beta}_1-\hat{\beta}_2-0}{se(\hat{\beta}_1-\hat{\beta}_2)} \sim t_{n-k-1}$$
+$$\frac{\hat{\alpha}-0}{\widehat{se(\hat{\alpha})}} = \frac{\hat{\beta}_1-\hat{\beta}_2-0}{\widehat{se(\hat{\beta}_1-\hat{\beta}_2)}} \sim t_{n-k-1}$$
 
 --
 
-So, all you need to do is to substitute $\hat{\beta}_1$, $\hat{\beta}_2$, $se(\hat{\beta}_1 - \hat{\beta}_2)$ into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
+So, all you need to do is to substitute $\hat{\beta}_1$, $\hat{\beta}_2$, $\widehat{se(\hat{\beta}_1 - \hat{\beta}_2)}$ into the formula and see if the value is beyond the critical value for your chosen level of statistical significance.
 
 ---
 
@@ -1281,7 +1283,8 @@ $$se(\hat{\beta}_1-\hat{\beta}_2)= \sqrt{Var(\hat{\beta}_1-\hat{\beta}_2}) = \sq
 .content-box-red[**Regression**]
 
 ```{r }
-twoyear <- readRDS("twoyear.rds") # import data
+#--- import data ---#
+data("twoyear", package = "wooldridge")
 
 reg_sc <- feols(lwage ~ jc + univ + exper, data = twoyear) # OLS
 ```
@@ -1317,7 +1320,7 @@ class: middle
 vcov_sc
 ```
 ```{r }
-reg_sc_td <- tidy(reg_sc)
+reg_sc_td <- broom::tidy(reg_sc)
 
 beta_jc <-
   reg_sc_td %>%
@@ -1389,17 +1392,15 @@ How do we test this?
 .content-box-red[**Running a regression**]
 
 ```{r }
-library(readstata13)
-
-#--- red the data ---#
-mlb_data <- read.dta13("MLB1.dta")
+#--- load the mlb data ---#
+data("mlb1", package = "wooldridge")
 
 #--- run a rergession ---#
 mlb_reg <- feols(log(salary) ~ years + gamesyr + bavg
-  + hrunsyr + rbisyr, data = mlb_data)
+  + hrunsyr + rbisyr, data = mlb1)
 
 #--- take a look at the results ---#
-tidy(mlb_reg)
+broom::tidy(mlb_reg)
 ```
 
 --
@@ -1458,7 +1459,7 @@ If the null hypothesis is indeed true, then what do you think is going to happen
 ```{r }
 #--- run OLS ---#
 res_u <- feols(log(salary) ~ years + gamesyr + bavg
-  + hrunsyr + rbisyr, data = mlb_data)
+  + hrunsyr + rbisyr, data = mlb1)
 
 #--- SSR ---#
 sum(res_u$residuals^2)
@@ -1468,7 +1469,7 @@ sum(res_u$residuals^2)
 
 ```{r }
 #--- run OLS ---#
-res_r <- feols(log(salary) ~ years + gamesyr, data = mlb_data)
+res_r <- feols(log(salary) ~ years + gamesyr, data = mlb1)
 
 #--- SSR ---#
 sum(res_r$residuals^2)
@@ -1589,12 +1590,12 @@ ggplot(data = f_plot) +
 ```{r }
 #--- unrestricted model ---#
 reg_u <- feols(log(salary) ~ years + gamesyr +
-  bavg + hrunsyr + rbisyr, data = mlb_data)
+  bavg + hrunsyr + rbisyr, data = mlb1)
 
 SSR_u <- sum(reg_u$residuals^2)
 
 #--- restricted model ---#
-reg_r <- feols(log(salary) ~ years + gamesyr, data = mlb_data)
+reg_r <- feols(log(salary) ~ years + gamesyr, data = mlb1)
 
 SSR_r <- sum(reg_r$residuals^2)
 ```
@@ -1667,7 +1668,7 @@ cor(x1, x2) # correlation between x1 and x2
 
 ```{r cache = F}
 reg_u <- feols(y ~ x1 + x2 + x3, data = data) # OLS
-tidy(reg_u) # results
+broom::tidy(reg_u) # results
 ```
 
 Both `x1` and `x2` are statistically insignificant individually. 
@@ -1724,7 +1725,7 @@ But, collectively, they have large impacts. $F$-test was able to detect the stat
 Here is the correlation coefficients between the three variables:
 
 ```{r cor}
-select(mlb_data, bavg, hrunsyr, rbisyr) %>% cor()
+dplyr::select(mlb1, bavg, hrunsyr, rbisyr) %>% cor()
 ```
 
 --

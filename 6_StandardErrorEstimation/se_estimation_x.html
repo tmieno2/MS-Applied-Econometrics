@@ -23,8 +23,12 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Standard Error Estimation
+]
+.author[
 ### AECN 396/896-002
+]
 
 ---
 
@@ -727,13 +731,13 @@ Let's run a regression using `MLB1.dta`.
 
 ```r
 #--- library ---#
-library(readstata13)
+library(wooldridge)
 
 #--- import the data ---#
-mlb_data &lt;- read.dta13('MLB1.dta')
+data("mlb1")
 
 #--- regression ---#
-reg_mlb &lt;- feols(log(salary) ~ years + bavg, data = mlb_data) 
+reg_mlb &lt;- feols(log(salary) ~ years + bavg, data = mlb1) 
 ```
 
 ---
@@ -881,8 +885,8 @@ modelsummary::msummary(
  &lt;thead&gt;
   &lt;tr&gt;
    &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
-   &lt;th style="text-align:center;"&gt; Model 1 &lt;/th&gt;
-   &lt;th style="text-align:center;"&gt; Model 2 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;   (2) &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
@@ -912,9 +916,9 @@ modelsummary::msummary(
    &lt;td style="text-align:center;"&gt; 0.005*** &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;box-shadow: 0px 1px"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.003) &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.001) &lt;/td&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.001) &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
@@ -925,6 +929,16 @@ modelsummary::msummary(
    &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
    &lt;td style="text-align:center;"&gt; 0.367 &lt;/td&gt;
    &lt;td style="text-align:center;"&gt; 0.367 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.94 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.94 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Std.Errors &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Custom &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Custom &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
@@ -941,7 +955,7 @@ Or, you could add the `vcov` option like below inside `feols()`. Then, you do no
 
 
 ```r
-reg_mlb &lt;- feols(log(salary) ~ years + bavg, vcov = "hetero", data = mlb_data) 
+reg_mlb &lt;- feols(log(salary) ~ years + bavg, vcov = "hetero", data = mlb1) 
 
 tidy(reg_mlb)
 ```
@@ -972,7 +986,7 @@ modelsummary::msummary(
  &lt;thead&gt;
   &lt;tr&gt;
    &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
-   &lt;th style="text-align:center;"&gt; Model 1 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt;  (1) &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
@@ -997,8 +1011,8 @@ modelsummary::msummary(
    &lt;td style="text-align:center;"&gt; 0.005+ &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;box-shadow: 0px 1px"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1px"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.003) &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
@@ -1007,6 +1021,10 @@ modelsummary::msummary(
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
    &lt;td style="text-align:center;"&gt; 0.367 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.94 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Std.Errors &lt;/td&gt;
@@ -1287,7 +1305,7 @@ mean(abs(t_stat_store) &gt; c_value)
 ```
 
 ```
-## [1] 0.748
+## [1] 0.745
 ```
 
 --
@@ -1349,7 +1367,7 @@ Let's take a look at the MLB data again.
 
 
 ```r
-mlb_data[, c("salary", "years", "bavg", "nl")] %&gt;% head()
+dplyr::select(mlb1, salary, years, bavg, nl) %&gt;% head()
 ```
 
 ```
@@ -1376,7 +1394,7 @@ Run a regression
 
 
 ```r
-reg_mlb &lt;- feols(log(salary) ~ years + bavg, data = mlb_data) 
+reg_mlb &lt;- feols(log(salary) ~ years + bavg, data = mlb1) 
 ```
 
 --
@@ -1436,7 +1454,7 @@ Or, you could add the `cluster` option like below inside `feols()`.
 
 
 ```r
-reg_mlb &lt;- feols(log(salary) ~ years + bavg, cluster = ~ nl, data = mlb_data) 
+reg_mlb &lt;- feols(log(salary) ~ years + bavg, cluster = ~ nl, data = mlb1) 
 
 tidy(reg_mlb)
 ```
@@ -1533,7 +1551,7 @@ mean(abs(t_stat_store) &gt; c_value)
 ```
 
 ```
-## [1] 0.151
+## [1] 0.15
 ```
 
 --
@@ -1611,7 +1629,7 @@ mean(abs(t_stat_store) &gt; c_value)
 ```
 
 ```
-## [1] 0.091
+## [1] 0.09
 ```
 
 Better. But, we are still over-rejecting. Don't forget it is certianly better than using the default!
@@ -1663,6 +1681,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

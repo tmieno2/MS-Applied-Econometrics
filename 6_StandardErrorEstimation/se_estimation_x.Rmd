@@ -457,13 +457,13 @@ Let's run a regression using `MLB1.dta`.
 
 ```{r }
 #--- library ---#
-library(readstata13)
+library(wooldridge)
 
 #--- import the data ---#
-mlb_data <- read.dta13('MLB1.dta')
+data("mlb1")
 
 #--- regression ---#
-reg_mlb <- feols(log(salary) ~ years + bavg, data = mlb_data) 
+reg_mlb <- feols(log(salary) ~ years + bavg, data = mlb1) 
 ```
 
 ---
@@ -583,7 +583,7 @@ class: middle
 Or, you could add the `vcov` option like below inside `feols()`. Then, you do not need `statistic_override` option to override the default VCOV estimates.
 
 ```{r }
-reg_mlb <- feols(log(salary) ~ years + bavg, vcov = "hetero", data = mlb_data) 
+reg_mlb <- feols(log(salary) ~ years + bavg, vcov = "hetero", data = mlb1) 
 
 tidy(reg_mlb)
 ```
@@ -935,7 +935,7 @@ class: middle
 Let's take a look at the MLB data again.
 
 ```{r }
-mlb_data[, c("salary", "years", "bavg", "nl")] %>% head()
+dplyr::select(mlb1, salary, years, bavg, nl) %>% head()
 ```
 
 `nl` (1 if in the National league, 0 if in the American league) is the group variable we cluster around. 
@@ -951,7 +951,7 @@ class: middle
 Run a regression
 
 ```{r }
-reg_mlb <- feols(log(salary) ~ years + bavg, data = mlb_data) 
+reg_mlb <- feols(log(salary) ~ years + bavg, data = mlb1) 
 ```
 
 --
@@ -997,7 +997,7 @@ class: middle
 Or, you could add the `cluster` option like below inside `feols()`.
 
 ```{r }
-reg_mlb <- feols(log(salary) ~ years + bavg, cluster = ~ nl, data = mlb_data) 
+reg_mlb <- feols(log(salary) ~ years + bavg, cluster = ~ nl, data = mlb1) 
 
 tidy(reg_mlb)
 ```
