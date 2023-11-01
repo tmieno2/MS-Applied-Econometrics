@@ -189,13 +189,13 @@ When you include a variable that is a transformation of an existing variable, us
 
 ```{r }
 #--- prepare a dataset ---#
-wage <- readRDS("wage1.rds")
+data("wage1", package = "wooldridge")
 
 #--- run a regression ---#
-quad_reg <- feols(wage ~ female + educ + I(educ^2), data = wage)
+quad_reg <- fixest::feols(wage ~ female + educ + I(educ^2), data = wage1)
 
 #--- look at the results ---#
-tidy(quad_reg)
+broom::tidy(quad_reg)
 ```
 
 ---
@@ -206,12 +206,12 @@ $wage = 5.60 - 2.12\times female -0.416\times educ + 0.039\times educ^2$
 
 ```{r echo = F, out.width = "60%"}
 N <- 1000
-x <- seq(min(wage$educ), max(wage$educ), length = N)
+x <- seq(min(wage1$educ), max(wage1$educ), length = N)
 data <- data.table(educ = x, female = 1) %>%
   mutate(y = predict(quad_reg, newdata = .))
 
 g_quad_ex <- ggplot() +
-  geom_point(data = wage, aes(y = wage, x = educ), size = 0.4) +
+  geom_point(data = wage1, aes(y = wage, x = educ), size = 0.4) +
   geom_line(data = data, aes(y = y, x = x))
 
 g_quad_ex
@@ -273,8 +273,8 @@ So, is the marginal impact of $educ$ statistically significantly different from 
 # In the linear case
 
 ```{r }
-linear_reg <- feols(wage ~ female + educ, data = wage)
-tidy(linear_reg)
+linear_reg <- fixest::feols(wage ~ female + educ, data = wage1)
+broom::tidy(linear_reg)
 ```
 
 --
@@ -383,7 +383,7 @@ $t = \frac{\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 4}{se(\hat{
 Remember, a trick to do this test using R is take advantage of the fact that $F_{1, n-k-1} \sim t_{n-k-1}^2$.
 
 ```{r }
-linearHypothesis(quad_reg, "educ + 8*I(educ^2)=0")
+car::linearHypothesis(quad_reg, "educ + 8*I(educ^2)=0")
 ```
 
 --
@@ -435,7 +435,7 @@ $t = \frac{\hat{\beta}_{educ} + \hat{\beta}_{educ^2} \times 2 \times 10}{se(\hat
 .content-box-red[**R implementation**]
 
 ```{r }
-linearHypothesis(quad_reg, "educ + 20*I(educ^2)=0")
+car::linearHypothesis(quad_reg, "educ + 20*I(educ^2)=0")
 ```
 
 --
@@ -500,7 +500,7 @@ The marginal impact of experience depends on education
 Just like the quadratic case with $educ^2$, you can use `I()`.
 
 ```{r }
-reg_int <- feols(wage ~ female + exper + I(exper * educ), data = wage)
+reg_int <- fixest::feols(wage ~ female + exper + I(exper * educ), data = wage1)
 ```
 
 --
@@ -529,7 +529,7 @@ class: middle
 
 ```{r echo = F}
 N <- 1000
-educ_temp <- seq(min(wage$educ), max(wage$educ), length = N)
+educ_temp <- seq(min(wage1$educ), max(wage1$educ), length = N)
 min_exper <- reg_int$coefficients["exper"] + reg_int$coefficients["I(exper * educ)"] * educ_temp
 data_exper <- data.table(
   x = educ_temp,
@@ -542,7 +542,7 @@ g_marginal <- ggplot(data = data_exper) +
   xlab("education") +
   geom_hline(yintercept = 0)
 
-g_hist <- ggplot(data = wage) +
+g_hist <- ggplot(data = wage1) +
   geom_histogram(aes(educ)) +
   xlab("education")
 ```
@@ -599,7 +599,7 @@ class: middle
 .content-box-red[**R implementation**]
 
 ```{r }
-linearHypothesis(reg_int, "exper+10*I(exper * educ)=0")
+car::linearHypothesis(reg_int, "exper+10*I(exper * educ)=0")
 ```
 
 ---
@@ -647,9 +647,7 @@ How do we include qualitative information as an independent variable?
 .content-box-red[**Example**]
 
 ```{r }
-wage <- readRDS("wage1.rds")
-
-dplyr::select(wage, wage, educ, exper, female, married) %>%
+dplyr::select(wage1, wage, educ, exper, female, married) %>%
   head()
 ```
 
@@ -692,7 +690,7 @@ class: middle
 .content-box-red[**Regression with a dummy variable**]
 
 ```{r }
-reg_df <- feols(wage ~ female + educ, data = wage)
+reg_df <- fixest::feols(wage ~ female + educ, data = wage1)
 
 reg_df
 ```
@@ -783,9 +781,9 @@ class: middle
 .content-box-red[**Regression with a dummy variable**]
 
 ```{r }
-wage <- mutate(wage, male = 1 - female)
+wage <- dplyr::mutate(wage, male = 1 - female)
 
-reg_df <- feols(wage ~ male + educ, data = wage)
+reg_df <- fixest::feols(wage ~ male + educ, data = wage)
 
 reg_df
 ```
@@ -830,7 +828,7 @@ class: middle
 Here is what happens if you include both:
 
 ```{r highlight.output = c(8)}
-reg_dmf <- feols(wage ~ male + female + educ, data = wage)
+reg_dmf <- fixest::feols(wage ~ male + female + educ, data = wage)
 
 reg_dmf
 ```
@@ -869,12 +867,12 @@ For female, education is more effective by $\gamma$ than it is for male.
 .content-box-red[**Example using R**]
 
 ```{r eval = F}
-reg_di <- lm(wage ~ female + educ + `I(female * educ)`, data = wage)
+reg_di <- fixest::feols(wage ~ female + educ + `I(female * educ)`, data = wage)
 reg_di
 ```
 
 ```{r echo = F}
-reg_di <- lm(wage ~ female + educ + I(female * educ), data = wage)
+reg_di <- fixest::feols(wage ~ female + educ + I(female * educ), data = wage)
 reg_di
 ```
 
@@ -1090,11 +1088,13 @@ class: middle
 Run the unrestricted model with all the interaction terms:
 
 ```{r }
+data("gpa3", package = "wooldridge")
+
 gpa <-
-  read.dta13("GPA3.dta") %>%
-  filter(!is.na(ctothrs)) %>%
+  gpa3 %>%
+  dplyr::filter(!is.na(ctothrs)) %>%
   #--- create interaction terms ---#
-  mutate(
+  dplyr::mutate(
     female_sat := female * sat,
     female_hsperc := female * hsperc,
     female_tothrs := female * tothrs
@@ -1102,7 +1102,7 @@ gpa <-
 
 #--- regression with female dummy ---#
 reg_full <-
-  feols(
+  fixest::feols(
     cumgpa ~
       female + sat + female_sat + hsperc + female_hsperc +
       tothrs + female_tothrs,
@@ -1127,7 +1127,7 @@ class: middle
 
 .right5[
 ```{r echo = F}
-msummary(
+modelsummary::msummary(
   reg_full,
   gof_omit = "Obs|R|Log|IC|Std",
   stars = TRUE
@@ -1138,7 +1138,7 @@ msummary(
 ---
 
 ```{r }
-linearHypothesis(
+car::linearHypothesis(
   reg_full,
   c(
     "female = 0",
@@ -1173,7 +1173,7 @@ data("big9salary")
 #* this is how the data would like most of the time (instead of having bunch of dummy variables)
 big9salary_c <-
   as_tibble(big9salary) %>%
-  mutate(
+  dplyr::mutate(
     university =
       case_when(
         osu == 1 ~ "Ohio State U",
@@ -1186,7 +1186,7 @@ big9salary_c <-
         illinois == 1 ~ "U of Illinois"
       )
   ) %>%
-  relocate(id, year, salary, pubindx, university)
+  dplyr::relocate(id, year, salary, pubindx, university)
 ```
 
 ---
@@ -1203,16 +1203,16 @@ tail(big9salary_c)
 ---
 class: middle
 
-You can use the `i()` function inside `feols()` like below:
+You can use the `i()` function inside `fixest::feols()` like below:
 
 ```{r eval = F}
-feols(salary ~ pubindx + female + `i(university, ref = "Indiana U")`, data = big9salary_c) %>%
-  tidy()
+fixest::feols(salary ~ pubindx + female + `i(university, ref = "Indiana U")`, data = big9salary_c) %>%
+  broom::tidy()
 ```
 
 ```{r echo = F, highlight.output = c(7)}
-feols(salary ~ pubindx + female + i(university, ref = "Indiana U"), data = big9salary_c) %>%
-  tidy()
+fixest::feols(salary ~ pubindx + female + i(university, ref = "Indiana U"), data = big9salary_c) %>%
+  broom::tidy()
 ```
 
 `ref = "Indiana U"` sets the base category to `"Indiana U"`. 
@@ -1235,13 +1235,13 @@ You can use `i()` for creating interactions of a categorical variable and a cont
 Suppose you are interested in understanding the impact of `pubindx` (continuous) by `university` (categorical), then
 
 ```{r eval = F}
-feols(salary ~ female + pubindx + i(university, ref = "Indiana U") + `i(university, totpge, ref = "Indiana U")`, data = big9salary_c) %>%
-  tidy()
+fixest::feols(salary ~ female + pubindx + i(university, ref = "Indiana U") + `i(university, totpge, ref = "Indiana U")`, data = big9salary_c) %>%
+  broom::tidy()
 ```
 
 ```{r echo = F, highlight.output = c(14)}
-feols(salary ~ female + pubindx + i(university, ref = "Indiana U") + i(university, pubindx, ref = "Indiana U"), data = big9salary_c) %>%
-  tidy()
+fixest::feols(salary ~ female + pubindx + i(university, ref = "Indiana U") + i(university, pubindx, ref = "Indiana U"), data = big9salary_c) %>%
+  broom::tidy()
 ```
 
 So, the marginal impact of `pubindex` is $436$ greater for those at Michigan State U than those at Indiana U.
@@ -1284,7 +1284,7 @@ $$ecolabs = \beta_0 + \beta_1 regprc + \beta_2 ecoprc$$
 
 ```{r echo = F, results = "asis"}
 apple <- read.dta13("APPLE.dta")
-reg_apple <- lm(ecolbs ~ regprc + ecoprc, data = apple)
+reg_apple <- fixest::feols(ecolbs ~ regprc + ecoprc, data = apple)
 stargazer(reg_apple, type = "html", no.space = TRUE, omit.stat = c("adj.rsq", "ser", "f"), table.layout = "-ld#-t-s-")
 ```
  
@@ -1317,17 +1317,17 @@ What happens if you scale up/down variables used in regression?
 
 ```{r scale-no-scale}
 #--- regression with original scale ---#
-reg_no_scale <- feols(wage ~ female + educ, data = wage)
+reg_no_scale <- fixest::feols(wage ~ female + educ, data = wage)
 
 #--- regression with scaled educ ---#
-reg_scale <- feols(wage ~ female + I(educ * 12), data = wage)
+reg_scale <- fixest::feols(wage ~ female + I(educ * 12), data = wage)
 ```
   
 ---
 
 .left5[
 ```{r dependson = "scale-no-scale", eval = F}
-msummary(
+modelsummary::msummary(
   list(reg_no_scale, reg_scale),
   stars = TRUE,
   gof_omit = "IC|Log|Adj|F|Pseudo|Within"
@@ -1347,7 +1347,7 @@ msummary(
 
 .right5[
 ```{r dependson = "scale-no-scale", echo = F}
-msummary(
+modelsummary::msummary(
   list(reg_no_scale, reg_scale),
   stars = TRUE,
   gof_omit = "IC|Log|Adj|F|Pseudo|Within"
