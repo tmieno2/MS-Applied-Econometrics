@@ -114,7 +114,7 @@ theme_update(
 )
 ```
 
-```{r setup, include=FALSE, cache = FALSE}
+```{r setup, include=FALSE, cache = FALSE, eval = FALSE}
 options(htmltools.dir.version = FALSE)
 BibOptions(
   check.entries = FALSE,

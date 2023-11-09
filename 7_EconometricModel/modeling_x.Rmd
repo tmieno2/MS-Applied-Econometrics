@@ -781,9 +781,9 @@ class: middle
 .content-box-red[**Regression with a dummy variable**]
 
 ```{r }
-wage <- dplyr::mutate(wage, male = 1 - female)
+wage1 <- dplyr::mutate(wage1, male = 1 - female)
 
-reg_df <- fixest::feols(wage ~ male + educ, data = wage)
+reg_df <- fixest::feols(wage ~ male + educ, data = wage1)
 
 reg_df
 ```
@@ -792,7 +792,7 @@ reg_df
 
 .content-box-red[**Interpretation**]
 
-Female workers make `r reg_df$coefficients["male"]` ($/hour) more than female workers on average even though they have the same education level. 
+Male workers make `r reg_df$coefficients["male"]` ($/hour) more than female workers on average even though they have the same education level. 
 
 ---
 
@@ -1317,10 +1317,10 @@ What happens if you scale up/down variables used in regression?
 
 ```{r scale-no-scale}
 #--- regression with original scale ---#
-reg_no_scale <- fixest::feols(wage ~ female + educ, data = wage)
+reg_no_scale <- fixest::feols(wage ~ female + educ, data = wage1)
 
 #--- regression with scaled educ ---#
-reg_scale <- fixest::feols(wage ~ female + I(educ * 12), data = wage)
+reg_scale <- fixest::feols(wage ~ female + I(educ * 12), data = wage1)
 ```
   
 ---
