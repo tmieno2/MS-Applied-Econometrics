@@ -44,7 +44,6 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/syllabus_2023.
 + Lecture A3: Research Demonstration Supplementary Information ([html](https://tmieno2.github.io/MS-Applied-Econometrics/A3_ResearchDemonstration/demonstration_supplement_x.html), [pdf](https://tmieno2.github.io/MS-Applied-Econometrics/A3_ResearchDemonstration/demonstration_supplement_x.pdf))
 
 
-
 ## Assignments
 
 + [Assignment 1](https://www.dropbox.com/sh/8q8twk1gph0qts0/AADYc4cWzYJCArWUtNZmPNsva?dl=0) ([Submission Link](https://www.dropbox.com/request/QoEGkBxBSn1xvmYhJbe1))([Solution](https://www.dropbox.com/scl/fo/cnw369ndsr05dd7y90oet/h?rlkey=l8t3kietff144qfy7tbo9cs3j&dl=0))
@@ -56,5 +55,5 @@ Syllabus ([pdf](https://tmieno2.github.io/MS-Applied-Econometrics/syllabus_2023.
 + [Assignment 4](https://www.dropbox.com/sh/sbl3cih6yv1nvxj/AAAsoFgAqPRi87qWc0GAlHWoa?dl=0) ([Submission Link](https://www.dropbox.com/request/ziUBm3LLDQQEgbOXScNl))
 
 ## Final paper
-+ Final Paper ([Instruction](https://tmieno2.github.io/MS-Applied-Econometrics/A2_PaperExpectation/paper_expectation_x.html), [Submission Link](https://www.dropbox.com/request/UVp6fI1CbH9Om2u51MLK))
++ Final Paper ([Instruction](https://tmieno2.github.io/MS-Applied-Econometrics/A2_PaperExpectation/paper_expectation_x.html), [Submission Link](https://www.dropbox.com/request/UVp6fI1CbH9Om2u51MLK), [check list](https://www.dropbox.com/scl/fi/kgmmdwiuh5chuzqw4352q/checklist.html?rlkey=hwmjeam1g8chce5u370k90gh4&dl=0))
 
